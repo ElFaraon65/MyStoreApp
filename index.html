@@ -6,859 +6,294 @@
   <title>ArchiveStoreApps</title>
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    /* ── GOOGLE PLAY PALETTE ── */
     :root {
-      --bg:           #f8f9fa;
-      --bg2:          #ffffff;
-      --surface:      #ffffff;
-      --surface2:     #f1f3f4;
-      --surface3:     #e8eaed;
-      --navy:         #01875f;   /* Play Store green */
-      --navy-dark:    #005c45;
-      --blue-link:    #1a73e8;
-      --text:         #202124;
-      --text2:        #5f6368;
-      --text3:        #80868b;
-      --border:       #e0e0e0;
-      --chip-bg:      #e8f5e9;
-      --chip-text:    #1e8e3e;
-      --star:         #fbbc04;
-      --danger:       #d93025;
-      --install:      #01875f;
-      --shadow-sm:    0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.08);
-      --shadow:       0 2px 8px rgba(0,0,0,.1), 0 1px 4px rgba(0,0,0,.06);
-      --shadow-lg:    0 8px 24px rgba(0,0,0,.12);
-      --r:            12px;
-      --r-sm:         8px;
-      --r-full:       50px;
+      --bg:        #f8f9fa;
+      --surface:   #ffffff;
+      --surface2:  #f1f3f4;
+      --surface3:  #e8eaed;
+      --navy:      #01875f;
+      --navy-dark: #005c45;
+      --blue-link: #1a73e8;
+      --text:      #202124;
+      --text2:     #5f6368;
+      --text3:     #80868b;
+      --border:    #e0e0e0;
+      --chip-bg:   #e8f5e9;
+      --chip-text: #1e8e3e;
+      --star:      #fbbc04;
+      --install:   #01875f;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.08);
+      --shadow:    0 2px 8px rgba(0,0,0,.1),0 1px 4px rgba(0,0,0,.06);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,.12);
+      --r:         12px;
+      --r-sm:      8px;
+      --r-full:    50px;
     }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%}
+    body{font-family:'Roboto',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
 
-    * { margin:0; padding:0; box-sizing:border-box; }
-    html, body { height:100%; }
+    /* ── TOP NAV ── */
+    .topnav{position:sticky;top:0;z-index:200;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;height:56px;gap:10px;box-shadow:var(--shadow-sm)}
+    .logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+    .logo-icon{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#01875f,#34a853);display:flex;align-items:center;justify-content:center}
+    .logo-icon svg{width:18px;height:18px}
+    .logo-text{display:flex;flex-direction:column;line-height:1.1}
+    .logo-text .brand{font-family:'Google Sans',sans-serif;font-size:14px;font-weight:700;color:var(--text)}
+    .logo-text .sub{font-size:9px;color:var(--text3);letter-spacing:.3px;text-transform:uppercase}
+    .nav-search{flex:1;max-width:480px;margin:0 auto;position:relative}
+    .nav-search input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-full);padding:8px 14px 8px 38px;font-size:14px;color:var(--text);outline:none;transition:all .2s}
+    .nav-search input:focus{background:#fff;border-color:var(--blue-link);box-shadow:0 0 0 3px rgba(26,115,232,.15)}
+    .nav-search .srch-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+    .nav-account{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1a73e8,#4285f4);display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Google Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;flex-shrink:0;margin-left:auto}
+    @media(max-width:480px){.logo-text .sub{display:none}.logo-text .brand{font-size:13px}}
 
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
-      line-height: 1.5;
-    }
+    /* ── LAYOUT ── */
+    .page-wrap{max-width:1100px;margin:0 auto;padding:0 14px 80px}
+    .view{display:none}
+    .view.active{display:block}
 
-    /* ════════════════════════════════════════
-       TOP NAV
-    ════════════════════════════════════════ */
-    .topnav {
-      position: sticky; top: 0; z-index: 200;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center;
-      padding: 0 16px;
-      height: 56px;
-      gap: 12px;
-      box-shadow: var(--shadow-sm);
-    }
-    .logo-wrap {
-      display: flex; align-items: center; gap: 8px;
-      text-decoration: none;
-    }
-    .logo-icon {
-      width: 36px; height: 36px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #01875f, #34a853);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .logo-icon svg { width: 20px; height: 20px; }
-    .logo-text {
-      display: flex; flex-direction: column; line-height: 1.1;
-    }
-    .logo-text .brand {
-      font-family: 'Google Sans', sans-serif;
-      font-size: 15px; font-weight: 700;
-      color: var(--text); letter-spacing: -.2px;
-    }
-    .logo-text .sub {
-      font-size: 10px; color: var(--text3);
-      letter-spacing: .3px; text-transform: uppercase;
-    }
-    .nav-search {
-      flex: 1; max-width: 500px; margin: 0 auto;
-      position: relative;
-    }
-    .nav-search input {
-      width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--r-full);
-      padding: 8px 16px 8px 40px;
-      font-family: 'Roboto', sans-serif;
-      font-size: 14px; color: var(--text);
-      outline: none; transition: all .2s;
-    }
-    .nav-search input:focus {
-      background: #fff;
-      border-color: var(--blue-link);
-      box-shadow: 0 0 0 3px rgba(26,115,232,.15);
-    }
-    .nav-search .srch-icon {
-      position: absolute; left: 13px; top: 50%;
-      transform: translateY(-50%);
-      color: var(--text3); pointer-events: none;
-    }
-    .nav-account {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: linear-gradient(135deg, #1a73e8, #4285f4);
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-family: 'Google Sans', sans-serif;
-      font-weight: 700; font-size: 14px;
-      cursor: pointer; flex-shrink: 0; margin-left: auto;
-    }
+    /* ── BANNER CAROUSEL ── */
+    .home-hero{margin:18px 0 26px;position:relative}
+    .carousel-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
+    .carousel-track::-webkit-scrollbar{display:none}
+    .banner-slide{flex-shrink:0;width:calc(100vw - 56px);max-width:680px;border-radius:14px;overflow:hidden;scroll-snap-align:start;box-shadow:var(--shadow);cursor:pointer;position:relative;aspect-ratio:16/7;background:#0D1A2E;transition:transform .2s}
+    .banner-slide:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+    .banner-1{background:linear-gradient(135deg,#07101F,#0D1A2E 40%,#152236)}
+    .banner-1-content{position:absolute;inset:0;display:flex;align-items:center;padding:18px 22px;gap:18px}
+    .b1-left{flex:1}
+    .b1-label{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#3ECFA0;margin-bottom:5px}
+    .b1-title{font-family:'Google Sans',sans-serif;font-size:clamp(16px,3.5vw,24px);font-weight:700;color:#E8EFF8;line-height:1.15;margin-bottom:7px}
+    .b1-title em{color:#E8B84B;font-style:normal}
+    .b1-sub{font-size:12px;color:#637A99;line-height:1.5;max-width:220px}
+    .b1-right{flex-shrink:0;width:clamp(80px,20vw,140px);aspect-ratio:9/16;background:#0D1A2E;border-radius:10px;border:1px solid #1E3050;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.5);position:relative}
+    .mock-topbar{height:26px;background:#0D1A2E;border-bottom:1px solid #1E3050;display:flex;align-items:center;padding:0 7px;gap:5px}
+    .mock-brand{font-size:8px;font-weight:800;color:#E8EFF8;letter-spacing:-.3px}
+    .mock-brand span{color:#E8B84B}
+    .mock-body{padding:5px;display:flex;flex-direction:column;gap:4px}
+    .mock-bubble{background:#0D1A2E;border:1px solid #1E3050;border-radius:5px;padding:4px 5px}
+    .mock-bhead{display:flex;align-items:center;gap:3px;margin-bottom:3px}
+    .mock-bid{width:12px;height:12px;border-radius:3px;background:rgba(232,184,75,.2);border:1px solid rgba(232,184,75,.3);display:flex;align-items:center;justify-content:center}
+    .mock-bid-dot{width:4px;height:4px;border-radius:50%;background:#E8B84B}
+    .mock-bname{font-size:6px;font-weight:700;color:#E8EFF8}
+    .mock-table{display:flex;flex-direction:column;gap:2px}
+    .mock-trow{display:flex;gap:2px}
+    .mock-th{flex:1;height:6px;background:#1C2E45;border-radius:2px;min-width:0}
+    .mock-td{flex:1;height:6px;background:#07101F;border-radius:2px;min-width:0}
+    .mock-td.g{background:rgba(62,207,160,.2)}
+    .mock-td.a{background:rgba(232,184,75,.2)}
+    .banner-2{background:linear-gradient(135deg,#0D1A2E,#152236 50%,#1C2E45)}
+    .banner-2-content{position:absolute;inset:0;display:flex;align-items:center;padding:18px 22px;gap:18px}
+    .b2-phone{flex-shrink:0;width:clamp(80px,18vw,120px);aspect-ratio:9/16;background:#07101F;border-radius:10px;border:1px solid #1E3050;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+    .mock-form{padding:5px;display:flex;flex-direction:column;gap:4px}
+    .mock-field{background:#152236;border:1px solid #1E3050;border-radius:3px;height:11px}
+    .mock-field.active{border-color:#4B8FE8}
+    .mock-field-label{font-size:5px;color:#637A99;margin-bottom:1px}
+    .mock-save-btn{background:#E8B84B;border-radius:3px;height:13px;margin-top:3px}
+    .b2-right{flex:1}
+    .b2-label{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#4B8FE8;margin-bottom:5px}
+    .b2-title{font-family:'Google Sans',sans-serif;font-size:clamp(14px,2.8vw,20px);font-weight:700;color:#E8EFF8;line-height:1.2;margin-bottom:7px}
+    .b2-pills{display:flex;flex-wrap:wrap;gap:4px}
+    .b2-pill{font-size:9px;font-weight:600;padding:3px 7px;border-radius:50px;border:1px solid}
+    .pill-g{color:#3ECFA0;border-color:rgba(62,207,160,.4);background:rgba(62,207,160,.1)}
+    .pill-b{color:#4B8FE8;border-color:rgba(75,143,232,.4);background:rgba(75,143,232,.1)}
+    .pill-p{color:#A855F7;border-color:rgba(168,85,247,.4);background:rgba(168,85,247,.1)}
+    .pill-a{color:#E8B84B;border-color:rgba(232,184,75,.4);background:rgba(232,184,75,.1)}
+    .banner-3{background:linear-gradient(135deg,#0B1E38,#0F2340)}
+    .banner-3-content{position:absolute;inset:0;display:flex;align-items:center;padding:18px 22px;gap:18px}
+    .b3-stats{flex:1;display:flex;flex-direction:column;gap:7px}
+    .b3-stat{background:rgba(255,255,255,.04);border:1px solid rgba(62,207,160,.2);border-radius:7px;padding:7px 10px}
+    .b3-stat-label{font-size:9px;color:#637A99;text-transform:uppercase;letter-spacing:.6px}
+    .b3-stat-val{font-family:'Google Sans',sans-serif;font-size:16px;font-weight:700;color:#3ECFA0}
+    .b3-right{flex-shrink:0}
+    .b3-title{font-family:'Google Sans',sans-serif;font-size:clamp(14px,2.8vw,20px);font-weight:700;color:#E8EFF8;margin-bottom:5px;line-height:1.2}
+    .b3-sub{font-size:11px;color:#637A99;max-width:170px;line-height:1.5}
+    .carousel-dots{display:flex;justify-content:center;gap:6px;margin-top:10px}
+    .cdot{width:6px;height:6px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .2s}
+    .cdot.active{background:var(--navy);width:16px;border-radius:3px}
+    @media(max-width:500px){.b1-right,.b2-phone{display:none}}
 
-    /* ════════════════════════════════════════
-       MAIN LAYOUT
-    ════════════════════════════════════════ */
-    .page-wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 16px 80px;
-    }
+    /* ── SECTION TITLE ── */
+    .sec-title{font-family:'Google Sans',sans-serif;font-size:17px;font-weight:700;color:var(--text);margin-bottom:13px;display:flex;align-items:center;justify-content:space-between}
+    .sec-title a{font-size:13px;font-weight:500;color:var(--blue-link);text-decoration:none;cursor:pointer}
 
-    /* ════════════════════════════════════════
-       VIEWS
-    ════════════════════════════════════════ */
-    .view { display: none; }
-    .view.active { display: block; }
+    /* ── APP ROW ── */
+    .app-row{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:30px}
+    .app-row::-webkit-scrollbar{display:none}
+    .app-card-sm{flex-shrink:0;width:130px;cursor:pointer;transition:transform .2s}
+    .app-card-sm:hover{transform:translateY(-2px)}
+    .app-card-sm .ic{width:58px;height:58px;border-radius:13px;margin-bottom:7px;overflow:hidden;box-shadow:var(--shadow-sm)}
+    .app-card-sm .ic svg{width:100%;height:100%}
+    .app-card-sm .name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .app-card-sm .dev{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-    /* ════════════════════════════════════════
-       HOME — BANNER CAROUSEL
-    ════════════════════════════════════════ */
-    .home-hero {
-      margin: 20px 0 28px;
-      position: relative;
-    }
-    .carousel-track {
-      display: flex; gap: 12px;
-      overflow-x: auto; scroll-snap-type: x mandatory;
-      scrollbar-width: none; padding-bottom: 4px;
-    }
-    .carousel-track::-webkit-scrollbar { display: none; }
-    .banner-slide {
-      flex-shrink: 0;
-      width: calc(100vw - 64px);
-      max-width: 680px;
-      border-radius: 16px;
-      overflow: hidden;
-      scroll-snap-align: start;
-      box-shadow: var(--shadow);
-      cursor: pointer;
-      position: relative;
-      aspect-ratio: 16/7;
-      background: #0D1A2E;
-      transition: transform .2s;
-    }
-    .banner-slide:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    /* ── CHIPS ── */
+    .chips-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:22px}
+    .chips-row::-webkit-scrollbar{display:none}
+    .chip{flex-shrink:0;padding:7px 15px;border-radius:var(--r-full);border:1px solid var(--border);background:var(--surface);font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap}
+    .chip:hover{background:var(--surface2);border-color:var(--text3)}
+    .chip.active{background:#e8f5e9;border-color:#1e8e3e;color:#1e8e3e}
 
-    /* Banner 1 — Home screen of DataGrid */
-    .banner-1 {
-      background: linear-gradient(135deg, #07101F 0%, #0D1A2E 40%, #152236 100%);
-    }
-    .banner-1-content {
-      position: absolute; inset: 0;
-      display: flex; align-items: center;
-      padding: 20px 24px;
-      gap: 20px;
-    }
-    .b1-left { flex: 1; }
-    .b1-label {
-      font-size: 10px; font-weight: 600; letter-spacing: .12em;
-      text-transform: uppercase;
-      color: #3ECFA0; margin-bottom: 6px;
-    }
-    .b1-title {
-      font-family: 'Google Sans', sans-serif;
-      font-size: clamp(18px,3.5vw,26px);
-      font-weight: 700; color: #E8EFF8;
-      line-height: 1.15; margin-bottom: 8px;
-      letter-spacing: -.3px;
-    }
-    .b1-title em { color: #E8B84B; font-style: normal; }
-    .b1-sub {
-      font-size: 12px; color: #637A99;
-      line-height: 1.5; max-width: 240px;
-    }
-    .b1-right {
-      flex-shrink: 0;
-      width: clamp(100px, 22vw, 160px);
-      aspect-ratio: 9/16;
-      background: #0D1A2E;
-      border-radius: 10px;
-      border: 1px solid #1E3050;
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0,0,0,.5);
-      position: relative;
-    }
-    /* Simulated DataGrid topbar */
-    .mock-topbar {
-      height: 28px; background: #0D1A2E;
-      border-bottom: 1px solid #1E3050;
-      display: flex; align-items: center;
-      padding: 0 8px; gap: 6px;
-    }
-    .mock-brand {
-      font-size: 8px; font-weight: 800;
-      color: #E8EFF8; letter-spacing: -.3px;
-    }
-    .mock-brand span { color: #E8B84B; }
-    .mock-body { padding: 6px; display: flex; flex-direction: column; gap: 5px; }
-    .mock-bubble {
-      background: #0D1A2E; border: 1px solid #1E3050;
-      border-radius: 6px; padding: 5px 6px;
-    }
-    .mock-bhead {
-      display: flex; align-items: center; gap: 4px;
-      margin-bottom: 4px;
-    }
-    .mock-bid {
-      width: 14px; height: 14px; border-radius: 3px;
-      background: rgba(232,184,75,.2); border: 1px solid rgba(232,184,75,.3);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .mock-bid-dot { width: 4px; height: 4px; border-radius: 50%; background: #E8B84B; }
-    .mock-bname { font-size: 6px; font-weight: 700; color: #E8EFF8; }
-    .mock-table { display: flex; flex-direction: column; gap: 2px; }
-    .mock-trow { display: flex; gap: 2px; }
-    .mock-th {
-      flex: 1; height: 7px; background: #1C2E45;
-      border-radius: 2px; min-width: 0;
-    }
-    .mock-td {
-      flex: 1; height: 7px; background: #07101F;
-      border-radius: 2px; min-width: 0;
-    }
-    .mock-td.g { background: rgba(62,207,160,.2); }
-    .mock-td.a { background: rgba(232,184,75,.2); }
-
-    /* Banner 2 — Edit view */
-    .banner-2 {
-      background: linear-gradient(135deg, #0D1A2E 0%, #152236 50%, #1C2E45 100%);
-    }
-    .banner-2-content {
-      position: absolute; inset: 0;
-      display: flex; align-items: center;
-      padding: 20px 24px; gap: 20px;
-    }
-    .b2-phone {
-      flex-shrink: 0;
-      width: clamp(90px, 20vw, 140px);
-      aspect-ratio: 9/16;
-      background: #07101F;
-      border-radius: 10px;
-      border: 1px solid #1E3050;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,.5);
-    }
-    .mock-form { padding: 6px; display: flex; flex-direction: column; gap: 4px; }
-    .mock-field {
-      background: #152236; border: 1px solid #1E3050;
-      border-radius: 4px; height: 12px;
-    }
-    .mock-field.active { border-color: #4B8FE8; }
-    .mock-field-label { font-size: 5px; color: #637A99; margin-bottom: 2px; }
-    .mock-save-btn {
-      background: #E8B84B; border-radius: 4px;
-      height: 14px; margin-top: 4px;
-    }
-    .b2-right { flex: 1; }
-    .b2-label {
-      font-size: 10px; font-weight: 600; letter-spacing: .12em;
-      text-transform: uppercase; color: #4B8FE8; margin-bottom: 6px;
-    }
-    .b2-title {
-      font-family: 'Google Sans', sans-serif;
-      font-size: clamp(16px, 3vw, 22px);
-      font-weight: 700; color: #E8EFF8;
-      line-height: 1.2; margin-bottom: 8px;
-    }
-    .b2-pills { display: flex; flex-wrap: wrap; gap: 5px; }
-    .b2-pill {
-      font-size: 9px; font-weight: 600;
-      padding: 3px 8px; border-radius: 50px;
-      border: 1px solid;
-    }
-    .pill-g { color: #3ECFA0; border-color: rgba(62,207,160,.4); background: rgba(62,207,160,.1); }
-    .pill-b { color: #4B8FE8; border-color: rgba(75,143,232,.4); background: rgba(75,143,232,.1); }
-    .pill-p { color: #A855F7; border-color: rgba(168,85,247,.4); background: rgba(168,85,247,.1); }
-    .pill-a { color: #E8B84B; border-color: rgba(232,184,75,.4); background: rgba(232,184,75,.1); }
-
-    /* Banner 3 — Insights */
-    .banner-3 {
-      background: linear-gradient(135deg, #0B1E38 0%, #0F2340 100%);
-    }
-    .banner-3-content {
-      position: absolute; inset: 0;
-      display: flex; align-items: center;
-      padding: 20px 24px; gap: 20px;
-    }
-    .b3-stats { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-    .b3-stat {
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(62,207,160,.2);
-      border-radius: 8px; padding: 8px 12px;
-    }
-    .b3-stat-label { font-size: 9px; color: #637A99; text-transform: uppercase; letter-spacing: .6px; }
-    .b3-stat-val {
-      font-family: 'Google Sans', sans-serif;
-      font-size: 18px; font-weight: 700; color: #3ECFA0;
-    }
-    .b3-right { flex-shrink: 0; }
-    .b3-title {
-      font-family: 'Google Sans', sans-serif;
-      font-size: clamp(16px, 3vw, 22px);
-      font-weight: 700; color: #E8EFF8;
-      margin-bottom: 6px; line-height: 1.2;
-    }
-    .b3-sub { font-size: 11px; color: #637A99; max-width: 180px; line-height: 1.5; }
-
-    /* Carousel dots */
-    .carousel-dots {
-      display: flex; justify-content: center; gap: 6px;
-      margin-top: 12px;
-    }
-    .cdot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--border); cursor: pointer;
-      transition: all .2s;
-    }
-    .cdot.active { background: var(--navy); width: 18px; border-radius: 3px; }
-
-    /* ════════════════════════════════════════
-       HOME SECTION TITLES
-    ════════════════════════════════════════ */
-    .sec-title {
-      font-family: 'Google Sans', sans-serif;
-      font-size: 18px; font-weight: 700;
-      color: var(--text);
-      margin-bottom: 14px;
-      display: flex; align-items: center;
-      justify-content: space-between;
-    }
-    .sec-title a {
-      font-size: 13px; font-weight: 500;
-      color: var(--blue-link); text-decoration: none;
-      cursor: pointer;
-    }
-
-    /* ════════════════════════════════════════
-       HORIZONTAL APP LIST
-    ════════════════════════════════════════ */
-    .app-row {
-      display: flex; gap: 12px;
-      overflow-x: auto; scrollbar-width: none;
-      padding-bottom: 4px; margin-bottom: 32px;
-    }
-    .app-row::-webkit-scrollbar { display: none; }
-    .app-card-sm {
-      flex-shrink: 0; width: 140px;
-      cursor: pointer;
-      transition: transform .2s;
-    }
-    .app-card-sm:hover { transform: translateY(-2px); }
-    .app-card-sm .ic {
-      width: 60px; height: 60px;
-      border-radius: 14px;
-      margin-bottom: 8px;
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-    }
-    .app-card-sm .ic svg { width: 100%; height: 100%; }
-    .app-card-sm .name {
-      font-size: 13px; font-weight: 500;
-      color: var(--text); margin-bottom: 2px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .app-card-sm .dev {
-      font-size: 11px; color: var(--text3);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-
-    /* ════════════════════════════════════════
-       CATEGORY CHIPS
-    ════════════════════════════════════════ */
-    .chips-row {
-      display: flex; gap: 8px;
-      overflow-x: auto; scrollbar-width: none;
-      padding-bottom: 4px; margin-bottom: 24px;
-    }
-    .chips-row::-webkit-scrollbar { display: none; }
-    .chip {
-      flex-shrink: 0;
-      padding: 7px 16px;
-      border-radius: var(--r-full);
-      border: 1px solid var(--border);
-      background: var(--surface);
-      font-size: 13px; font-weight: 500;
-      color: var(--text2);
-      cursor: pointer; transition: all .15s;
-      white-space: nowrap;
-    }
-    .chip:hover { background: var(--surface2); border-color: var(--text3); }
-    .chip.active {
-      background: #e8f5e9;
-      border-color: #1e8e3e;
-      color: #1e8e3e;
-    }
-
-    /* ════════════════════════════════════════
-       APP DETAIL PAGE
-    ════════════════════════════════════════ */
-    .detail-back {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 12px 0 0;
-      font-size: 13px; color: var(--blue-link);
-      cursor: pointer; text-decoration: none;
-      font-weight: 500;
-    }
-    .detail-back:hover { text-decoration: underline; }
-
-    .detail-hero {
-      display: flex; gap: 20px;
-      padding: 20px 0 24px;
-      border-bottom: 1px solid var(--border);
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-    .detail-icon {
-      width: 100px; height: 100px;
-      border-radius: 22px;
-      overflow: hidden; flex-shrink: 0;
-      box-shadow: var(--shadow);
-    }
-    .detail-icon svg { width: 100%; height: 100%; }
-    .detail-meta { flex: 1; min-width: 200px; }
-    .detail-name {
-      font-family: 'Google Sans', sans-serif;
-      font-size: 26px; font-weight: 700;
-      color: var(--text); line-height: 1.1;
-      margin-bottom: 4px;
-    }
-    .detail-dev {
-      font-size: 14px; color: var(--navy);
-      font-weight: 500; margin-bottom: 8px;
-    }
-    .detail-tags {
-      display: flex; flex-wrap: wrap; gap: 6px;
-      margin-bottom: 12px;
-    }
-    .dtag {
-      font-size: 11px; font-weight: 500;
-      padding: 3px 10px; border-radius: 50px;
-      background: var(--chip-bg); color: var(--chip-text);
-    }
-    .dtag.blue { background: #e8f0fe; color: #1a73e8; }
-    .dtag.purple { background: #f3e8fd; color: #7b1fa2; }
-    .dtag.orange { background: #fef3e2; color: #e37400; }
-
-    .rating-snapshot {
-      display: flex; align-items: center; gap: 12px;
-      flex-wrap: wrap;
-    }
-    .rating-big {
-      font-family: 'Google Sans', sans-serif;
-      font-size: 36px; font-weight: 700;
-      color: var(--text); line-height: 1;
-    }
-    .stars-row { display: flex; gap: 2px; }
-    .s { font-size: 16px; color: var(--star); }
-    .s.empty { color: var(--border); }
-    .rating-count { font-size: 12px; color: var(--text3); }
-
-    /* Install button */
-    .install-btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--install);
-      color: #fff;
-      border: none; border-radius: var(--r-full);
-      padding: 12px 28px;
-      font-family: 'Google Sans', sans-serif;
-      font-size: 15px; font-weight: 700;
-      cursor: pointer; text-decoration: none;
-      box-shadow: 0 2px 8px rgba(1,135,95,.3);
-      transition: all .2s;
-      margin-top: 16px;
-    }
-    .install-btn:hover { background: var(--navy-dark); box-shadow: 0 4px 16px rgba(1,135,95,.4); transform: translateY(-1px); }
-
-    /* Update pill */
-    .update-pill {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: #fff8e1; border: 1px solid #f9ab00;
-      border-radius: var(--r-full);
-      padding: 6px 14px;
-      font-size: 12px; font-weight: 600;
-      color: #e37400; cursor: pointer;
-      margin-top: 10px; margin-left: 10px;
-      animation: glow-pill 2.5s infinite;
-    }
-    @keyframes glow-pill {
-      0%,100%{box-shadow:0 0 0 0 rgba(249,171,0,.3)}
-      50%{box-shadow:0 0 0 6px rgba(249,171,0,.0)}
-    }
-    .update-dot { width:7px;height:7px;border-radius:50%;background:#f9ab00;animation:blink 1.5s infinite; }
+    /* ── DETAIL ── */
+    .detail-back{display:inline-flex;align-items:center;gap:6px;padding:12px 0 0;font-size:13px;color:var(--blue-link);cursor:pointer;text-decoration:none;font-weight:500}
+    .detail-back:hover{text-decoration:underline}
+    .detail-hero{display:flex;gap:18px;padding:18px 0 22px;border-bottom:1px solid var(--border);align-items:flex-start;flex-wrap:wrap}
+    .detail-icon{width:90px;height:90px;border-radius:20px;overflow:hidden;flex-shrink:0;box-shadow:var(--shadow)}
+    .detail-icon svg{width:100%;height:100%}
+    .detail-meta{flex:1;min-width:190px}
+    .detail-name{font-family:'Google Sans',sans-serif;font-size:24px;font-weight:700;color:var(--text);line-height:1.1;margin-bottom:3px}
+    .detail-dev{font-size:14px;color:var(--navy);font-weight:500;margin-bottom:7px}
+    .detail-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:11px}
+    .dtag{font-size:11px;font-weight:500;padding:3px 10px;border-radius:50px;background:var(--chip-bg);color:var(--chip-text)}
+    .dtag.blue{background:#e8f0fe;color:#1a73e8}
+    .dtag.purple{background:#f3e8fd;color:#7b1fa2}
+    .dtag.orange{background:#fef3e2;color:#e37400}
+    .rating-snapshot{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .rating-big{font-family:'Google Sans',sans-serif;font-size:34px;font-weight:700;color:var(--text);line-height:1}
+    .stars-row{display:flex;gap:2px}
+    .s{font-size:15px;color:var(--star)}
+    .s.empty{color:var(--border)}
+    .rating-count{font-size:12px;color:var(--text3)}
+    .install-btn{display:inline-flex;align-items:center;gap:7px;background:var(--install);color:#fff;border:none;border-radius:var(--r-full);padding:11px 26px;font-family:'Google Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;box-shadow:0 2px 8px rgba(1,135,95,.3);transition:all .2s;margin-top:14px}
+    .install-btn:hover{background:var(--navy-dark);box-shadow:0 4px 16px rgba(1,135,95,.4);transform:translateY(-1px)}
+    .update-pill{display:none;align-items:center;gap:5px;background:#fff8e1;border:1px solid #f9ab00;border-radius:var(--r-full);padding:6px 13px;font-size:12px;font-weight:600;color:#e37400;cursor:pointer;margin-top:10px;margin-left:8px;animation:glow-pill 2.5s infinite}
+    .update-pill.visible{display:inline-flex}
+    @keyframes glow-pill{0%,100%{box-shadow:0 0 0 0 rgba(249,171,0,.3)}50%{box-shadow:0 0 0 6px rgba(249,171,0,0)}}
+    .update-dot{width:7px;height:7px;border-radius:50%;background:#f9ab00;animation:blink 1.5s infinite}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 
     /* ── STATS STRIP ── */
-    .stats-strip {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      overflow: hidden;
-      margin: 24px 0;
+    .stats-strip{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:22px 0}
+    .stat-cell{padding:14px;text-align:center;border-right:1px solid var(--border)}
+    .stat-cell:last-child{border-right:none}
+    .stat-val{font-family:'Google Sans',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:2px}
+    .stat-lbl{font-size:11px;color:var(--text3)}
+    @media(max-width:500px){
+      .stats-strip{grid-template-columns:1fr}
+      .stat-cell{border-right:none;border-bottom:1px solid var(--border)}
+      .stat-cell:last-child{border-bottom:none}
+      .detail-hero{flex-direction:column}
     }
-    .stat-cell {
-      padding: 16px; text-align: center;
-      border-right: 1px solid var(--border);
-    }
-    .stat-cell:last-child { border-right: none; }
-    .stat-val {
-      font-family: 'Google Sans', sans-serif;
-      font-size: 20px; font-weight: 700;
-      color: var(--text); margin-bottom: 2px;
-    }
-    .stat-lbl { font-size: 11px; color: var(--text3); }
 
     /* ── TABS ── */
-    .detail-tabs {
-      display: flex; gap: 0;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 24px;
-      overflow-x: auto; scrollbar-width: none;
-    }
-    .detail-tabs::-webkit-scrollbar { display: none; }
-    .dtab {
-      padding: 12px 20px;
-      font-size: 14px; font-weight: 500;
-      color: var(--text3);
-      cursor: pointer; border: none;
-      background: none; font-family: 'Roboto', sans-serif;
-      white-space: nowrap;
-      border-bottom: 2px solid transparent;
-      transition: all .15s;
-      margin-bottom: -1px;
-    }
-    .dtab.active {
-      color: var(--navy);
-      border-bottom-color: var(--navy);
-    }
-    .dtab:hover { color: var(--text); }
-    .dtab-content { display: none; }
-    .dtab-content.active { display: block; }
+    .detail-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:22px;overflow-x:auto;scrollbar-width:none}
+    .detail-tabs::-webkit-scrollbar{display:none}
+    .dtab{padding:11px 18px;font-size:14px;font-weight:500;color:var(--text3);cursor:pointer;border:none;background:none;font-family:'Roboto',sans-serif;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px}
+    .dtab.active{color:var(--navy);border-bottom-color:var(--navy)}
+    .dtab:hover{color:var(--text)}
+    .dtab-content{display:none}
+    .dtab-content.active{display:block}
 
     /* ── DESCRIPTION ── */
-    .desc-text {
-      font-size: 14px; color: var(--text2);
-      line-height: 1.7; max-width: 680px;
-    }
-    .desc-text p { margin-bottom: 12px; }
-    .desc-features {
-      margin-top: 16px; display: flex;
-      flex-direction: column; gap: 8px;
-    }
-    .feat-item {
-      display: flex; align-items: flex-start; gap: 10px;
-      font-size: 14px; color: var(--text2);
-    }
-    .feat-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--navy); margin-top: 7px; flex-shrink: 0;
-    }
-    .show-more {
-      display: inline-block; margin-top: 12px;
-      color: var(--blue-link); font-size: 13px;
-      font-weight: 500; cursor: pointer;
-    }
-    .show-more:hover { text-decoration: underline; }
-
-    /* For-who section */
-    .for-who {
-      margin-top: 20px; padding: 16px;
-      background: var(--surface2);
-      border-radius: var(--r-sm);
-    }
-    .for-who-title {
-      font-family: 'Google Sans', sans-serif;
-      font-size: 14px; font-weight: 700;
-      margin-bottom: 10px; color: var(--text);
-    }
-    .for-who-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .fw-chip {
-      padding: 5px 12px; border-radius: 50px;
-      background: var(--surface); border: 1px solid var(--border);
-      font-size: 12px; color: var(--text2);
-    }
-    .fw-chip.yes { background: #e8f5e9; border-color: #a8d5b5; color: #2e7d32; }
-    .fw-chip.no  { background: #fff3e0; border-color: #ffcc80; color: #e65100; }
-
-    /* ── DIFFICULTY ── */
-    .diff-section {
-      margin-top: 20px; padding: 16px;
-      border: 1px solid var(--border);
-      border-radius: var(--r-sm);
-    }
-    .diff-title {
-      font-size: 13px; font-weight: 600;
-      color: var(--text2); margin-bottom: 10px;
-    }
-    .diff-bar-wrap { position: relative; margin-bottom: 6px; }
-    .diff-bar {
-      height: 6px; background: var(--surface2);
-      border-radius: 50px; overflow: hidden;
-    }
-    .diff-bar-fill {
-      height: 100%; width: 30%;
-      background: linear-gradient(90deg, #34a853, #fbbc04, #ea4335);
-      border-radius: 50px;
-    }
-    .diff-bar-labels {
-      display: flex; justify-content: space-between;
-      font-size: 11px; color: var(--text3);
-      margin-top: 4px;
-    }
-    .diff-verdict {
-      margin-top: 10px; font-size: 13px;
-      color: #2e7d32; font-weight: 600;
-    }
+    .desc-text{font-size:14px;color:var(--text2);line-height:1.7;max-width:680px}
+    .desc-text p{margin-bottom:11px}
+    .desc-features{margin-top:15px;display:flex;flex-direction:column;gap:7px}
+    .feat-item{display:flex;align-items:flex-start;gap:9px;font-size:14px;color:var(--text2)}
+    .feat-dot{width:6px;height:6px;border-radius:50%;background:var(--navy);margin-top:7px;flex-shrink:0}
+    .for-who{margin-top:18px;padding:14px;background:var(--surface2);border-radius:var(--r-sm)}
+    .for-who-title{font-family:'Google Sans',sans-serif;font-size:14px;font-weight:700;margin-bottom:9px;color:var(--text)}
+    .for-who-chips{display:flex;flex-wrap:wrap;gap:7px}
+    .fw-chip{padding:5px 11px;border-radius:50px;background:var(--surface);border:1px solid var(--border);font-size:12px;color:var(--text2)}
+    .fw-chip.yes{background:#e8f5e9;border-color:#a8d5b5;color:#2e7d32}
+    .fw-chip.no{background:#fff3e0;border-color:#ffcc80;color:#e65100}
+    .diff-section{margin-top:18px;padding:14px;border:1px solid var(--border);border-radius:var(--r-sm)}
+    .diff-title{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:9px}
+    .diff-bar{height:6px;background:var(--surface2);border-radius:50px;overflow:hidden;margin-bottom:5px}
+    .diff-bar-fill{height:100%;width:30%;background:linear-gradient(90deg,#34a853,#fbbc04,#ea4335);border-radius:50px}
+    .diff-bar-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:3px}
+    .diff-verdict{margin-top:9px;font-size:13px;color:#2e7d32;font-weight:600}
 
     /* ── SCREENSHOTS ── */
-    .screenshots-row {
-      display: flex; gap: 10px;
-      overflow-x: auto; scrollbar-width: none;
-      padding-bottom: 4px;
-      margin-bottom: 24px;
-    }
-    .screenshots-row::-webkit-scrollbar { display: none; }
-    .screenshot {
-      flex-shrink: 0;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-sm);
-    }
+    .screenshots-row{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:22px}
+    .screenshots-row::-webkit-scrollbar{display:none}
+    .screenshot{flex-shrink:0;border-radius:11px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-sm)}
 
     /* ── REVIEWS ── */
-    .review-summary {
-      display: flex; gap: 24px;
-      padding: 20px; background: var(--surface2);
-      border-radius: var(--r); margin-bottom: 20px;
-      align-items: center; flex-wrap: wrap;
-    }
-    .rev-big {
-      font-family: 'Google Sans', sans-serif;
-      font-size: 52px; font-weight: 700;
-      color: var(--text); line-height: 1;
-      text-align: center;
-    }
-    .rev-stars-big { display: flex; gap: 3px; justify-content: center; margin: 4px 0 2px; }
-    .rev-stars-big .s { font-size: 14px; }
-    .rev-count { font-size: 11px; color: var(--text3); text-align: center; }
-    .rev-bars { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 6px; }
-    .rev-bar-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2); }
-    .rev-bar-track {
-      flex: 1; height: 6px;
-      background: var(--border); border-radius: 50px; overflow: hidden;
-    }
-    .rev-bar-fill { height: 100%; background: var(--star); border-radius: 50px; transition: width 1s; }
-
-    .no-reviews {
-      text-align: center; padding: 40px 20px;
-      color: var(--text3);
-    }
-    .no-reviews .nr-icon {
-      font-size: 36px; margin-bottom: 10px;
-    }
-    .no-reviews p { font-size: 14px; line-height: 1.6; }
-
-    /* Add review */
-    .add-review {
-      border: 1px solid var(--border);
-      border-radius: var(--r); padding: 20px;
-      margin-top: 16px;
-    }
-    .add-review h4 {
-      font-family: 'Google Sans', sans-serif;
-      font-size: 16px; font-weight: 700;
-      margin-bottom: 14px;
-    }
-    .star-input { display: flex; gap: 6px; margin-bottom: 12px; }
-    .si { font-size: 28px; color: var(--border); cursor: pointer; transition: all .15s; }
-    .si:hover { transform: scale(1.2); }
-    .si.lit { color: var(--star); }
-    .review-ta {
-      width: 100%; min-height: 90px;
-      border: 1px solid var(--border); border-radius: var(--r-sm);
-      padding: 10px 14px; font-family: 'Roboto', sans-serif;
-      font-size: 14px; color: var(--text); resize: vertical;
-      outline: none; transition: border-color .2s;
-      background: var(--surface);
-    }
-    .review-ta:focus { border-color: var(--blue-link); }
-    .review-name-in {
-      width: 100%; border: 1px solid var(--border); border-radius: var(--r-sm);
-      padding: 8px 14px; font-family: 'Roboto', sans-serif;
-      font-size: 14px; color: var(--text); outline: none;
-      background: var(--surface); transition: border-color .2s;
-      margin-bottom: 10px;
-    }
-    .review-name-in:focus { border-color: var(--blue-link); }
-    .sub-review-btn {
-      background: var(--navy); color: #fff;
-      border: none; border-radius: var(--r-full);
-      padding: 10px 24px; font-family: 'Google Sans', sans-serif;
-      font-size: 14px; font-weight: 700; cursor: pointer;
-      transition: all .2s;
-    }
-    .sub-review-btn:hover { background: var(--navy-dark); }
-
-    .review-card {
-      padding: 16px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .rc-top {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
-    }
-    .rc-avatar {
-      width: 36px; height: 36px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 13px; flex-shrink: 0;
-    }
-    .rc-name { font-size: 14px; font-weight: 500; }
-    .rc-date { font-size: 12px; color: var(--text3); margin-left: auto; }
-    .rc-stars { display: flex; gap: 2px; margin-bottom: 6px; }
-    .rc-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+    .review-summary{display:flex;gap:22px;padding:18px;background:var(--surface2);border-radius:var(--r);margin-bottom:18px;align-items:center;flex-wrap:wrap}
+    .rev-big{font-family:'Google Sans',sans-serif;font-size:50px;font-weight:700;color:var(--text);line-height:1;text-align:center}
+    .rev-stars-big{display:flex;gap:3px;justify-content:center;margin:3px 0 2px}
+    .rev-stars-big .s{font-size:13px}
+    .rev-count{font-size:11px;color:var(--text3);text-align:center}
+    .rev-bars{flex:1;min-width:190px;display:flex;flex-direction:column;gap:5px}
+    .rev-bar-row{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2)}
+    .rev-bar-track{flex:1;height:6px;background:var(--border);border-radius:50px;overflow:hidden}
+    .rev-bar-fill{height:100%;background:var(--star);border-radius:50px;transition:width 1s}
+    .no-reviews{text-align:center;padding:38px 18px;color:var(--text3)}
+    .no-reviews .nr-icon{font-size:34px;margin-bottom:9px}
+    .no-reviews p{font-size:14px;line-height:1.6}
+    .add-review{border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-top:14px}
+    .add-review h4{font-family:'Google Sans',sans-serif;font-size:15px;font-weight:700;margin-bottom:13px}
+    .star-input{display:flex;gap:5px;margin-bottom:11px}
+    .si{font-size:26px;color:var(--border);cursor:pointer;transition:all .15s}
+    .si:hover{transform:scale(1.2)}
+    .si.lit{color:var(--star)}
+    .review-ta{width:100%;min-height:85px;border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 13px;font-family:'Roboto',sans-serif;font-size:14px;color:var(--text);resize:vertical;outline:none;transition:border-color .2s;background:var(--surface)}
+    .review-ta:focus{border-color:var(--blue-link)}
+    .review-name-in{width:100%;border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 13px;font-family:'Roboto',sans-serif;font-size:14px;color:var(--text);outline:none;background:var(--surface);transition:border-color .2s;margin-bottom:9px}
+    .review-name-in:focus{border-color:var(--blue-link)}
+    .sub-review-btn{background:var(--navy);color:#fff;border:none;border-radius:var(--r-full);padding:10px 22px;font-family:'Google Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+    .sub-review-btn:hover{background:var(--navy-dark)}
+    .review-card{padding:15px 0;border-bottom:1px solid var(--border)}
+    .rc-top{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+    .rc-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+    .rc-name{font-size:14px;font-weight:500}
+    .rc-date{font-size:12px;color:var(--text3);margin-left:auto}
+    .rc-stars{display:flex;gap:2px;margin-bottom:5px}
+    .rc-text{font-size:13px;color:var(--text2);line-height:1.6}
 
     /* ── VERSION HISTORY ── */
-    .version-item {
-      padding: 16px 0;
-      border-bottom: 1px solid var(--border);
-      display: flex; gap: 16px;
-    }
-    .vdot-col {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 0; flex-shrink: 0; width: 20px;
-    }
-    .vdot {
-      width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
-    }
-    .vdot.current { background: var(--navy); box-shadow: 0 0 0 3px rgba(1,135,95,.2); }
-    .vdot.old { background: var(--border); }
-    .vline {
-      flex: 1; width: 2px; background: var(--border);
-      margin: 4px 0;
-    }
-    .vitem-content { flex: 1; }
-    .vitem-head {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 6px; flex-wrap: wrap;
-    }
-    .vnum {
-      font-family: 'Google Sans', sans-serif;
-      font-size: 14px; font-weight: 700; color: var(--text);
-    }
-    .vbadge {
-      font-size: 10px; font-weight: 700;
-      padding: 2px 8px; border-radius: 50px;
-      letter-spacing: .06em; text-transform: uppercase;
-    }
-    .vb-new { background: #e8f5e9; color: #2e7d32; }
-    .vb-stable { background: #e8f0fe; color: #1a73e8; }
-    .vdate { font-size: 12px; color: var(--text3); margin-left: auto; }
-    .vchanges { font-size: 13px; color: var(--text2); line-height: 1.8; }
-    .vch { display: flex; gap: 8px; }
-    .vch-dot { color: var(--navy); font-size: 10px; margin-top: 5px; flex-shrink: 0; }
+    .version-item{padding:15px 0;border-bottom:1px solid var(--border);display:flex;gap:14px}
+    .vdot-col{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:18px}
+    .vdot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+    .vdot.current{background:var(--navy);box-shadow:0 0 0 3px rgba(1,135,95,.2)}
+    .vdot.old{background:var(--border)}
+    .vline{flex:1;width:2px;background:var(--border);margin:3px 0}
+    .vitem-content{flex:1}
+    .vitem-head{display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-wrap:wrap}
+    .vnum{font-family:'Google Sans',sans-serif;font-size:14px;font-weight:700;color:var(--text)}
+    .vbadge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:50px;letter-spacing:.06em;text-transform:uppercase}
+    .vb-new{background:#e8f5e9;color:#2e7d32}
+    .vb-stable{background:#e8f0fe;color:#1a73e8}
+    .vdate{font-size:12px;color:var(--text3);margin-left:auto}
+    .vchanges{font-size:13px;color:var(--text2);line-height:1.8}
+    .vch{display:flex;gap:7px}
+    .vch-dot{color:var(--navy);font-size:10px;margin-top:5px;flex-shrink:0}
 
     /* ── UPDATE MODAL ── */
-    .modal-bg {
-      position: fixed; inset: 0; z-index: 999;
-      background: rgba(0,0,0,.5);
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none; transition: opacity .2s;
-    }
-    .modal-bg.open { opacity: 1; pointer-events: all; }
-    .modal-box {
-      background: var(--surface);
-      border-radius: 20px;
-      padding: 28px 24px;
-      max-width: 400px; width: 90%;
-      box-shadow: var(--shadow-lg);
-      transform: translateY(16px); transition: transform .2s;
-    }
-    .modal-bg.open .modal-box { transform: translateY(0); }
-    .modal-icon { font-size: 32px; margin-bottom: 12px; }
-    .modal-box h3 {
-      font-family: 'Google Sans', sans-serif;
-      font-size: 18px; font-weight: 700; margin-bottom: 8px;
-    }
-    .modal-box p { font-size: 14px; color: var(--text2); line-height: 1.6; margin-bottom: 20px; }
-    .modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
-    .mbtn-cancel {
-      background: none; border: 1px solid var(--border);
-      border-radius: var(--r-full); padding: 10px 20px;
-      font-family: 'Google Sans', sans-serif; font-size: 14px;
-      font-weight: 600; color: var(--text2); cursor: pointer;
-    }
-    .mbtn-ok {
-      background: var(--install); border: none;
-      border-radius: var(--r-full); padding: 10px 20px;
-      font-family: 'Google Sans', sans-serif; font-size: 14px;
-      font-weight: 700; color: #fff; cursor: pointer;
-    }
+    .modal-bg{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+    .modal-bg.open{opacity:1;pointer-events:all}
+    .modal-box{background:var(--surface);border-radius:18px;padding:26px 22px;max-width:390px;width:90%;box-shadow:var(--shadow-lg);transform:translateY(16px);transition:transform .2s}
+    .modal-bg.open .modal-box{transform:translateY(0)}
+    .modal-icon{font-size:30px;margin-bottom:10px}
+    .modal-box h3{font-family:'Google Sans',sans-serif;font-size:17px;font-weight:700;margin-bottom:7px}
+    .modal-box p{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:18px}
+    .modal-btns{display:flex;gap:9px;justify-content:flex-end}
+    .mbtn-cancel{background:none;border:1px solid var(--border);border-radius:var(--r-full);padding:9px 18px;font-family:'Google Sans',sans-serif;font-size:14px;font-weight:600;color:var(--text2);cursor:pointer}
+    .mbtn-ok{background:var(--install);border:none;border-radius:var(--r-full);padding:9px 18px;font-family:'Google Sans',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer}
+    .mbtn-ok:disabled{background:#ccc;cursor:not-allowed}
 
-    /* ── BOTTOM NAV (mobile) ── */
-    .bottom-nav {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      display: flex; z-index: 100;
-      box-shadow: 0 -2px 8px rgba(0,0,0,.08);
-    }
-    .bnav-item {
-      flex: 1; padding: 10px 4px 8px;
-      display: flex; flex-direction: column;
-      align-items: center; gap: 3px;
-      cursor: pointer; border: none; background: none;
-      color: var(--text3); transition: color .15s;
-      font-family: 'Roboto', sans-serif;
-    }
-    .bnav-item.active { color: var(--navy); }
-    .bnav-item svg { width: 22px; height: 22px; }
-    .bnav-label { font-size: 10px; font-weight: 500; }
+    /* ── UPDATE BANNER (inline) ── */
+    .update-banner{background:#fff8e1;border:1px solid #f9ab00;border-radius:var(--r-sm);padding:10px 13px;display:none;align-items:center;gap:9px;font-size:13px;color:#e37400;margin-bottom:14px;cursor:pointer}
+    .update-banner.visible{display:flex}
+    .ub-dot{width:8px;height:8px;border-radius:50%;background:#f9ab00;animation:blink 1.5s infinite;flex-shrink:0}
 
-    /* ── EMPTY STATE ── */
-    .empty-state {
-      text-align: center; padding: 60px 20px;
-      color: var(--text3);
-    }
-    .empty-state .es-icon { font-size: 48px; margin-bottom: 16px; }
-    .empty-state h3 { font-size: 18px; font-weight: 600; color: var(--text2); margin-bottom: 8px; }
-    .empty-state p { font-size: 14px; line-height: 1.6; }
+    /* ── BOTTOM NAV ── */
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.08)}
+    .bnav-item{flex:1;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:none;background:none;color:var(--text3);transition:color .15s;font-family:'Roboto',sans-serif}
+    .bnav-item.active{color:var(--navy)}
+    .bnav-item svg{width:22px;height:22px}
+    .bnav-label{font-size:10px;font-weight:500}
 
-    /* ── MISC ── */
-    .divider { height: 1px; background: var(--border); margin: 24px 0; }
-    .update-banner {
-      background: #fff8e1; border: 1px solid #f9ab00;
-      border-radius: var(--r-sm); padding: 10px 14px;
-      display: flex; align-items: center; gap: 10px;
-      font-size: 13px; color: #e37400;
-      margin-bottom: 16px; cursor: pointer;
-    }
-    .ub-dot { width: 8px; height: 8px; border-radius: 50%; background: #f9ab00; animation: blink 1.5s infinite; flex-shrink: 0; }
+    /* ── LOADING ── */
+    .loading-state{text-align:center;padding:50px 20px;color:var(--text3);font-size:14px}
+    .spinner{display:inline-block;width:30px;height:30px;border:3px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
+    @keyframes spin{to{transform:rotate(360deg)}}
 
-    @media(max-width:600px) {
-      .detail-hero { flex-direction: column; }
-      .stats-strip { grid-template-columns: 1fr; }
-      .stat-cell { border-right: none; border-bottom: 1px solid var(--border); }
-      .stat-cell:last-child { border-bottom: none; }
-      .b1-right, .b2-phone { display: none; }
-    }
+    /* ── NUEVO LANZAMIENTO CARD ── */
+    .new-launch-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;gap:13px;align-items:center;cursor:pointer;box-shadow:var(--shadow-sm);margin-bottom:30px;transition:box-shadow .2s}
+    .new-launch-card:hover{box-shadow:var(--shadow)}
+    .nlc-install{background:#e8f5e9;color:#2e7d32;padding:7px 14px;border-radius:50px;font-family:'Google Sans',sans-serif;font-size:13px;font-weight:700;flex-shrink:0}
+    .divider{height:1px;background:var(--border);margin:22px 0}
   </style>
 </head>
 <body>
@@ -867,11 +302,11 @@
 <div class="modal-bg" id="updateModal">
   <div class="modal-box">
     <div class="modal-icon">🔄</div>
-    <h3>Actualización disponible</h3>
-    <p><strong>DataGrid v1.3.0</strong> está disponible. Incluye mejoras de rendimiento, nuevo filtro avanzado y corrección de errores en exportación de datos.</p>
+    <h3 id="modalTitle">Actualización disponible</h3>
+    <p id="modalDesc">Cargando información…</p>
     <div class="modal-btns">
       <button class="mbtn-cancel" onclick="closeModal()">Ahora no</button>
-      <a id="updateModal" href="https://raw.githubusercontent.com/elFaraon65/MyStoreApp/main/DataGrid.html" download class="mbtn-ok" style="text-decoration:none" onclick="closeModal()">Actualizar</a>
+      <button class="mbtn-ok" id="modalUpdateBtn" onclick="doUpdate()">Actualizar</button>
     </div>
   </div>
 </div>
@@ -881,7 +316,6 @@
   <a class="logo-wrap" href="#" onclick="goHome()">
     <div class="logo-icon">
       <svg viewBox="0 0 24 24" fill="none">
-        <!-- Archive/scroll icon -->
         <path d="M4 7h16v2H4V7z" fill="rgba(255,255,255,.3)"/>
         <rect x="3" y="9" width="18" height="12" rx="2" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.8)" stroke-width="1.2"/>
         <path d="M9 13h6M9 16h4" stroke="rgba(255,255,255,.9)" stroke-width="1.4" stroke-linecap="round"/>
@@ -895,7 +329,7 @@
     </div>
   </a>
   <div class="nav-search">
-    <svg class="srch-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <svg class="srch-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input type="text" placeholder="Buscar apps…" id="searchInput" oninput="handleSearch(this.value)">
   </div>
   <div class="nav-account" title="HistoryGamesProductions">H</div>
@@ -908,9 +342,7 @@
     <!-- BANNER CAROUSEL -->
     <div class="home-hero">
       <div class="carousel-track" id="carouselTrack">
-
-        <!-- BANNER 1: pantalla principal de DataGrid -->
-        <div class="banner-slide banner-1" onclick="goDetail()">
+        <div class="banner-slide banner-1" onclick="openAppDetail(currentApp)">
           <div class="banner-1-content">
             <div class="b1-left">
               <div class="b1-label">Destacado</div>
@@ -918,53 +350,28 @@
               <div class="b1-sub">Tablas, inventarios, finanzas y contactos en un solo archivo.</div>
             </div>
             <div class="b1-right">
-              <div class="mock-topbar">
-                <div class="mock-brand">Data<span>Grid</span></div>
-              </div>
+              <div class="mock-topbar"><div class="mock-brand">Data<span>Grid</span></div></div>
               <div class="mock-body">
                 <div class="mock-bubble">
-                  <div class="mock-bhead">
-                    <div class="mock-bid"><div class="mock-bid-dot"></div></div>
-                    <div class="mock-bname">Ventas Q1</div>
-                  </div>
+                  <div class="mock-bhead"><div class="mock-bid"><div class="mock-bid-dot"></div></div><div class="mock-bname">Ventas Q1</div></div>
                   <div class="mock-table">
                     <div class="mock-trow"><div class="mock-th"></div><div class="mock-th"></div><div class="mock-th"></div></div>
                     <div class="mock-trow"><div class="mock-td"></div><div class="mock-td g"></div><div class="mock-td"></div></div>
                     <div class="mock-trow"><div class="mock-td"></div><div class="mock-td a"></div><div class="mock-td"></div></div>
-                    <div class="mock-trow"><div class="mock-td"></div><div class="mock-td g"></div><div class="mock-td"></div></div>
-                  </div>
-                </div>
-                <div class="mock-bubble" style="opacity:.7">
-                  <div class="mock-bhead">
-                    <div class="mock-bid"><div class="mock-bid-dot"></div></div>
-                    <div class="mock-bname">Inventario</div>
-                  </div>
-                  <div class="mock-table">
-                    <div class="mock-trow"><div class="mock-th"></div><div class="mock-th"></div></div>
-                    <div class="mock-trow"><div class="mock-td"></div><div class="mock-td" style="background:rgba(75,143,232,.2)"></div></div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- BANNER 2: edición y formularios -->
-        <div class="banner-slide banner-2" onclick="goDetail()">
+        <div class="banner-slide banner-2" onclick="openAppDetail(currentApp)">
           <div class="banner-2-content">
             <div class="b2-phone">
-              <div class="mock-topbar" style="height:24px">
-                <div class="mock-brand" style="font-size:7px">← Editar</div>
-              </div>
+              <div class="mock-topbar" style="height:22px"><div class="mock-brand" style="font-size:7px">← Editar</div></div>
               <div class="mock-form">
-                <div class="mock-field-label">Nombre</div>
-                <div class="mock-field active"></div>
-                <div class="mock-field-label">Valor</div>
-                <div class="mock-field"></div>
-                <div class="mock-field-label">Categoría</div>
-                <div class="mock-field"></div>
-                <div class="mock-field-label">Notas</div>
-                <div class="mock-field" style="height:20px"></div>
+                <div class="mock-field-label">Nombre</div><div class="mock-field active"></div>
+                <div class="mock-field-label">Valor</div><div class="mock-field"></div>
+                <div class="mock-field-label">Notas</div><div class="mock-field" style="height:18px"></div>
                 <div class="mock-save-btn"></div>
               </div>
             </div>
@@ -980,31 +387,19 @@
             </div>
           </div>
         </div>
-
-        <!-- BANNER 3: insights -->
-        <div class="banner-slide banner-3" onclick="goDetail()">
+        <div class="banner-slide banner-3" onclick="openAppDetail(currentApp)">
           <div class="banner-3-content">
             <div class="b3-stats">
-              <div class="b3-stat">
-                <div class="b3-stat-label">Total ingresos</div>
-                <div class="b3-stat-val">$24,500</div>
-              </div>
-              <div class="b3-stat">
-                <div class="b3-stat-label">Balance neto</div>
-                <div class="b3-stat-val" style="color:#4B8FE8">+$3,200</div>
-              </div>
-              <div class="b3-stat">
-                <div class="b3-stat-label">Registros</div>
-                <div class="b3-stat-val" style="color:#E8B84B">48</div>
-              </div>
+              <div class="b3-stat"><div class="b3-stat-label">Total ingresos</div><div class="b3-stat-val">$24,500</div></div>
+              <div class="b3-stat"><div class="b3-stat-label">Balance neto</div><div class="b3-stat-val" style="color:#4B8FE8">+$3,200</div></div>
+              <div class="b3-stat"><div class="b3-stat-label">Registros</div><div class="b3-stat-val" style="color:#E8B84B">48</div></div>
             </div>
             <div class="b3-right">
               <div class="b3-title">Insights<br>financieros<br>al instante</div>
-              <div class="b3-sub">Suma, analiza y visualiza tus datos sin fórmulas.</div>
+              <div class="b3-sub">Suma, analiza y visualiza sin fórmulas.</div>
             </div>
           </div>
         </div>
-
       </div>
       <div class="carousel-dots">
         <div class="cdot active" onclick="scrollBanner(0)"></div>
@@ -1014,80 +409,22 @@
     </div>
 
     <!-- CHIPS -->
-    <div class="chips-row">
-      <div class="chip active">Todas</div>
-      <div class="chip" onclick="chipSelect(this)">Productividad</div>
-      <div class="chip" onclick="chipSelect(this)">Finanzas</div>
-      <div class="chip" onclick="chipSelect(this)">Gestión</div>
-      <div class="chip" onclick="chipSelect(this)">Offline</div>
-      <div class="chip" onclick="chipSelect(this)">Sin registro</div>
+    <div class="chips-row" id="chipsRow">
+      <div class="chip active" onclick="chipSelect(this,'')">Todas</div>
+      <div class="chip" onclick="chipSelect(this,'Productividad')">Productividad</div>
+      <div class="chip" onclick="chipSelect(this,'Finanzas')">Finanzas</div>
+      <div class="chip" onclick="chipSelect(this,'Gestión')">Gestión</div>
+      <div class="chip" onclick="chipSelect(this,'Offline')">Offline</div>
     </div>
 
-    <!-- APP DESTACADA -->
-    <div class="sec-title">
-      Aplicaciones destacadas
-      <a onclick="goDetail()">Ver todo →</a>
-    </div>
-
+    <!-- APPS LIST -->
+    <div class="sec-title">Aplicaciones destacadas <a onclick="goDetail()">Ver todo →</a></div>
     <div class="app-row" id="homeAppRow">
-      <!-- DataGrid card -->
-      <div class="app-card-sm" onclick="goDetail()" id="dg-card">
-        <div class="ic">
-          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-            <rect width="60" height="60" fill="#07101F"/>
-            <!-- Stylized D letter made of grid fragments -->
-            <rect x="10" y="10" width="10" height="10" rx="2" fill="#E8B84B" opacity=".9"/>
-            <rect x="10" y="25" width="10" height="10" rx="2" fill="#E8B84B" opacity=".6"/>
-            <rect x="10" y="40" width="10" height="10" rx="2" fill="#E8B84B" opacity=".9"/>
-            <rect x="22" y="10" width="10" height="10" rx="2" fill="#3ECFA0" opacity=".7"/>
-            <rect x="22" y="40" width="10" height="10" rx="2" fill="#3ECFA0" opacity=".7"/>
-            <rect x="34" y="14" width="10" height="6" rx="2" fill="#4B8FE8" opacity=".6"/>
-            <rect x="34" y="40" width="10" height="6" rx="2" fill="#4B8FE8" opacity=".6"/>
-            <rect x="40" y="22" width="8" height="16" rx="2" fill="#A855F7" opacity=".5"/>
-            <!-- Center accent dot -->
-            <circle cx="30" cy="30" r="3" fill="#E8B84B"/>
-          </svg>
-        </div>
-        <div class="name">DataGrid</div>
-        <div class="dev">HistoryGamesProductions</div>
-      </div>
-      <!-- Placeholder future apps (greyed out) -->
-      <div class="app-card-sm" style="opacity:.35;cursor:default">
-        <div class="ic" style="background:var(--surface3);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--text3)">+</div>
-        <div class="name" style="color:var(--text3)">Próximamente</div>
-        <div class="dev" style="color:var(--text3)">—</div>
-      </div>
-      <div class="app-card-sm" style="opacity:.2;cursor:default">
-        <div class="ic" style="background:var(--surface2);border-radius:14px;"></div>
-        <div class="name" style="color:var(--text3)">—</div>
-        <div class="dev"></div>
-      </div>
+      <div class="loading-state"><div class="spinner"></div><br>Cargando apps…</div>
     </div>
 
-    <!-- NUEVO LANZAMIENTO -->
     <div class="sec-title">Nuevo lanzamiento</div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;display:flex;gap:14px;align-items:center;cursor:pointer;box-shadow:var(--shadow-sm);margin-bottom:32px" onclick="goDetail()">
-      <div style="width:56px;height:56px;border-radius:14px;overflow:hidden;flex-shrink:0;box-shadow:var(--shadow-sm)">
-        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" width="56" height="56">
-          <rect width="60" height="60" fill="#07101F"/>
-          <rect x="10" y="10" width="10" height="10" rx="2" fill="#E8B84B" opacity=".9"/>
-          <rect x="10" y="25" width="10" height="10" rx="2" fill="#E8B84B" opacity=".6"/>
-          <rect x="10" y="40" width="10" height="10" rx="2" fill="#E8B84B" opacity=".9"/>
-          <rect x="22" y="10" width="10" height="10" rx="2" fill="#3ECFA0" opacity=".7"/>
-          <rect x="22" y="40" width="10" height="10" rx="2" fill="#3ECFA0" opacity=".7"/>
-          <rect x="34" y="14" width="10" height="6" rx="2" fill="#4B8FE8" opacity=".6"/>
-          <rect x="34" y="40" width="10" height="6" rx="2" fill="#4B8FE8" opacity=".6"/>
-          <rect x="40" y="22" width="8" height="16" rx="2" fill="#A855F7" opacity=".5"/>
-          <circle cx="30" cy="30" r="3" fill="#E8B84B"/>
-        </svg>
-      </div>
-      <div style="flex:1">
-        <div style="font-family:'Google Sans',sans-serif;font-size:15px;font-weight:700;color:var(--text)">DataGrid</div>
-        <div style="font-size:12px;color:var(--text3);margin-bottom:4px">HistoryGamesProductions</div>
-        <div style="font-size:12px;color:var(--text2)">Gestión de datos offline · 99 KB</div>
-      </div>
-      <div style="background:#e8f5e9;color:#2e7d32;padding:8px 16px;border-radius:50px;font-family:'Google Sans',sans-serif;font-size:13px;font-weight:700;flex-shrink:0">Instalar</div>
-    </div>
+    <div id="newLaunchSection"></div>
 
   </div>
 </div>
@@ -1095,21 +432,20 @@
 <!-- ════ VIEW: DETAIL ════ -->
 <div class="view" id="view-detail">
   <div class="page-wrap">
-
     <a class="detail-back" onclick="goHome()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
       Inicio
     </a>
 
-    <!-- Update banner -->
-    <div class="update-banner" onclick="openModal()" style="margin-top:12px">
+    <!-- Update banner inline -->
+    <div class="update-banner" id="updateBanner" onclick="openModal()" style="margin-top:11px">
       <div class="ub-dot"></div>
-      <strong>v1.3.0 disponible</strong> — Toca para ver qué hay nuevo y actualizar.
+      <span id="updateBannerText">Actualización disponible — Toca para ver qué hay nuevo.</span>
     </div>
 
     <!-- HERO -->
     <div class="detail-hero">
-      <div class="detail-icon">
+      <div class="detail-icon" id="detailIconWrap">
         <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
           <rect width="100" height="100" fill="#07101F"/>
           <rect x="14" y="14" width="18" height="18" rx="4" fill="#E8B84B" opacity=".9"/>
@@ -1125,14 +461,9 @@
         </svg>
       </div>
       <div class="detail-meta">
-        <div class="detail-name">DataGrid</div>
-        <div class="detail-dev">HistoryGamesProductions</div>
-        <div class="detail-tags">
-          <span class="dtag">Productividad</span>
-          <span class="dtag blue">Datos</span>
-          <span class="dtag purple">Gestión</span>
-          <span class="dtag orange">Offline</span>
-        </div>
+        <div class="detail-name" id="detailName">—</div>
+        <div class="detail-dev" id="detailDev">—</div>
+        <div class="detail-tags" id="detailTags"></div>
         <div class="rating-snapshot">
           <div class="rating-big" id="detailRatingNum">—</div>
           <div>
@@ -1143,11 +474,11 @@
           </div>
         </div>
         <div style="display:flex;flex-wrap:wrap;align-items:center;gap:0">
-          <a href="DataGrid.html" download class="install-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Descargar v1.3.0
+          <a id="downloadBtn" href="#" class="install-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span id="downloadBtnText">Descargar</span>
           </a>
-          <div class="update-pill" onclick="openModal()">
+          <div class="update-pill" id="updatePill" onclick="openModal()">
             <div class="update-dot"></div>
             Actualización lista
           </div>
@@ -1155,142 +486,44 @@
       </div>
     </div>
 
-    <!-- STATS STRIP -->
+    <!-- STATS -->
     <div class="stats-strip">
-      <div class="stat-cell">
-        <div class="stat-val">99 KB</div>
-        <div class="stat-lbl">Tamaño</div>
-      </div>
-      <div class="stat-cell">
-        <div class="stat-val">Android 7+</div>
-        <div class="stat-lbl">Requiere</div>
-      </div>
-      <div class="stat-cell">
-        <div class="stat-val">v1.3.0</div>
-        <div class="stat-lbl">Versión actual</div>
-      </div>
+      <div class="stat-cell"><div class="stat-val" id="statSize">—</div><div class="stat-lbl">Tamaño</div></div>
+      <div class="stat-cell"><div class="stat-val" id="statReq">—</div><div class="stat-lbl">Requiere</div></div>
+      <div class="stat-cell"><div class="stat-val" id="statVer">—</div><div class="stat-lbl">Versión actual</div></div>
     </div>
 
-    <!-- SCREENSHOTS (banners de la app real) -->
-    <div class="sec-title" style="margin-bottom:12px">Capturas de pantalla</div>
+    <!-- SCREENSHOTS -->
+    <div class="sec-title" style="margin-bottom:11px">Capturas de pantalla</div>
     <div class="screenshots-row">
-      <!-- Screenshot 1: pantalla principal -->
-      <div class="screenshot" style="width:clamp(160px,40vw,240px)">
+      <div class="screenshot" style="width:clamp(150px,38vw,230px)">
         <svg viewBox="0 0 240 426" xmlns="http://www.w3.org/2000/svg" width="100%">
           <rect width="240" height="426" fill="#07101F"/>
-          <!-- Topbar -->
           <rect width="240" height="44" fill="#0D1A2E"/>
           <rect x="0" y="43" width="240" height="1" fill="#1E3050"/>
           <text x="12" y="27" font-size="16" font-weight="800" fill="#E8EFF8" font-family="monospace">Data<tspan fill="#E8B84B">Grid</tspan></text>
-          <!-- Search bar -->
           <rect x="10" y="54" width="220" height="32" rx="8" fill="#152236" stroke="#1E3050" stroke-width="1"/>
           <text x="20" y="74" font-size="10" fill="#637A99" font-family="monospace">🔍 Buscar…</text>
-          <!-- Bubble 1 -->
-          <rect x="10" y="95" width="220" height="90" rx="12" fill="#0D1A2E" stroke="#1E3050" stroke-width="1"/>
-          <rect x="10" y="95" width="220" height="36" rx="12" fill="#152236"/>
-          <rect x="10" y="119" width="220" height="12" fill="#152236"/>
-          <rect x="24" y="107" width="24" height="24" rx="6" fill="rgba(232,184,75,.2)" stroke="rgba(232,184,75,.3)" stroke-width="1"/>
-          <text x="32" y="122" font-size="9" fill="#E8B84B" font-family="monospace" font-weight="800">01</text>
-          <text x="56" y="116" font-size="11" fill="#E8EFF8" font-family="monospace" font-weight="700">Ventas Q1</text>
-          <text x="56" y="128" font-size="8" fill="#3ECFA0" font-family="monospace">FINANCIERO</text>
-          <!-- Table rows -->
-          <rect x="20" y="137" width="200" height="1" fill="#1E3050"/>
-          <rect x="20" y="141" width="60" height="10" rx="2" fill="#1C2E45"/>
-          <rect x="84" y="141" width="60" height="10" rx="2" fill="#1C2E45"/>
-          <rect x="148" y="141" width="60" height="10" rx="2" fill="#1C2E45"/>
-          <rect x="20" y="155" width="60" height="10" rx="2" fill="#07101F"/>
-          <rect x="84" y="155" width="60" height="10" rx="2" fill="rgba(62,207,160,.2)"/>
-          <rect x="148" y="155" width="60" height="10" rx="2" fill="#07101F"/>
-          <rect x="20" y="169" width="60" height="10" rx="2" fill="#07101F"/>
-          <rect x="84" y="169" width="60" height="10" rx="2" fill="rgba(232,184,75,.2)"/>
-          <rect x="148" y="169" width="60" height="10" rx="2" fill="#07101F"/>
-          <!-- Bubble 2 -->
-          <rect x="10" y="195" width="220" height="75" rx="12" fill="#0D1A2E" stroke="#1E3050" stroke-width="1"/>
-          <rect x="10" y="195" width="220" height="36" rx="12" fill="#152236"/>
-          <rect x="10" y="219" width="220" height="12" fill="#152236"/>
-          <rect x="24" y="207" width="24" height="24" rx="6" fill="rgba(75,143,232,.13)" stroke="rgba(75,143,232,.25)" stroke-width="1"/>
-          <text x="30" y="222" font-size="9" fill="#4B8FE8" font-family="monospace" font-weight="800">02</text>
-          <text x="56" y="216" font-size="11" fill="#E8EFF8" font-family="monospace" font-weight="700">Inventario</text>
-          <text x="56" y="228" font-size="8" fill="#4B8FE8" font-family="monospace">INVENTARIO</text>
-          <rect x="20" y="237" width="200" height="1" fill="#1E3050"/>
-          <rect x="20" y="241" width="60" height="10" rx="2" fill="#1C2E45"/>
-          <rect x="84" y="241" width="80" height="10" rx="2" fill="#1C2E45"/>
-          <rect x="20" y="255" width="60" height="10" rx="2" fill="#07101F"/>
-          <rect x="84" y="255" width="80" height="10" rx="2" fill="rgba(75,143,232,.15)"/>
-          <!-- FAB -->
-          <rect x="182" y="370" width="48" height="48" rx="14" fill="#E8B84B"/>
-          <text x="202" y="400" font-size="22" fill="#07101F" font-family="monospace">+</text>
-        </svg>
-      </div>
-      <!-- Screenshot 2: edit form -->
-      <div class="screenshot" style="width:clamp(160px,40vw,240px)">
-        <svg viewBox="0 0 240 426" xmlns="http://www.w3.org/2000/svg" width="100%">
-          <rect width="240" height="426" fill="#07101F"/>
-          <rect width="240" height="44" fill="#0D1A2E"/>
-          <rect x="0" y="43" width="240" height="1" fill="#1E3050"/>
-          <text x="12" y="27" font-size="12" font-weight="700" fill="#637A99" font-family="monospace">← Editar entrada</text>
-          <rect x="170" y="10" width="60" height="28" rx="8" fill="#E8B84B"/>
-          <text x="185" y="28" font-size="11" font-weight="800" fill="#07101F" font-family="monospace">Guardar</text>
-          <!-- Fields -->
-          <text x="12" y="72" font-size="10" fill="#637A99" font-family="monospace">Nombre</text>
-          <rect x="10" y="78" width="220" height="36" rx="8" fill="#152236" stroke="#1E3050" stroke-width="1"/>
-          <text x="20" y="100" font-size="11" fill="#E8EFF8" font-family="monospace">Producto A</text>
-          <text x="12" y="132" font-size="10" fill="#637A99" font-family="monospace">Valor</text>
-          <rect x="10" y="138" width="220" height="36" rx="8" fill="#152236" stroke="#4B8FE8" stroke-width="1.5"/>
-          <text x="20" y="160" font-size="11" fill="#E8EFF8" font-family="monospace">$1,250.00</text>
-          <text x="12" y="192" font-size="10" fill="#637A99" font-family="monospace">Categoría</text>
-          <rect x="10" y="198" width="220" height="36" rx="8" fill="#152236" stroke="#1E3050" stroke-width="1"/>
-          <text x="20" y="220" font-size="11" fill="#637A99" font-family="monospace">Seleccionar…</text>
-          <text x="12" y="252" font-size="10" fill="#637A99" font-family="monospace">Importancia</text>
-          <rect x="10" y="258" width="68" height="32" rx="8" fill="#152236" stroke="#1E3050" stroke-width="1"/>
-          <rect x="82" y="258" width="68" height="32" rx="8" fill="rgba(232,184,75,.13)" stroke="rgba(232,184,75,.5)" stroke-width="1.5"/>
-          <rect x="154" y="258" width="68" height="32" rx="8" fill="#152236" stroke="#1E3050" stroke-width="1"/>
-          <text x="27" y="278" font-size="9" fill="#637A99" font-family="monospace">Normal</text>
-          <text x="98" y="278" font-size="9" fill="#E8B84B" font-family="monospace" font-weight="700">Alta</text>
-          <text x="167" y="278" font-size="9" fill="#637A99" font-family="monospace">Crítica</text>
-          <text x="12" y="312" font-size="10" fill="#637A99" font-family="monospace">Notas</text>
-          <rect x="10" y="318" width="220" height="70" rx="8" fill="#152236" stroke="#1E3050" stroke-width="1"/>
-        </svg>
-      </div>
-      <!-- Screenshot 3: insights/financial -->
-      <div class="screenshot" style="width:clamp(160px,40vw,240px)">
-        <svg viewBox="0 0 240 426" xmlns="http://www.w3.org/2000/svg" width="100%">
-          <rect width="240" height="426" fill="#07101F"/>
-          <rect width="240" height="44" fill="#0D1A2E"/>
-          <rect x="0" y="43" width="240" height="1" fill="#1E3050"/>
-          <text x="12" y="27" font-size="14" font-weight="800" fill="#E8EFF8" font-family="monospace">Data<tspan fill="#E8B84B">Grid</tspan></text>
-          <!-- Insights card -->
-          <rect x="10" y="55" width="220" height="130" rx="12" fill="#0B1E38" stroke="rgba(62,207,160,.35)" stroke-width="1"/>
-          <rect x="10" y="55" width="220" height="38" rx="12" fill="rgba(62,207,160,.07)"/>
-          <rect x="10" y="81" width="220" height="12" fill="rgba(62,207,160,.07)"/>
-          <rect x="20" y="66" width="24" height="24" rx="6" fill="rgba(62,207,160,.13)" stroke="rgba(62,207,160,.3)" stroke-width="1"/>
-          <text x="27" y="82" font-size="11" fill="#3ECFA0">📊</text>
-          <text x="50" y="78" font-size="11" fill="#3ECFA0" font-family="monospace" font-weight="800">Resumen financiero</text>
-          <!-- Stats grid -->
-          <rect x="18" y="97" width="96" height="40" rx="6" fill="rgba(255,255,255,.03)" stroke="#1E3050" stroke-width="1"/>
-          <text x="26" y="110" font-size="8" fill="#637A99" font-family="monospace">INGRESOS</text>
-          <text x="26" y="126" font-size="14" fill="#3ECFA0" font-family="monospace" font-weight="800">$24,500</text>
-          <rect x="126" y="97" width="96" height="40" rx="6" fill="rgba(255,255,255,.03)" stroke="#1E3050" stroke-width="1"/>
-          <text x="134" y="110" font-size="8" fill="#637A99" font-family="monospace">EGRESOS</text>
-          <text x="134" y="126" font-size="14" fill="#E85B5B" font-family="monospace" font-weight="800">$21,300</text>
-          <rect x="18" y="143" width="96" height="35" rx="6" fill="rgba(255,255,255,.03)" stroke="#1E3050" stroke-width="1"/>
-          <text x="26" y="156" font-size="8" fill="#637A99" font-family="monospace">BALANCE</text>
-          <text x="26" y="170" font-size="14" fill="#3ECFA0" font-family="monospace" font-weight="800">+$3,200</text>
-          <rect x="126" y="143" width="96" height="35" rx="6" fill="rgba(255,255,255,.03)" stroke="#1E3050" stroke-width="1"/>
-          <text x="134" y="156" font-size="8" fill="#637A99" font-family="monospace">REGISTROS</text>
-          <text x="134" y="170" font-size="14" fill="#E8B84B" font-family="monospace" font-weight="800">48</text>
-          <!-- Template picker -->
-          <text x="12" y="210" font-size="11" fill="#E8EFF8" font-family="monospace" font-weight="700">Tipo de tabla</text>
-          <rect x="10" y="218" width="220" height="50" rx="10" fill="#0D1A2E" stroke="#1E3050" stroke-width="1"/>
-          <rect x="18" y="228" width="30" height="30" rx="8" fill="rgba(62,207,160,.13)"/>
-          <text x="27" y="247" font-size="14">💰</text>
-          <text x="55" y="242" font-size="11" fill="#E8EFF8" font-family="monospace" font-weight="700">Financiero</text>
-          <text x="55" y="255" font-size="8" fill="#637A99" font-family="monospace">Ingresos, egresos, balance</text>
-          <rect x="10" y="273" width="220" height="50" rx="10" fill="#0D1A2E" stroke="#1E3050" stroke-width="1"/>
-          <rect x="18" y="283" width="30" height="30" rx="8" fill="rgba(75,143,232,.13)"/>
-          <text x="27" y="302" font-size="14">📦</text>
-          <text x="55" y="297" font-size="11" fill="#E8EFF8" font-family="monospace" font-weight="700">Inventario</text>
-          <text x="55" y="310" font-size="8" fill="#637A99" font-family="monospace">Productos, stock, precios</text>
+          <rect x="10" y="96" width="220" height="60" rx="8" fill="#0D1A2E" stroke="#1E3050" stroke-width="1"/>
+          <text x="20" y="115" font-size="9" fill="#637A99" font-family="monospace">VENTAS Q1</text>
+          <rect x="18" y="120" width="194" height="1" fill="#1E3050"/>
+          <rect x="18" y="125" width="60" height="7" rx="2" fill="#1C2E45"/>
+          <rect x="82" y="125" width="60" height="7" rx="2" fill="#1C2E45"/>
+          <rect x="146" y="125" width="60" height="7" rx="2" fill="#1C2E45"/>
+          <rect x="18" y="136" width="60" height="7" rx="2" fill="#07101F"/>
+          <rect x="82" y="136" width="60" height="7" rx="2" fill="rgba(62,207,160,.2)"/>
+          <rect x="146" y="136" width="60" height="7" rx="2" fill="#07101F"/>
+          <rect x="18" y="147" width="60" height="7" rx="2" fill="#07101F"/>
+          <rect x="82" y="147" width="60" height="7" rx="2" fill="rgba(232,184,75,.2)"/>
+          <rect x="146" y="147" width="60" height="7" rx="2" fill="#07101F"/>
+          <text x="12" y="190" font-size="11" fill="#E8EFF8" font-family="monospace" font-weight="700">Resumen</text>
+          <rect x="10" y="97" width="96" height="40" rx="6" fill="rgba(255,255,255,.03)" stroke="#1E3050" stroke-width="1" y="200"/>
+          <rect x="18" y="205" width="96" height="40" rx="6" fill="rgba(255,255,255,.03)" stroke="#1E3050" stroke-width="1"/>
+          <text x="26" y="218" font-size="8" fill="#637A99" font-family="monospace">INGRESOS</text>
+          <text x="26" y="232" font-size="14" fill="#3ECFA0" font-family="monospace" font-weight="800">$24,500</text>
+          <rect x="126" y="205" width="96" height="40" rx="6" fill="rgba(255,255,255,.03)" stroke="#1E3050" stroke-width="1"/>
+          <text x="134" y="218" font-size="8" fill="#637A99" font-family="monospace">BALANCE</text>
+          <text x="134" y="232" font-size="14" fill="#4B8FE8" font-family="monospace" font-weight="800">+$3,200</text>
         </svg>
       </div>
     </div>
@@ -1302,36 +535,17 @@
       <button class="dtab" onclick="switchDTab(this,'versions')">Versiones</button>
     </div>
 
-    <!-- TAB: ABOUT -->
+    <!-- TAB ABOUT -->
     <div class="dtab-content active" id="dtab-about">
-      <div class="desc-text">
-        <p><strong>DataGrid</strong> es una aplicación de gestión de datos 100% local. Sin servidores, sin internet, sin cuentas. Un solo archivo HTML que llevas contigo y funciona en cualquier navegador.</p>
-        <p>Diseñada para equipos que necesitan organizar información de forma ágil: tablas financieras, inventarios, listas de contactos o cualquier estructura personalizada.</p>
-      </div>
-      <div class="desc-features">
-        <div class="feat-item"><div class="feat-dot"></div>Grillas editables con múltiples tipos de columna</div>
-        <div class="feat-item"><div class="feat-dot"></div>Resumen financiero automático (ingresos, egresos, balance)</div>
-        <div class="feat-item"><div class="feat-dot"></div>4 plantillas: Financiero, Inventario, Contactos, Personalizado</div>
-        <div class="feat-item"><div class="feat-dot"></div>Búsqueda en tiempo real sobre todos los datos</div>
-        <div class="feat-item"><div class="feat-dot"></div>Funciona 100% sin conexión a internet</div>
-        <div class="feat-item"><div class="feat-dot"></div>Sin cuenta, sin anuncios, sin rastreo</div>
-        <div class="feat-item"><div class="feat-dot"></div>Menos de 100 KB — pesa menos que una foto</div>
-      </div>
-
-      <div class="diff-section" style="margin-top:20px">
+      <div class="desc-text" id="descText"></div>
+      <div class="desc-features" id="descFeatures"></div>
+      <div class="diff-section" style="margin-top:18px">
         <div class="diff-title">Nivel de dificultad de uso</div>
-        <div class="diff-bar-wrap">
-          <div class="diff-bar"><div class="diff-bar-fill"></div></div>
-        </div>
-        <div class="diff-bar-labels">
-          <span>🟢 Muy fácil</span>
-          <span>🟡 Intermedio</span>
-          <span>🔴 Experto</span>
-        </div>
+        <div class="diff-bar"><div class="diff-bar-fill"></div></div>
+        <div class="diff-bar-labels"><span>🟢 Muy fácil</span><span>🟡 Intermedio</span><span>🔴 Experto</span></div>
         <div class="diff-verdict">✔ Fácil — cualquier persona puede usarla desde el primer día.</div>
       </div>
-
-      <div class="for-who">
+      <div class="for-who" style="margin-top:18px">
         <div class="for-who-title">¿Para quién es?</div>
         <div class="for-who-chips">
           <span class="fw-chip yes">✅ Equipos pequeños</span>
@@ -1344,7 +558,7 @@
       </div>
     </div>
 
-    <!-- TAB: REVIEWS -->
+    <!-- TAB REVIEWS -->
     <div class="dtab-content" id="dtab-reviews">
       <div class="review-summary">
         <div>
@@ -1354,7 +568,7 @@
           </div>
           <div class="rev-count" id="revCount">0 reseñas</div>
         </div>
-        <div class="rev-bars" id="revBars">
+        <div class="rev-bars">
           <div class="rev-bar-row"><span>5★</span><div class="rev-bar-track"><div class="rev-bar-fill" id="rb5" style="width:0%"></div></div><span id="rc5">0</span></div>
           <div class="rev-bar-row"><span>4★</span><div class="rev-bar-track"><div class="rev-bar-fill" id="rb4" style="width:0%"></div></div><span id="rc4">0</span></div>
           <div class="rev-bar-row"><span>3★</span><div class="rev-bar-track"><div class="rev-bar-fill" id="rb3" style="width:0%"></div></div><span id="rc3">0</span></div>
@@ -1362,82 +576,27 @@
           <div class="rev-bar-row"><span>1★</span><div class="rev-bar-track"><div class="rev-bar-fill" id="rb1" style="width:0%"></div></div><span id="rc1">0</span></div>
         </div>
       </div>
-
       <div id="reviewList">
-        <div class="no-reviews">
-          <div class="nr-icon">💬</div>
-          <p>Aún no hay reseñas.<br>¡Sé el primero en dejar una opinión!</p>
-        </div>
+        <div class="no-reviews"><div class="nr-icon">💬</div><p>Aún no hay reseñas.<br>¡Sé el primero en dejar una opinión!</p></div>
       </div>
-
       <div class="add-review">
         <h4>Escribir una reseña</h4>
         <input class="review-name-in" id="reviewerName" placeholder="Tu nombre (opcional)">
         <div class="star-input" id="starInput">
-          <span class="si" data-v="1" onclick="pickStar(1)">★</span>
-          <span class="si" data-v="2" onclick="pickStar(2)">★</span>
-          <span class="si" data-v="3" onclick="pickStar(3)">★</span>
-          <span class="si" data-v="4" onclick="pickStar(4)">★</span>
-          <span class="si" data-v="5" onclick="pickStar(5)">★</span>
+          <span class="si" onclick="pickStar(1)">★</span>
+          <span class="si" onclick="pickStar(2)">★</span>
+          <span class="si" onclick="pickStar(3)">★</span>
+          <span class="si" onclick="pickStar(4)">★</span>
+          <span class="si" onclick="pickStar(5)">★</span>
         </div>
-        <textarea class="review-ta" id="reviewText" placeholder="Escribe tu opinión sobre DataGrid…"></textarea>
+        <textarea class="review-ta" id="reviewText" placeholder="Escribe tu opinión…"></textarea>
         <button class="sub-review-btn" onclick="submitReview()">Publicar reseña</button>
       </div>
     </div>
 
-    <!-- TAB: VERSIONS -->
+    <!-- TAB VERSIONS -->
     <div class="dtab-content" id="dtab-versions">
-      <div class="version-item">
-        <div class="vdot-col">
-          <div class="vdot current"></div>
-          <div class="vline"></div>
-        </div>
-        <div class="vitem-content">
-          <div class="vitem-head">
-            <span class="vnum">v1.3.0</span>
-            <span class="vbadge vb-new">Última</span>
-            <span class="vdate">Hoy</span>
-          </div>
-          <div class="vchanges">
-            <div class="vch"><span class="vch-dot">●</span><span>Nuevo filtro avanzado por múltiples columnas</span></div>
-            <div class="vch"><span class="vch-dot">●</span><span>Mejoras de rendimiento en tablas con muchos datos</span></div>
-            <div class="vch"><span class="vch-dot">●</span><span>Fix: exportación CSV con caracteres especiales</span></div>
-            <div class="vch"><span class="vch-dot">●</span><span>Distribución oficial vía ArchiveStoreApps</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="version-item">
-        <div class="vdot-col">
-          <div class="vdot old"></div>
-          <div class="vline"></div>
-        </div>
-        <div class="vitem-content">
-          <div class="vitem-head">
-            <span class="vnum">v1.2.0</span>
-            <span class="vbadge vb-stable">Estable</span>
-            <span class="vdate">Hace 2 semanas</span>
-          </div>
-          <div class="vchanges">
-            <div class="vch"><span class="vch-dot">●</span><span>Rediseño con tema oscuro profesional</span></div>
-            <div class="vch"><span class="vch-dot">●</span><span>Soporte adaptativo para móvil</span></div>
-            <div class="vch"><span class="vch-dot">●</span><span>Búsqueda en tiempo real</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="version-item" style="border-bottom:none">
-        <div class="vdot-col">
-          <div class="vdot old"></div>
-        </div>
-        <div class="vitem-content">
-          <div class="vitem-head">
-            <span class="vnum">v1.0.0</span>
-            <span class="vdate">Lanzamiento inicial</span>
-          </div>
-          <div class="vchanges">
-            <div class="vch"><span class="vch-dot">●</span><span>Primera versión pública de DataGrid</span></div>
-          </div>
-        </div>
-      </div>
+      <div id="versionList"></div>
     </div>
 
   </div>
@@ -1449,64 +608,370 @@
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
     <span class="bnav-label">Inicio</span>
   </button>
-  <button class="bnav-item" id="bn-apps" onclick="goDetail()">
+  <button class="bnav-item" id="bn-apps" onclick="openAppDetail(currentApp)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
     <span class="bnav-label">Apps</span>
   </button>
-  <button class="bnav-item" onclick="switchDTab(document.querySelector('.dtab:last-child'),'reviews');goDetail()">
+  <button class="bnav-item" onclick="switchDTab(document.querySelectorAll('.dtab')[1],'reviews');openAppDetail(currentApp)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     <span class="bnav-label">Reseñas</span>
   </button>
 </div>
 
 <script>
-  /* ── REVIEWS STATE ── */
-  let reviews = [];      // {name, stars, text, date}
-  let selStars = 0;
+/* ═══════════════════════════════════════════
+   CONFIGURACIÓN
+═══════════════════════════════════════════ */
+const JSON_URL = 'https://raw.githubusercontent.com/elFaraon65/MyStoreApp/main/AppsDisponibles.json';
 
-  const COLORS = ['#4285f4','#ea4335','#34a853','#fbbc04','#9c27b0','#ff5722'];
+/* ═══════════════════════════════════════════
+   ESTADO
+═══════════════════════════════════════════ */
+let apps = [];
+let currentApp = null;
+let reviews = [];
+let selStars = 0;
+let updateInfo = null; // { newVersion, downloadUrl, newFileName }
 
-  function getInitials(name) {
-    if (!name) return '?';
-    return name.trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+const COLORS = ['#4285f4','#ea4335','#34a853','#fbbc04','#9c27b0','#ff5722'];
+
+/* ═══════════════════════════════════════════
+   UTILIDADES
+═══════════════════════════════════════════ */
+function versionGreater(a, b) {
+  // Compara semver. Retorna true si a > b
+  const pa = a.split('.').map(Number);
+  const pb = b.split('.').map(Number);
+  for (let i = 0; i < 3; i++) {
+    if ((pa[i]||0) > (pb[i]||0)) return true;
+    if ((pa[i]||0) < (pb[i]||0)) return false;
+  }
+  return false;
+}
+
+function getInitials(name) {
+  if (!name) return '?';
+  return name.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+
+function rawGH(user, repo, branch, file) {
+  return `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${file}`;
+}
+
+/* ═══════════════════════════════════════════
+   CARGA DEL JSON DESDE GITHUB (con fallback local)
+═══════════════════════════════════════════ */
+async function loadApps() {
+  let data = null;
+  try {
+    const res = await fetch(JSON_URL, { cache: 'no-store' });
+    if (res.ok) data = await res.json();
+  } catch (_) {}
+
+  if (!data) {
+    // Fallback: intentar cargar localmente
+    try {
+      const res = await fetch('./AppsDisponibles.json', { cache: 'no-store' });
+      if (res.ok) data = await res.json();
+    } catch (_) {}
   }
 
-  function pickStar(n) {
-    selStars = n;
-    document.querySelectorAll('.si').forEach((s,i) => s.classList.toggle('lit', i < n));
+  if (!data) {
+    document.getElementById('homeAppRow').innerHTML = '<div class="loading-state">No se pudo cargar la lista de apps.<br>Verifica tu conexión.</div>';
+    return;
   }
 
-  function submitReview() {
-    const text = document.getElementById('reviewText').value.trim();
-    if (!text || selStars === 0) {
-      alert('Seleccioná al menos una estrella y escribí tu opinión.');
-      return;
+  apps = data;
+  currentApp = apps[0] || null;
+  renderHomeApps();
+  renderNewLaunch();
+  if (currentApp) {
+    checkForUpdates(currentApp);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   DETECCIÓN DE ACTUALIZACIONES EN GITHUB
+   Estrategia: intenta acceder a archivoBase + sufijo numérico creciente
+   DataGrid → DataGrid2 → DataGrid3 ...
+═══════════════════════════════════════════ */
+async function checkForUpdates(app) {
+  updateInfo = null;
+  try {
+    const base = app.archivoBase;
+    const ext  = app.extension || '.html';
+    const user = app.githubUser;
+    const repo = app.githubRepo;
+    const branch = app.githubBranch || 'main';
+    const installedVer = app.version || '1.0.0';
+
+    // Busca la versión más alta disponible probando sufijos numéricos
+    // DataGrid, DataGrid2, DataGrid3 ...
+    let latestFile = base + ext;  // el archivo actual instalado
+    let latestNum  = 1;           // DataGrid = sufijo implícito 1
+    let found = false;
+
+    for (let n = 2; n <= 20; n++) {
+      const candidate = `${base}${n}${ext}`;
+      const url = rawGH(user, repo, branch, candidate);
+      try {
+        const r = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+        if (r.ok) {
+          latestFile = candidate;
+          latestNum  = n;
+          found = true;
+        } else {
+          // Si falla, ya no hay más versiones
+          break;
+        }
+      } catch (_) {
+        break;
+      }
     }
-    const name = document.getElementById('reviewerName').value.trim() || 'Usuario anónimo';
-    const now = new Date().toLocaleDateString('es', {day:'numeric',month:'long',year:'numeric'});
-    reviews.unshift({ name, stars: selStars, text, date: now });
-    document.getElementById('reviewText').value = '';
-    document.getElementById('reviewerName').value = '';
-    selStars = 0;
-    document.querySelectorAll('.si').forEach(s => s.classList.remove('lit'));
-    renderReviews();
+
+    if (found) {
+      // Hay un archivo nuevo. Construimos la versión a mostrar:
+      // no tenemos número de semver del nuevo, así que solo avisamos que hay update
+      const newUrl = rawGH(user, repo, branch, latestFile);
+      updateInfo = {
+        newFile: latestFile,
+        downloadUrl: newUrl,
+        currentFile: base + ext
+      };
+      showUpdateUI(app, latestFile);
+    }
+  } catch (e) {
+    // silencioso
+  }
+}
+
+function showUpdateUI(app, newFile) {
+  const banner = document.getElementById('updateBanner');
+  const pill   = document.getElementById('updatePill');
+  const text   = document.getElementById('updateBannerText');
+  if (banner) { banner.classList.add('visible'); }
+  if (pill)   { pill.classList.add('visible'); }
+  if (text)   { text.textContent = `Nueva versión disponible (${newFile}) — Toca para actualizar.`; }
+
+  // Actualizar modal
+  document.getElementById('modalTitle').textContent = 'Actualización disponible';
+  document.getElementById('modalDesc').innerHTML =
+    `<strong>${app.nombre}</strong> tiene una nueva versión: <strong>${newFile}</strong>.<br><br>
+     La actualización descargará el nuevo archivo y reemplazará el actual en tu carpeta — no se creará un archivo duplicado.`;
+}
+
+/* ═══════════════════════════════════════════
+   ACTUALIZACIÓN: descarga y superpone el archivo
+═══════════════════════════════════════════ */
+async function doUpdate() {
+  if (!updateInfo || !currentApp) return;
+  const btn = document.getElementById('modalUpdateBtn');
+  btn.textContent = 'Descargando…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(updateInfo.downloadUrl);
+    if (!res.ok) throw new Error('No se pudo descargar');
+    const blob = await res.blob();
+
+    // Crear link de descarga con el nombre del archivo ORIGINAL (sin el sufijo numérico)
+    // Así sobreescribe el archivo existente en lugar de crear uno nuevo
+    const originalName = currentApp.archivoBase + (currentApp.extension || '.html');
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = originalName; // <- nombre original para sobrescribir
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    btn.textContent = '¡Listo!';
+    setTimeout(() => {
+      closeModal();
+      btn.textContent = 'Actualizar';
+      btn.disabled = false;
+      // Ocultar indicadores de update
+      document.getElementById('updateBanner').classList.remove('visible');
+      document.getElementById('updatePill').classList.remove('visible');
+      updateInfo = null;
+    }, 1500);
+  } catch (err) {
+    btn.textContent = 'Error — reintentar';
+    btn.disabled = false;
+    document.getElementById('modalDesc').innerHTML += '<br><br>⚠️ No se pudo descargar. Verifica tu conexión.';
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RENDER HOME
+═══════════════════════════════════════════ */
+function renderHomeApps(filter = '') {
+  const row = document.getElementById('homeAppRow');
+  const filtered = filter
+    ? apps.filter(a => a.categoria && a.categoria.toLowerCase().includes(filter.toLowerCase()))
+    : apps;
+
+  if (filtered.length === 0) {
+    row.innerHTML = '<div class="loading-state">No hay apps en esta categoría aún.</div>';
+    return;
   }
 
-  function renderReviews() {
-    const list = document.getElementById('reviewList');
-    if (reviews.length === 0) {
-      list.innerHTML = '<div class="no-reviews"><div class="nr-icon">💬</div><p>Aún no hay reseñas.<br>¡Sé el primero en dejar una opinión!</p></div>';
-      updateRatingSummary();
-      return;
-    }
-    list.innerHTML = reviews.map((r,i) => {
-      const stars = '★'.repeat(r.stars) + '★'.repeat(5-r.stars);
-      const lit = r.stars; const empty = 5 - r.stars;
+  row.innerHTML = filtered.map((app, i) => `
+    <div class="app-card-sm" onclick="openAppDetail(apps[${apps.indexOf(app)}])">
+      <div class="ic">${appIcon(app)}</div>
+      <div class="name">${app.nombre}</div>
+      <div class="dev">${app.autor}</div>
+    </div>
+  `).join('') + `
+    <div class="app-card-sm" style="opacity:.35;cursor:default">
+      <div class="ic" style="background:var(--surface3);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--text3)">+</div>
+      <div class="name" style="color:var(--text3)">Próximamente</div>
+      <div class="dev" style="color:var(--text3)">—</div>
+    </div>`;
+}
+
+function renderNewLaunch() {
+  const sec = document.getElementById('newLaunchSection');
+  if (!apps.length) { sec.innerHTML = ''; return; }
+  const app = apps[0];
+  sec.innerHTML = `
+    <div class="new-launch-card" onclick="openAppDetail(apps[0])">
+      <div style="width:54px;height:54px;border-radius:13px;overflow:hidden;flex-shrink:0;box-shadow:var(--shadow-sm)">${appIcon(app)}</div>
+      <div style="flex:1">
+        <div style="font-family:'Google Sans',sans-serif;font-size:15px;font-weight:700;color:var(--text)">${app.nombre}</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:3px">${app.autor}</div>
+        <div style="font-size:12px;color:var(--text2)">${app.categoria} · ${app.tamano || '—'}</div>
+      </div>
+      <div class="nlc-install">Instalar</div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════
+   ICONO SVG DE APP (DataGrid por defecto)
+═══════════════════════════════════════════ */
+function appIcon(app) {
+  // Extensible: si hay más apps con iconos distintos, se puede agregar aquí
+  return `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+    <rect width="60" height="60" fill="#07101F"/>
+    <rect x="10" y="10" width="10" height="10" rx="2" fill="#E8B84B" opacity=".9"/>
+    <rect x="10" y="25" width="10" height="10" rx="2" fill="#E8B84B" opacity=".6"/>
+    <rect x="10" y="40" width="10" height="10" rx="2" fill="#E8B84B" opacity=".9"/>
+    <rect x="22" y="10" width="10" height="10" rx="2" fill="#3ECFA0" opacity=".7"/>
+    <rect x="22" y="40" width="10" height="10" rx="2" fill="#3ECFA0" opacity=".7"/>
+    <rect x="34" y="14" width="10" height="6"  rx="2" fill="#4B8FE8" opacity=".6"/>
+    <rect x="34" y="40" width="10" height="6"  rx="2" fill="#4B8FE8" opacity=".6"/>
+    <rect x="40" y="22" width="8"  height="16" rx="2" fill="#A855F7" opacity=".5"/>
+    <circle cx="30" cy="30" r="3" fill="#E8B84B"/>
+  </svg>`;
+}
+
+/* ═══════════════════════════════════════════
+   ABRIR DETALLE DE APP
+═══════════════════════════════════════════ */
+function openAppDetail(app) {
+  if (!app) return;
+  currentApp = app;
+  goDetail();
+
+  // Llenar campos
+  document.getElementById('detailName').textContent = app.nombre;
+  document.getElementById('detailDev').textContent  = app.autor;
+  document.getElementById('statSize').textContent   = app.tamano || '—';
+  document.getElementById('statReq').textContent    = app.requiere || '—';
+  document.getElementById('statVer').textContent    = 'v' + (app.version || '—');
+
+  // Tags
+  const tagColors = ['', 'blue', 'purple', 'orange'];
+  document.getElementById('detailTags').innerHTML = (app.tags || [app.categoria]).map((t, i) =>
+    `<span class="dtag ${tagColors[i] || ''}">${t}</span>`).join('');
+
+  // Botón descarga — apunta al archivo en GitHub
+  const dlBtn  = document.getElementById('downloadBtn');
+  const dlText = document.getElementById('downloadBtnText');
+  const ghFile = rawGH(app.githubUser, app.githubRepo, app.githubBranch || 'main', app.archivoBase + (app.extension || '.html'));
+  dlBtn.href = ghFile;
+  dlBtn.setAttribute('download', app.archivoBase + (app.extension || '.html'));
+  dlText.textContent = `Descargar v${app.version || ''}`;
+
+  // Descripción
+  document.getElementById('descText').innerHTML = `<p>${app.descripcion || ''}</p>`;
+  document.getElementById('descFeatures').innerHTML = (app.caracteristicas || []).map(f =>
+    `<div class="feat-item"><div class="feat-dot"></div>${f}</div>`).join('');
+
+  // Versiones
+  renderVersions(app);
+
+  // Reviews
+  renderReviews();
+
+  // Chequear updates (si ya chequeamos, no molesta volver a llamar)
+  if (updateInfo) showUpdateUI(app, updateInfo.newFile);
+}
+
+/* ═══════════════════════════════════════════
+   VERSIONES
+═══════════════════════════════════════════ */
+function renderVersions(app) {
+  const list = document.getElementById('versionList');
+  const cl   = app.changelog || [];
+  if (!cl.length) { list.innerHTML = '<div class="loading-state">Sin historial de versiones aún.</div>'; return; }
+
+  list.innerHTML = cl.map((v, i) => {
+    const isCurrent = i === 0;
+    const badgeClass = isCurrent ? 'vb-new' : 'vb-stable';
+    const badgeText  = isCurrent ? 'Actual' : 'Estable';
+    return `
+    <div class="version-item" ${i === cl.length-1 ? 'style="border-bottom:none"' : ''}>
+      <div class="vdot-col">
+        <div class="vdot ${isCurrent ? 'current' : 'old'}"></div>
+        ${i < cl.length-1 ? '<div class="vline"></div>' : ''}
+      </div>
+      <div class="vitem-content">
+        <div class="vitem-head">
+          <span class="vnum">v${v.version}</span>
+          ${v.estado !== 'legacy' ? `<span class="vbadge ${badgeClass}">${badgeText}</span>` : ''}
+          <span class="vdate">${v.fecha}</span>
+        </div>
+        <div class="vchanges">
+          ${(v.cambios||[]).map(c => `<div class="vch"><span class="vch-dot">●</span><span>${c}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════
+   REVIEWS
+═══════════════════════════════════════════ */
+function pickStar(n) {
+  selStars = n;
+  document.querySelectorAll('.si').forEach((s, i) => s.classList.toggle('lit', i < n));
+}
+
+function submitReview() {
+  const text = document.getElementById('reviewText').value.trim();
+  if (!text || selStars === 0) { alert('Seleccioná al menos una estrella y escribí tu opinión.'); return; }
+  const name = document.getElementById('reviewerName').value.trim() || 'Usuario anónimo';
+  const now  = new Date().toLocaleDateString('es', { day:'numeric', month:'long', year:'numeric' });
+  reviews.unshift({ name, stars: selStars, text, date: now });
+  document.getElementById('reviewText').value = '';
+  document.getElementById('reviewerName').value = '';
+  selStars = 0;
+  document.querySelectorAll('.si').forEach(s => s.classList.remove('lit'));
+  renderReviews();
+}
+
+function renderReviews() {
+  const list = document.getElementById('reviewList');
+  if (!reviews.length) {
+    list.innerHTML = '<div class="no-reviews"><div class="nr-icon">💬</div><p>Aún no hay reseñas.<br>¡Sé el primero en dejar una opinión!</p></div>';
+  } else {
+    list.innerHTML = reviews.map((r, i) => {
       const color = COLORS[i % COLORS.length];
-      const initials = getInitials(r.name);
       return `<div class="review-card">
         <div class="rc-top">
-          <div class="rc-avatar" style="background:${color}22;color:${color}">${initials}</div>
+          <div class="rc-avatar" style="background:${color}22;color:${color}">${getInitials(r.name)}</div>
           <div class="rc-name">${r.name}</div>
           <div class="rc-date">${r.date}</div>
         </div>
@@ -1514,118 +979,114 @@
         <div class="rc-text">${r.text}</div>
       </div>`;
     }).join('');
-    updateRatingSummary();
   }
+  updateRatingSummary();
+}
 
-  function updateRatingSummary() {
-    const total = reviews.length;
-    const avg = total ? (reviews.reduce((a,r) => a + r.stars, 0) / total) : 0;
-    const rounded = Math.round(avg * 10) / 10;
+function updateRatingSummary() {
+  const total = reviews.length;
+  const avg   = total ? reviews.reduce((a, r) => a + r.stars, 0) / total : 0;
+  const rounded = Math.round(avg * 10) / 10;
 
-    // Big number in hero
-    document.getElementById('detailRatingNum').textContent = total ? rounded.toFixed(1) : '—';
-    document.getElementById('detailRatingCount').textContent = total ? `${total} reseña${total>1?'s':''}` : 'Sin reseñas aún';
+  document.getElementById('detailRatingNum').textContent   = total ? rounded.toFixed(1) : '—';
+  document.getElementById('detailRatingCount').textContent = total ? `${total} reseña${total>1?'s':''}` : 'Sin reseñas aún';
+  document.getElementById('detailStars').innerHTML = [1,2,3,4,5].map(i =>
+    avg >= i ? '<span class="s">★</span>' : avg >= i-.5 ? '<span class="s" style="opacity:.5">★</span>' : '<span class="s empty">★</span>').join('');
 
-    // Stars in hero
-    const heroStars = document.getElementById('detailStars');
-    heroStars.innerHTML = [1,2,3,4,5].map(i => {
-      if (!total) return '<span class="s empty">★</span>';
-      if (avg >= i) return '<span class="s">★</span>';
-      if (avg >= i - 0.5) return '<span class="s" style="opacity:.5">★</span>';
-      return '<span class="s empty">★</span>';
-    }).join('');
+  document.getElementById('revBig').textContent   = total ? rounded.toFixed(1) : '—';
+  document.getElementById('revCount').textContent = `${total} reseña${total!==1?'s':''}`;
+  document.getElementById('revStarsBig').innerHTML = [1,2,3,4,5].map(i =>
+    `<span class="s${avg>=i?'':(avg>=i-.5?'" style="opacity:.5':' empty')}">★</span>`).join('');
 
-    // Summary panel
-    document.getElementById('revBig').textContent = total ? rounded.toFixed(1) : '—';
-    document.getElementById('revCount').textContent = `${total} reseña${total!==1?'s':''}`;
-    const revStarsBig = document.getElementById('revStarsBig');
-    revStarsBig.innerHTML = [1,2,3,4,5].map(i => {
-      if (!total) return '<span class="s empty">★</span>';
-      return `<span class="s${avg >= i ? '' : avg >= i-.5 ? '" style="opacity:.5' : ' empty'}">★</span>`;
-    }).join('');
-
-    // Bars
-    const counts = [0,0,0,0,0];
-    reviews.forEach(r => counts[r.stars-1]++);
-    [1,2,3,4,5].forEach(n => {
-      const cnt = counts[n-1];
-      const pct = total ? (cnt/total*100) : 0;
-      document.getElementById('rb'+n).style.width = pct + '%';
-      document.getElementById('rc'+n).textContent = cnt;
-    });
-  }
-
-  /* ── NAVIGATION ── */
-  function goHome() {
-    document.getElementById('view-home').classList.add('active');
-    document.getElementById('view-detail').classList.remove('active');
-    document.getElementById('bn-home').classList.add('active');
-    document.getElementById('bn-apps').classList.remove('active');
-  }
-
-  function goDetail() {
-    document.getElementById('view-home').classList.remove('active');
-    document.getElementById('view-detail').classList.add('active');
-    document.getElementById('bn-home').classList.remove('active');
-    document.getElementById('bn-apps').classList.add('active');
-  }
-
-  /* ── TABS ── */
-  function switchDTab(btn, id) {
-    document.querySelectorAll('.dtab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.dtab-content').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('dtab-' + id).classList.add('active');
-  }
-
-  /* ── MODAL ── */
-  function openModal()  { document.getElementById('updateModal').classList.add('open'); }
-  function closeModal() { document.getElementById('updateModal').classList.remove('open'); }
-  document.getElementById('updateModal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
+  const counts = [0,0,0,0,0];
+  reviews.forEach(r => counts[r.stars-1]++);
+  [1,2,3,4,5].forEach(n => {
+    document.getElementById('rb'+n).style.width = total ? (counts[n-1]/total*100)+'%' : '0%';
+    document.getElementById('rc'+n).textContent = counts[n-1];
   });
+}
 
-  /* ── CAROUSEL ── */
-  let currentBanner = 0;
-  function scrollBanner(i) {
-    currentBanner = i;
-    const track = document.getElementById('carouselTrack');
-    const slide = track.querySelectorAll('.banner-slide')[i];
-    slide.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
-    document.querySelectorAll('.cdot').forEach((d,j) => d.classList.toggle('active', j===i));
+/* ═══════════════════════════════════════════
+   NAVEGACIÓN
+═══════════════════════════════════════════ */
+function goHome() {
+  document.getElementById('view-home').classList.add('active');
+  document.getElementById('view-detail').classList.remove('active');
+  document.getElementById('bn-home').classList.add('active');
+  document.getElementById('bn-apps').classList.remove('active');
+}
+function goDetail() {
+  document.getElementById('view-home').classList.remove('active');
+  document.getElementById('view-detail').classList.add('active');
+  document.getElementById('bn-home').classList.remove('active');
+  document.getElementById('bn-apps').classList.add('active');
+}
+function switchDTab(btn, id) {
+  document.querySelectorAll('.dtab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.dtab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('dtab-' + id).classList.add('active');
+}
+
+/* ═══════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════ */
+function openModal()  { document.getElementById('updateModal').classList.add('open'); }
+function closeModal() { document.getElementById('updateModal').classList.remove('open'); }
+document.getElementById('updateModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+/* ═══════════════════════════════════════════
+   CAROUSEL
+═══════════════════════════════════════════ */
+let currentBanner = 0;
+function scrollBanner(i) {
+  currentBanner = i;
+  const track = document.getElementById('carouselTrack');
+  const slides = track.querySelectorAll('.banner-slide');
+  if (slides[i]) slides[i].scrollIntoView({ behavior:'smooth', inline:'start', block:'nearest' });
+  document.querySelectorAll('.cdot').forEach((d, j) => d.classList.toggle('active', j===i));
+}
+setInterval(() => { currentBanner = (currentBanner+1) % 3; scrollBanner(currentBanner); }, 4000);
+document.getElementById('carouselTrack').addEventListener('scroll', function() {
+  const w = this.firstElementChild?.offsetWidth || 1;
+  const i = Math.round(this.scrollLeft / (w + 12));
+  document.querySelectorAll('.cdot').forEach((d, j) => d.classList.toggle('active', j===i));
+  currentBanner = i;
+});
+
+/* ═══════════════════════════════════════════
+   CHIPS Y BÚSQUEDA
+═══════════════════════════════════════════ */
+function chipSelect(el, cat) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderHomeApps(cat);
+}
+function handleSearch(q) {
+  const row = document.getElementById('homeAppRow');
+  const ql  = q.toLowerCase();
+  const filtered = !q ? apps : apps.filter(a =>
+    a.nombre.toLowerCase().includes(ql) || (a.autor && a.autor.toLowerCase().includes(ql)) || (a.categoria && a.categoria.toLowerCase().includes(ql))
+  );
+  if (!filtered.length) {
+    row.innerHTML = '<div class="loading-state">No se encontraron apps.</div>';
+    return;
   }
+  row.innerHTML = filtered.map((app, i) => `
+    <div class="app-card-sm" onclick="openAppDetail(apps[${apps.indexOf(app)}])">
+      <div class="ic">${appIcon(app)}</div>
+      <div class="name">${app.nombre}</div>
+      <div class="dev">${app.autor}</div>
+    </div>`).join('');
+}
 
-  // Auto-rotate carousel
-  setInterval(() => {
-    currentBanner = (currentBanner + 1) % 3;
-    scrollBanner(currentBanner);
-  }, 4000);
-
-  // Sync dots on manual scroll
-  document.getElementById('carouselTrack').addEventListener('scroll', function() {
-    const w = this.firstElementChild?.offsetWidth || 1;
-    const i = Math.round(this.scrollLeft / (w + 12));
-    document.querySelectorAll('.cdot').forEach((d,j) => d.classList.toggle('active', j===i));
-    currentBanner = i;
-  });
-
-  /* ── CHIP SELECT ── */
-  function chipSelect(el) {
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-  }
-
-  /* ── SEARCH (placeholder) ── */
-  function handleSearch(q) {
-    if (q.toLowerCase().includes('datagrid') || q.toLowerCase().includes('data') || !q) {
-      document.getElementById('dg-card').style.display = '';
-    } else {
-      document.getElementById('dg-card').style.display = 'none';
-    }
-  }
-
-  /* ── INIT ── */
-  renderReviews();
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+loadApps();
+renderReviews();
 </script>
 </body>
 </html>
