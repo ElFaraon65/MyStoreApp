@@ -658,6 +658,45 @@ function rawGH(user, repo, branch, file) {
   return `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${file}`;
 }
 
+/* ===== NUEVA FUNCIÓN PARA OBTENER TAMAÑO REAL DESDE GITHUB ===== */
+async function obtenerTamañoReal(app) {
+  const url = rawGH(app.githubUser, app.githubRepo, app.githubBranch || 'main', app.archivoBase + (app.extension || '.html'));
+  console.log('Consultando tamaño de:', url);
+  try {
+    // Usamos Range: bytes=0-0 para obtener solo la cabecera Content-Range
+    const respuesta = await fetch(url, { 
+      method: 'GET',
+      headers: { 'Range': 'bytes=0-0' },
+      cache: 'no-store'
+    });
+    // El servidor debe responder 206 Partial Content
+    const contentRange = respuesta.headers.get('Content-Range');
+    if (contentRange) {
+      // Formato: "bytes 0-0/62566"
+      const totalBytes = parseInt(contentRange.split('/')[1], 10);
+      if (!isNaN(totalBytes)) {
+        const kb = (totalBytes / 1024).toFixed(1);
+        console.log(`Tamaño real obtenido: ${kb} KB (${totalBytes} bytes)`);
+        return `${kb} KB`;
+      }
+    }
+    // Fallback: intentar con HEAD
+    const headResp = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+    const length = headResp.headers.get('Content-Length');
+    if (length) {
+      const kb = (parseInt(length) / 1024).toFixed(1);
+      console.log(`Tamaño por HEAD: ${kb} KB`);
+      return `${kb} KB`;
+    }
+  } catch (e) {
+    console.warn('Error obteniendo tamaño real:', e);
+  }
+  // Fallback al valor del JSON
+  console.log('Usando tamaño del JSON:', app.tamano);
+  return app.tamano || '—';
+}
+/* ============================================= */
+
 /* ═══════════════════════════════════════════
    CARGA DEL JSON DESDE GITHUB (con fallback local)
 ═══════════════════════════════════════════ */
@@ -877,6 +916,7 @@ function openAppDetail(app) {
   // Llenar campos
   document.getElementById('detailName').textContent = app.nombre;
   document.getElementById('detailDev').textContent  = app.autor;
+  // El tamaño se actualizará de forma asíncrona (primero mostramos el valor del JSON como fallback)
   document.getElementById('statSize').textContent   = app.tamano || '—';
   document.getElementById('statReq').textContent    = app.requiere || '—';
   document.getElementById('statVer').textContent    = 'v' + (app.version || '—');
@@ -886,7 +926,7 @@ function openAppDetail(app) {
   document.getElementById('detailTags').innerHTML = (app.tags || [app.categoria]).map((t, i) =>
     `<span class="dtag ${tagColors[i] || ''}">${t}</span>`).join('');
 
-    // Botón descarga — apunta al archivo LOCAL (mismo directorio)
+  // Botón descarga — apunta al archivo LOCAL (mismo directorio)
   const dlBtn  = document.getElementById('downloadBtn');
   const dlText = document.getElementById('downloadBtnText');
   const localFile = app.archivoBase + (app.extension || '.html');
@@ -907,6 +947,11 @@ function openAppDetail(app) {
 
   // Chequear updates (si ya chequeamos, no molesta volver a llamar)
   if (updateInfo) showUpdateUI(app, updateInfo.newFile);
+
+  // OBTENER Y MOSTRAR EL TAMAÑO REAL DEL ARCHIVO (DESDE GITHUB)
+  obtenerTamañoReal(app).then(tamañoReal => {
+    if (tamañoReal) document.getElementById('statSize').textContent = tamañoReal;
+  });
 }
 
 /* ═══════════════════════════════════════════
