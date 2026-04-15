@@ -886,11 +886,11 @@ function openAppDetail(app) {
   document.getElementById('detailTags').innerHTML = (app.tags || [app.categoria]).map((t, i) =>
     `<span class="dtag ${tagColors[i] || ''}">${t}</span>`).join('');
 
-  // Botón descarga — apunta al archivo en GitHub
+    // Botón descarga — apunta al archivo LOCAL (mismo directorio)
   const dlBtn  = document.getElementById('downloadBtn');
   const dlText = document.getElementById('downloadBtnText');
-  const ghFile = rawGH(app.githubUser, app.githubRepo, app.githubBranch || 'main', app.archivoBase + (app.extension || '.html'));
-  dlBtn.href = ghFile;
+  const localFile = app.archivoBase + (app.extension || '.html');
+  dlBtn.href = localFile;
   dlBtn.setAttribute('download', app.archivoBase + (app.extension || '.html'));
   dlText.textContent = `Descargar v${app.version || ''}`;
 
