@@ -11,13 +11,12 @@
     "archivoBase": "DataGrid",
     "extension": ".html",
 
-    "portada": "Screenshoots/WhatsApp Image 2026-04-16 at 10.26.38 AM.jpeg",
+    "portada": "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/assets/icons/LOGO%20DATAGRID.png",
 
     "capturas": [
-      "Screenshoots/WhatsApp Image 2026-04-16 at 10.26.38 AM.jpeg",
-      "Screenshoots/WhatsApp Image 2026-04-16 at 10.26.39 AM.jpeg",
-      "Screenshoots/WhatsApp Image 2026-04-16 at 10.28.22 AM.jpeg",
-      "Screenshoots/Captura de pantalla 2026-04-16 102933.jpg"
+      "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/Captura%20de%20pantalla%202026-04-16%20150545.jpg",
+      "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/Captura%20de%20pantalla%202026-04-16%20at%203.06.06%20PM.jpeg",
+      "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/Captura%20de%20pantalla%202026-04-16%20at%203.06.09%20PM.jpeg"
     ],
 
     "descripcion": "Aplicación de gestión de datos 100% local. Sin servidores, sin internet, sin cuentas. Un solo archivo HTML que llevas contigo y funciona en cualquier navegador.",
