@@ -932,6 +932,29 @@ function refreshActionBtn(app) {
   }
 }
 
+/* ══════════════════════════════════════════
+   DESCARGA FORZADA (siempre como archivo)
+   Resuelve el problema de que GitHub abra el HTML en vez de descargar.
+══════════════════════════════════════════ */
+async function forceDownload(url, filename) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Error al descargar: ${response.status}`);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
+  } catch (err) {
+    console.error('Fallo la descarga forzada', err);
+    alert('No se pudo descargar el archivo. Intenta de nuevo.');
+  }
+}
+
 function mainAction() {
   if (!currentApp) return;
   const installed = isInstalled(currentApp);
@@ -949,7 +972,7 @@ function mainAction() {
     }
 
     const filename = currentApp.archivoBase + (currentApp.extension || '.html');
-    triggerDownload(downloadUrl, filename);
+    forceDownload(downloadUrl, filename);
     markInstalled(currentApp, versionNumberToMark);
     setTimeout(() => {
       refreshActionBtn(currentApp);
@@ -972,7 +995,7 @@ function mainAction() {
       downloadUrl = GH_RAW(currentApp.githubUser, currentApp.githubRepo, currentApp.githubBranch || 'main',
         currentApp.archivoBase + (currentApp.extension || '.html'));
     }
-    triggerDownload(downloadUrl, currentApp.archivoBase + (currentApp.extension || '.html'));
+    forceDownload(downloadUrl, currentApp.archivoBase + (currentApp.extension || '.html'));
   }
 }
 
@@ -983,12 +1006,7 @@ async function doUpdate() {
   btn.disabled = true;
 
   try {
-    const res = await fetch(updateInfo.downloadUrl);
-    if (!res.ok) throw new Error();
-    const blob = await res.blob();
-    const originalName = currentApp.archivoBase + (currentApp.extension || '.html');
-    triggerDownloadBlob(blob, originalName);
-
+    await forceDownload(updateInfo.downloadUrl, currentApp.archivoBase + (currentApp.extension || '.html'));
     // Marcar como instalada con la nueva versión
     markInstalled(currentApp, updateInfo.versionNumber);
     updateInfo = null;
@@ -1007,17 +1025,6 @@ async function doUpdate() {
     document.getElementById('modalDesc').innerHTML +=
       '<br><br>⚠️ No se pudo descargar. Verifica tu conexión.';
   }
-}
-
-function triggerDownload(url, filename) {
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-}
-function triggerDownloadBlob(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  triggerDownload(url, filename);
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 
 /* ══════════════════════════════════════════
