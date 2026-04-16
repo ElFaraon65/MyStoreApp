@@ -5,12 +5,23 @@
     "rating": "5.0",
     "categoria": "Productividad",
     "version": "1.1.0",
-    "githubUser": "elFaraon65",
+    "githubUser": "ElFaraon65",
     "githubRepo": "MyStoreApp",
     "githubBranch": "main",
     "archivoBase": "DataGrid",
     "extension": ".html",
+
+    "portada": "Screenshoots/WhatsApp Image 2026-04-16 at 10.26.38 AM.jpeg",
+
+    "capturas": [
+      "Screenshoots/WhatsApp Image 2026-04-16 at 10.26.38 AM.jpeg",
+      "Screenshoots/WhatsApp Image 2026-04-16 at 10.26.39 AM.jpeg",
+      "Screenshoots/WhatsApp Image 2026-04-16 at 10.28.22 AM.jpeg",
+      "Screenshoots/Captura de pantalla 2026-04-16 102933.jpg"
+    ],
+
     "descripcion": "Aplicación de gestión de datos 100% local. Sin servidores, sin internet, sin cuentas. Un solo archivo HTML que llevas contigo y funciona en cualquier navegador.",
+
     "caracteristicas": [
       "Grillas editables con múltiples tipos de columna",
       "Resumen financiero automático (ingresos, egresos, balance)",
@@ -20,14 +31,26 @@
       "Sin cuenta, sin anuncios, sin rastreo",
       "Menos de 100 KB — pesa menos que una foto"
     ],
+
+    "paraQuien": [
+      { "tipo": "si", "texto": "✅ Equipos pequeños" },
+      { "tipo": "si", "texto": "✅ Uso sin internet" },
+      { "tipo": "si", "texto": "✅ Gestión de datos simple" },
+      { "tipo": "si", "texto": "✅ Usuarios no técnicos" },
+      { "tipo": "no", "texto": "⚠️ No para millones de filas" },
+      { "tipo": "no", "texto": "⚠️ No tiene gráficas (aún)" }
+    ],
+
     "tags": ["Productividad", "Datos", "Gestión", "Offline"],
     "tamano": "99 KB",
     "requiere": "Cualquier navegador",
+
     "changelog": [
       {
         "version": "1.1.0",
         "fecha": "Versión actual",
         "estado": "estable",
+        "descripcion": "Escribe aquí una nota editorial para esta versión — aparecerá resaltada en la tienda antes de la lista de cambios.",
         "cambios": [
           "Primera versión pública estable de DataGrid",
           "Soporte adaptativo para móvil",
@@ -38,6 +61,7 @@
         "version": "1.0.0",
         "fecha": "Lanzamiento inicial",
         "estado": "legacy",
+        "descripcion": "",
         "cambios": [
           "Primera versión pública de DataGrid"
         ]
