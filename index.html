@@ -249,7 +249,10 @@
     .vitem-head{display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-wrap:wrap}
     .vnum{font-family:'Google Sans',sans-serif;font-size:14px;font-weight:700;color:var(--text)}
     .vbadge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:50px;letter-spacing:.06em;text-transform:uppercase}
-    .vb-new{background:#e8f5e9;color:#2e7d32}.vb-stable{background:#e8f0fe;color:#1a73e8}.vb-legacy{background:#f1f3f4;color:#80868b}
+    .vb-new{background:#e8f5e9;color:#2e7d32}.vb-stable{background:#e8f0fe;color:#1a73e8}.vb-legacy{background:#f1f3f4;color:#80868b}.vb-unstable {
+  background: #fff3e0;
+  color: #ffe600;
+}
     .vdate{font-size:12px;color:var(--text3);margin-left:auto}
     .vchanges{font-size:13px;color:var(--text2);line-height:1.8}
     .vch{display:flex;gap:7px}
@@ -1236,9 +1239,19 @@ function renderVersions(app) {
   list.innerHTML = cl.map((v, i) => {
     const isCurrent = i === 0;
     let badgeClass, badgeText;
-    if (v.estado === 'legacy') { badgeClass = 'vb-legacy'; badgeText = 'Legacy'; }
-    else if (isCurrent)        { badgeClass = 'vb-new';    badgeText = 'Actual'; }
-    else                       { badgeClass = 'vb-stable'; badgeText = 'Estable'; }
+if (v.estado === 'legacy') {
+  badgeClass = 'vb-legacy';
+  badgeText = 'Legacy';
+} else if (v.estado === 'inestable') {
+  badgeClass = 'vb-unstable';
+  badgeText = 'Inestable';
+} else if (isCurrent) {
+  badgeClass = 'vb-new';
+  badgeText = 'Actual';
+} else {
+  badgeClass = 'vb-stable';
+  badgeText = 'Estable';
+}
 
     const descHTML = v.descripcion
       ? `<div class="vdesc">${v.descripcion}</div>` : '';

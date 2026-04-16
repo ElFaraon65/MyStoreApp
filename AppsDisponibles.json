@@ -48,7 +48,7 @@
 {
         "version": "2.1.0",
         "fecha": "Versión actual",
-        "estado": "Inestable",
+        "estado": "inestable",
         "descripcion": "Corrección de errores",
         "cambios": [
           "Ahora puedes escribir libremente sin que se seleccione involuntariamente la celda en las plantillas de finanzas e inventario",
@@ -58,7 +58,7 @@
     {
       "version": "2.0.0",
       "fecha": "Abril 16 del 2026",
-      "estado": "Inestable",
+      "estado": "inestable",
       "descripcion": "Nuevas funcionalidades y mejoras de rendimiento",
       "cambios": [
         "Categorías para separar tablas",
@@ -72,7 +72,7 @@
       {
         "version": "1.1.0",
         "fecha": "Abril 16 del 2026",
-        "estado": "Estable",
+        "estado": "estable",
         "descripcion": "El inicio de un programa totalmente gratuito para negocios",
         "cambios": [
           "Primera versión pública estable de DataGrid",
