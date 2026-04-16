@@ -44,12 +44,24 @@
     "tamano": "99 KB",
     "requiere": "Cualquier navegador",
 
-    "changelog": [
+"changelog": [
+    {
+      "version": "2.0.0",
+      "fecha": "Versión actual",
+      "estado": "estable",
+      "descripcion": "Nuevas funcionalidades y mejoras de rendimiento",
+      "cambios": [
+        "Exportación de datos a CSV/Excel",
+        "Soporte para fórmulas básicas en celdas",
+        "Mejora en la velocidad de búsqueda",
+        "Corrección de errores menores"
+      ]
+  },
       {
         "version": "1.1.0",
-        "fecha": "Versión actual",
+        "fecha": "Abril 16 del 2026",
         "estado": "estable",
-        "descripcion": "Escribe aquí una nota editorial para esta versión — aparecerá resaltada en la tienda antes de la lista de cambios.",
+        "descripcion": "El inicio de un programa totalmente gratuito para negocios",
         "cambios": [
           "Primera versión pública estable de DataGrid",
           "Soporte adaptativo para móvil",
