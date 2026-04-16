@@ -1,0 +1,68 @@
+{
+  "name": "ArchiveStoreApps",
+  "short_name": "MyStoreHG",
+  "description": "App de juegos gratuita para todos los proyectos de Historygamespstudios",
+  "id": "io.github.elfaraon65.twa",
+  "start_url": "/MyStoreApp-repositorio/index.html",
+"scope": "/MyStoreApp-repositorio/",
+  "display": "fullscreen",
+  "display_override": ["fullscreen"],
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "orientation": "portrait",    
+  "lang": "es-ES",
+  "dir": "ltr",
+  "categories": ["games", "entertainment", "utilities"],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "icons": [
+    {
+      "src": "./Logo%20ASA.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./Logo%20ASA.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/Screenshoots/WhatsApp%20Image%202026-04-16%20at%2010.26.38%20AM.jpeg",
+      "form_factor": "narrow",
+      "label": "Pantalla de inicio"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/Screenshoots/WhatsApp%20Image%202026-04-16%20at%2010.26.39%20AM.jpeg",
+      "form_factor": "narrow",
+      "label": "Interfaz de aplicaciones"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/Screenshoots/WhatsApp%20Image%202026-04-16%20at%2010.28.22%20AM.jpeg",
+      "form_factor": "narrow",
+      "label": "Reseñas"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/Screenshoots/Captura%20de%20pantalla%202026-04-16%20102933.jpg",
+      "form_factor": "wide",
+      "label": "Vista de Escritorio"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Probar Ahora",
+      "short_name": "Comenzar",
+      "description": "Entrar en la app",
+      "url": "./index.html",
+      "icons": [{ "src": "./Logo%20ASA.png", "sizes": "512x512", "type": "image/png" }]
+    }
+  ]
+}
