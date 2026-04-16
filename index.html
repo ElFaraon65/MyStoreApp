@@ -644,7 +644,7 @@ let apps        = [];
 let currentApp  = null;
 let reviews     = {};       // keyed by app.nombre, persisted to localStorage
 let selStars    = 0;
-let updateInfo  = null;     // { newFile, downloadUrl }
+let updateInfo  = null;     // { newFile, downloadUrl, versionNumber }
 let recentSearches = [];    // persisted
 
 const COLORS = ['#4285f4','#ea4335','#34a853','#fbbc04','#9c27b0','#ff5722'];
@@ -655,6 +655,7 @@ const COLORS = ['#4285f4','#ea4335','#34a853','#fbbc04','#9c27b0','#ff5722'];
    - asa_reviews_{appNombre}    → array of review objects
    - asa_installed_{appNombre}  → "true" | undefined
    - asa_installed_ver_{appNombre} → "1.1.0"
+   - asa_installed_vernum_{appNombre} → número de versión (entero)
    - asa_recent_searches        → JSON array
 ══════════════════════════════════════════ */
 function lsKey(type, app) { return `asa_${type}_${app.nombre}`; }
@@ -672,13 +673,26 @@ function isInstalled(app) {
 function getInstalledVer(app) {
   return localStorage.getItem(lsKey('installed_ver', app)) || null;
 }
-function markInstalled(app) {
+function getInstalledVersionNumber(app) {
+  const num = localStorage.getItem(lsKey('installed_vernum', app));
+  return num ? parseInt(num, 10) : 0;
+}
+function markInstalled(app, versionNumber) {
   localStorage.setItem(lsKey('installed', app), 'true');
   localStorage.setItem(lsKey('installed_ver', app), app.version);
+  if (versionNumber !== undefined) {
+    localStorage.setItem(lsKey('installed_vernum', app), versionNumber);
+  } else {
+    // Intentar extraer de app.version (ej. "1.1.0" -> 1)
+    const match = app.version.match(/^(\d+)/);
+    const vnum = match ? parseInt(match[1], 10) : 1;
+    localStorage.setItem(lsKey('installed_vernum', app), vnum);
+  }
 }
 function markUninstalled(app) {
   localStorage.removeItem(lsKey('installed', app));
   localStorage.removeItem(lsKey('installed_ver', app));
+  localStorage.removeItem(lsKey('installed_vernum', app));
 }
 function loadRecentSearches() {
   try { return JSON.parse(localStorage.getItem('asa_recent_searches')) || []; }
@@ -707,6 +721,17 @@ function versionGreater(a, b) {
 function getInitials(name) {
   if (!name) return '?';
   return name.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+
+/* ══════════════════════════════════════════
+   EXTRAER NÚMERO DE VERSIÓN DEL NOMBRE DE ARCHIVO
+   DataGrid.html → 1
+   DataGrid2.html → 2
+   DataGrid10.html → 10
+══════════════════════════════════════════ */
+function extractVersionFromFilename(filename) {
+  const match = filename.match(/(\d+)\.html$/);
+  return match ? parseInt(match[1], 10) : 1;
 }
 
 /* ══════════════════════════════════════════
@@ -808,10 +833,13 @@ function renderScreenshots(app) {
 
 /* ══════════════════════════════════════════
    UPDATE DETECTION
-   Busca DataGrid2, DataGrid3… en GitHub
+   Busca DataGrid2, DataGrid3… en GitHub y determina la última versión.
+   Compara con la versión instalada registrada.
 ══════════════════════════════════════════ */
 async function checkForUpdates(app) {
   updateInfo = null;
+  app.latestVersionInfo = null; // reset
+
   try {
     const base   = app.archivoBase;
     const ext    = app.extension || '.html';
@@ -820,24 +848,48 @@ async function checkForUpdates(app) {
     const branch = app.githubBranch || 'main';
 
     let latestFile = base + ext;
+    let latestVersionNumber = 1; // el base se considera versión 1
     let found = false;
 
+    // Buscar desde 2 hasta 20
     for (let n = 2; n <= 20; n++) {
       const candidate = `${base}${n}${ext}`;
       const url = GH_RAW(user, repo, branch, candidate);
       try {
         const r = await fetch(url, { method: 'HEAD', cache: 'no-store' });
-        if (r.ok) { latestFile = candidate; found = true; }
-        else break;
+        if (r.ok) {
+          latestFile = candidate;
+          latestVersionNumber = n;
+          found = true;
+        } else {
+          break; // si falla uno, asumimos que no hay más
+        }
       } catch (_) { break; }
     }
 
-    if (found) {
-      const newUrl = GH_RAW(user, repo, branch, latestFile);
-      updateInfo = { newFile: latestFile, downloadUrl: newUrl };
-      // Only show update UI if app is installed
-      if (isInstalled(app)) refreshActionBtn(app);
+    const latestUrl = GH_RAW(user, repo, branch, latestFile);
+    app.latestVersionInfo = {
+      versionNumber: latestVersionNumber,
+      file: latestFile,
+      url: latestUrl
+    };
+
+    const installedVerNum = getInstalledVersionNumber(app);
+    const isInstalledFlag = isInstalled(app);
+
+    if (isInstalledFlag && latestVersionNumber > installedVerNum) {
+      // Hay una versión más nueva disponible
+      updateInfo = {
+        newFile: latestFile,
+        downloadUrl: latestUrl,
+        versionNumber: latestVersionNumber
+      };
+    } else {
+      updateInfo = null;
     }
+
+    // Actualizar botón si la app está instalada
+    if (isInstalledFlag) refreshActionBtn(app);
   } catch (_) {}
 }
 
@@ -861,7 +913,11 @@ function refreshActionBtn(app) {
   if (!installed) {
     btn.classList.add('btn-install');
     btn.querySelector('svg').style.display = '';
-    text.textContent = `Descargar v${app.version || ''}`;
+    // Mostrar la versión que se descargará (última detectada o la del JSON)
+    const verToShow = (app.latestVersionInfo && app.latestVersionInfo.versionNumber > 1)
+      ? `v${app.latestVersionInfo.versionNumber}.0`
+      : `v${app.version || ''}`;
+    text.textContent = `Descargar ${verToShow}`;
     unin.classList.remove('visible');
   } else if (updateInfo) {
     btn.classList.add('btn-update');
@@ -881,28 +937,42 @@ function mainAction() {
   const installed = isInstalled(currentApp);
 
   if (!installed) {
-    // Download & mark installed
-    triggerDownload(
-      GH_RAW(currentApp.githubUser, currentApp.githubRepo, currentApp.githubBranch || 'main',
-        currentApp.archivoBase + (currentApp.extension || '.html')),
-      currentApp.archivoBase + (currentApp.extension || '.html')
-    );
-    markInstalled(currentApp);
-    setTimeout(() => refreshActionBtn(currentApp), 500);
+    // Determinar URL de descarga: usar la última versión detectada si existe, si no la base
+    let downloadUrl, versionNumberToMark;
+    if (currentApp.latestVersionInfo) {
+      downloadUrl = currentApp.latestVersionInfo.url;
+      versionNumberToMark = currentApp.latestVersionInfo.versionNumber;
+    } else {
+      downloadUrl = GH_RAW(currentApp.githubUser, currentApp.githubRepo, currentApp.githubBranch || 'main',
+        currentApp.archivoBase + (currentApp.extension || '.html'));
+      versionNumberToMark = 1;
+    }
+
+    const filename = currentApp.archivoBase + (currentApp.extension || '.html');
+    triggerDownload(downloadUrl, filename);
+    markInstalled(currentApp, versionNumberToMark);
+    setTimeout(() => {
+      refreshActionBtn(currentApp);
+      // Actualizar UI de versión instalada
+      document.getElementById('statVer').textContent = 'v' + (versionNumberToMark === 1 ? currentApp.version : `${versionNumberToMark}.0`);
+    }, 500);
   } else if (updateInfo) {
-    // Show update modal
+    // Mostrar modal de actualización
     document.getElementById('modalTitle').textContent = `Actualización disponible`;
     document.getElementById('modalDesc').innerHTML =
-      `<strong>${currentApp.nombre}</strong> tiene una versión nueva disponible.<br><br>
+      `<strong>${currentApp.nombre}</strong> tiene una versión nueva disponible (v${updateInfo.versionNumber}.0).<br><br>
        Se descargará con el mismo nombre que el archivo actual para que lo reemplace en tu dispositivo.`;
     openModal('updateModal');
   } else {
-    // Already installed, up to date → open the file (can't from web, just download again)
-    triggerDownload(
-      GH_RAW(currentApp.githubUser, currentApp.githubRepo, currentApp.githubBranch || 'main',
-        currentApp.archivoBase + (currentApp.extension || '.html')),
-      currentApp.archivoBase + (currentApp.extension || '.html')
-    );
+    // Ya instalado y actualizado: descargar de nuevo (por si acaso)
+    let downloadUrl;
+    if (currentApp.latestVersionInfo) {
+      downloadUrl = currentApp.latestVersionInfo.url;
+    } else {
+      downloadUrl = GH_RAW(currentApp.githubUser, currentApp.githubRepo, currentApp.githubBranch || 'main',
+        currentApp.archivoBase + (currentApp.extension || '.html'));
+    }
+    triggerDownload(downloadUrl, currentApp.archivoBase + (currentApp.extension || '.html'));
   }
 }
 
@@ -919,8 +989,8 @@ async function doUpdate() {
     const originalName = currentApp.archivoBase + (currentApp.extension || '.html');
     triggerDownloadBlob(blob, originalName);
 
-    // Mark as updated — clear update state
-    markInstalled(currentApp);
+    // Marcar como instalada con la nueva versión
+    markInstalled(currentApp, updateInfo.versionNumber);
     updateInfo = null;
 
     btn.textContent = '¡Listo!';
@@ -929,6 +999,7 @@ async function doUpdate() {
       btn.textContent = 'Actualizar';
       btn.disabled = false;
       refreshActionBtn(currentApp);
+      document.getElementById('statVer').textContent = 'v' + (currentApp.latestVersionInfo?.versionNumber || '—') + '.0';
     }, 1500);
   } catch (_) {
     btn.textContent = 'Error — reintentar';
@@ -1038,8 +1109,14 @@ async function fetchRealSize(app) {
   sizeEl.textContent = 'Calculando…';
 
   try {
-    const filePath = app.archivoBase + (app.extension || '.html');
-    const url = GH_RAW(app.githubUser, app.githubRepo, app.githubBranch || 'main', filePath);
+    // Usar la URL de la última versión si existe, si no la base
+    let url;
+    if (app.latestVersionInfo) {
+      url = app.latestVersionInfo.url;
+    } else {
+      const filePath = app.archivoBase + (app.extension || '.html');
+      url = GH_RAW(app.githubUser, app.githubRepo, app.githubBranch || 'main', filePath);
+    }
     const response = await fetch(url, { method: 'HEAD', cache: 'no-store' });
     if (!response.ok) throw new Error('No se pudo obtener el tamaño');
     const contentLength = response.headers.get('content-length');
@@ -1065,6 +1142,15 @@ function openAppDetail(app) {
   currentApp = app;
   goDetail();
 
+  // Asegurar que latestVersionInfo esté disponible
+  if (!app.latestVersionInfo) {
+    checkForUpdates(app).then(() => {
+      // Refrescar UI después de obtener info de versión
+      document.getElementById('statVer').textContent = 'v' + (app.latestVersionInfo?.versionNumber === 1 ? app.version : `${app.latestVersionInfo?.versionNumber}.0`) || app.version || '—';
+      refreshActionBtn(app);
+    });
+  }
+
   // Icon
   document.getElementById('detailIconWrap').innerHTML = iconHTML(app, 90);
 
@@ -1073,7 +1159,7 @@ function openAppDetail(app) {
   document.getElementById('detailDev').textContent  = app.autor;
   document.getElementById('statSize').textContent   = app.realSize || app.tamano || '—';
   document.getElementById('statReq').textContent    = app.requiere || '—';
-  document.getElementById('statVer').textContent    = 'v' + (app.version || '—');
+  document.getElementById('statVer').textContent    = 'v' + (app.latestVersionInfo?.versionNumber === 1 ? app.version : `${app.latestVersionInfo?.versionNumber}.0`) || app.version || '—';
 
   // Tags
   const tagColors = ['', 'blue', 'purple', 'orange'];
@@ -1117,7 +1203,6 @@ function openAppDetail(app) {
 
   // Action button
   refreshActionBtn(app);
-  if (updateInfo && isInstalled(app)) refreshActionBtn(app);
 
   // Reset tabs
   switchDTab(document.querySelector('.dtab'), 'about');
