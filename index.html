@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="manifest" href="./manifest.json">
   <style>
+    /* TODO EL CSS SE MANTIENE EXACTAMENTE IGUAL, SIN CAMBIOS */
     :root {
       --bg:        #f8f9fa;
       --surface:   #ffffff;
@@ -556,8 +557,7 @@
 
     <!-- TAB ABOUT -->
     <div class="dtab-content active" id="dtab-about">
-      <!-- Cover image -->
-      <div id="coverImageWrap"></div>
+      <!-- Se ha eliminado la imagen de portada (coverImageWrap) porque no se desea mostrar -->
       <div class="desc-text" id="descText"></div>
       <div class="desc-features" id="descFeatures"></div>
       <div class="diff-section" style="margin-top:18px">
@@ -741,16 +741,16 @@ async function loadApps() {
 
 /* ══════════════════════════════════════════
    ICON RESOLUTION
-   Busca ./icons/LOGO {AppNombre}.png (case-insensitive friendly)
-   Fallback: SVG generado
+   Ahora usa directamente app.portada si existe (URL completa). Si no, construye la ruta como antes.
 ══════════════════════════════════════════ */
 function iconSrc(app) {
-  // Convention: ./icons/LOGO DataGrid.png → LOGO {nombre}{cualquier ext}
-  // We return both a GH raw URL and a relative path, the <img> will try both
-  const nombre = app.nombre;
-  // Try GitHub raw first (same repo)
+  // Si el campo portada contiene una URL válida, la usamos directamente.
+  if (app.portada && (app.portada.startsWith('http://') || app.portada.startsWith('https://'))) {
+    return app.portada;
+  }
+  // Fallback a la convención anterior.
   return GH_RAW(app.githubUser, app.githubRepo, app.githubBranch || 'main',
-    `icons/LOGO ${nombre}.png`);
+    `icons/LOGO ${app.nombre}.png`);
 }
 
 function iconHTML(app, size = 58) {
@@ -779,8 +779,7 @@ function fallbackIcon(nombre, size) {
 
 /* ══════════════════════════════════════════
    SCREENSHOT RESOLUTION
-   JSON field: "capturas": ["Screenshoots/img1.jpeg", ...]
-   Paths relative to GH repo root
+   Ahora soporta URLs absolutas (http/https) directamente, y rutas relativas con GH_RAW.
 ══════════════════════════════════════════ */
 function renderScreenshots(app) {
   const row = document.getElementById('screenshotsRow');
@@ -795,24 +794,16 @@ function renderScreenshots(app) {
   }
 
   row.innerHTML = caps.map(path => {
-    const url = GH_RAW(app.githubUser, app.githubRepo, app.githubBranch || 'main', path);
+    // Si ya es una URL absoluta, la usamos directamente; si no, construimos con GH_RAW.
+    let url = path;
+    if (!path.startsWith('http://') && !path.startsWith('https://')) {
+      url = GH_RAW(app.githubUser, app.githubRepo, app.githubBranch || 'main', path);
+    }
     return `<div class="screenshot" style="width:clamp(150px,38vw,230px)">
       <img src="${url}" alt="Captura" style="width:100%;display:block;aspect-ratio:9/16;object-fit:cover"
         onerror="this.parentElement.innerHTML='<div class=\'screenshot-placeholder\' style=\'width:100%;aspect-ratio:9/16\'><span style=\'font-size:24px\'>📷</span><span>Sin imagen</span></div>'">
     </div>`;
   }).join('');
-}
-
-/* ══════════════════════════════════════════
-   COVER IMAGE
-   JSON field: "portada": "Screenshoots/cover.jpeg"
-══════════════════════════════════════════ */
-function renderCoverImage(app) {
-  const wrap = document.getElementById('coverImageWrap');
-  if (!app.portada) { wrap.innerHTML = ''; return; }
-  const url = GH_RAW(app.githubUser, app.githubRepo, app.githubBranch || 'main', app.portada);
-  wrap.innerHTML = `<img src="${url}" alt="Portada de ${app.nombre}" class="app-cover"
-    onerror="this.replaceWith(Object.assign(document.createElement('div'), {className:'app-cover-placeholder', innerHTML:'<span style=\'font-size:28px\'>🖼️</span><span>Portada no disponible</span>'}))">`;
 }
 
 /* ══════════════════════════════════════════
@@ -1062,9 +1053,6 @@ function openAppDetail(app) {
       <span class="fw-chip yes">✅ Usuarios no técnicos</span>
       <span class="fw-chip no">⚠️ No para millones de filas</span>`;
   }
-
-  // Cover image
-  renderCoverImage(app);
 
   // Screenshots
   renderScreenshots(app);
