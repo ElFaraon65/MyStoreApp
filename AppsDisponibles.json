@@ -45,16 +45,28 @@
     "requiere": "Cualquier navegador",
 
 "changelog": [
+{
+        "version": "2.1.0",
+        "fecha": "Abril 16 del 2026",
+        "estado": "inestable",
+        "descripcion": "Corrección de errores",
+        "cambios": [
+          "Ahora puedes escribir libremente sin que se seleccione involuntariamente la celda en las plantillas de finanzas e inventario",
+          "Las notas rápidas ya no te fuerzan a crear una tabla y ahora es opcional"
+        ]
+      },
     {
       "version": "2.0.0",
       "fecha": "Versión actual",
-      "estado": "estable",
+      "estado": "inestable",
       "descripcion": "Nuevas funcionalidades y mejoras de rendimiento",
       "cambios": [
-        "Exportación de datos a CSV/Excel",
-        "Soporte para fórmulas básicas en celdas",
-        "Mejora en la velocidad de búsqueda",
-        "Corrección de errores menores"
+        "Categorías para separar tablas",
+        "Tutorial adaptitivo",
+        "Nivel de importancia",
+        "Tipos de tabla",
+        "Notas rápidas para momentos en los cuales no haya tiempo de pensarlo mucho",
+        "Plantillas base para agilizar el trabajo y sentar una buena base"
       ]
   },
       {
