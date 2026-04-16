@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="manifest" href="./manifest.json">
   <style>
-    /* TODO EL CSS SE MANTIENE EXACTAMENTE IGUAL, SIN CAMBIOS */
+    /* ⚠️ TODO EL CSS SE MANTIENE EXACTAMENTE IGUAL, SIN CAMBIOS ⚠️ */
     :root {
       --bg:        #f8f9fa;
       --surface:   #ffffff;
@@ -998,16 +998,63 @@ function renderNewLaunch() {
   const sec = document.getElementById('newLaunchSection');
   if (!apps.length) { sec.innerHTML = ''; return; }
   const app = apps[0];
+  // Usamos el tamaño real si ya se obtuvo, si no el del JSON.
+  const sizeText = app.realSize || app.tamano || '—';
   sec.innerHTML = `
     <div class="new-launch-card" onclick="openAppDetail(apps[0])">
       <div style="width:54px;height:54px;border-radius:13px;overflow:hidden;flex-shrink:0;box-shadow:var(--shadow-sm)">${iconHTML(app)}</div>
       <div style="flex:1">
         <div style="font-family:'Google Sans',sans-serif;font-size:15px;font-weight:700;color:var(--text)">${app.nombre}</div>
         <div style="font-size:12px;color:var(--text3);margin-bottom:3px">${app.autor}</div>
-        <div style="font-size:12px;color:var(--text2)">${app.categoria} · ${app.tamano || '—'}</div>
+        <div style="font-size:12px;color:var(--text2)">${app.categoria} · ${sizeText}</div>
       </div>
       <div class="nlc-install">Instalar</div>
     </div>`;
+}
+
+/* ══════════════════════════════════════════
+   FORMATO DE TAMAÑO (bytes → KB/MB)
+══════════════════════════════════════════ */
+function formatBytes(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const size = (bytes / Math.pow(k, i)).toFixed(i === 0 ? 0 : 1);
+  return `${size} ${sizes[i]}`;
+}
+
+/* ══════════════════════════════════════════
+   OBTENER TAMAÑO REAL DEL ARCHIVO (HEAD)
+══════════════════════════════════════════ */
+async function fetchRealSize(app) {
+  // Si ya tenemos el tamaño real cacheado, lo usamos.
+  if (app.realSize) {
+    document.getElementById('statSize').textContent = app.realSize;
+    return;
+  }
+
+  const sizeEl = document.getElementById('statSize');
+  sizeEl.textContent = 'Calculando…';
+
+  try {
+    const filePath = app.archivoBase + (app.extension || '.html');
+    const url = GH_RAW(app.githubUser, app.githubRepo, app.githubBranch || 'main', filePath);
+    const response = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+    if (!response.ok) throw new Error('No se pudo obtener el tamaño');
+    const contentLength = response.headers.get('content-length');
+    if (contentLength) {
+      const bytes = parseInt(contentLength, 10);
+      const formatted = formatBytes(bytes);
+      app.realSize = formatted;      // cache para futuras visualizaciones
+      sizeEl.textContent = formatted;
+    } else {
+      sizeEl.textContent = app.tamano || '—';
+    }
+  } catch (e) {
+    console.warn('No se pudo obtener el tamaño real de', app.nombre, e);
+    sizeEl.textContent = app.tamano || '—';
+  }
 }
 
 /* ══════════════════════════════════════════
@@ -1024,7 +1071,7 @@ function openAppDetail(app) {
   // Meta
   document.getElementById('detailName').textContent = app.nombre;
   document.getElementById('detailDev').textContent  = app.autor;
-  document.getElementById('statSize').textContent   = app.tamano || '—';
+  document.getElementById('statSize').textContent   = app.realSize || app.tamano || '—';
   document.getElementById('statReq').textContent    = app.requiere || '—';
   document.getElementById('statVer').textContent    = 'v' + (app.version || '—');
 
@@ -1074,6 +1121,9 @@ function openAppDetail(app) {
 
   // Reset tabs
   switchDTab(document.querySelector('.dtab'), 'about');
+
+  // Obtener tamaño real del archivo (HEAD) y actualizar UI
+  fetchRealSize(app);
 }
 
 function openFirstApp() {
@@ -1353,7 +1403,7 @@ function renderSearchResults(found, q) {
         <div class="src-dev">${app.autor} · ${app.categoria}</div>
         <div class="src-stars">${starsHTML}</div>
       </div>
-      <div style="font-size:12px;color:var(--text3);flex-shrink:0">${app.tamano||'—'}</div>
+      <div style="font-size:12px;color:var(--text3);flex-shrink:0">${app.realSize || app.tamano || '—'}</div>
     </div>`;
   }).join('');
 }
