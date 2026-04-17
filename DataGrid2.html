@@ -715,16 +715,30 @@ input[type=range].font-range::-webkit-slider-thumb{-webkit-appearance:none;width
 .cat-opt-check{font-size:var(--fs-lg);color:var(--accent)}
 
 /* ═══════════════════════════════════════════════════════════  TUTORIAL */
-.tut-piece{position:fixed;background:rgba(0,0,0,.78);z-index:800;display:none}
+.tut-piece{position:fixed;background:rgba(0,0,0,.85);z-index:950;display:none}
 .tut-piece.show{display:block}
-#tut-shine{position:fixed;border:2px solid var(--accent);border-radius:12px;z-index:905;pointer-events:none;box-shadow:0 0 0 4px rgba(232,184,75,.15);display:none;transition:all .3s}
+#tut-shine{
+  position:fixed; border:2.5px solid var(--accent); border-radius:14px;
+  z-index:951; pointer-events:none;
+  box-shadow:0 0 0 6px rgba(232,184,75,.18),0 0 30px rgba(232,184,75,.12);
+  display:none;
+  transition: top 0.28s cubic-bezier(0.2, 0.9, 0.4, 1),
+              left 0.28s cubic-bezier(0.2, 0.9, 0.4, 1),
+              width 0.28s cubic-bezier(0.2, 0.9, 0.4, 1),
+              height 0.28s cubic-bezier(0.2, 0.9, 0.4, 1);
+}
 #tut-shine.show{display:block}
+
 #tut-card{
-  position:fixed;z-index:820;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r-lg);padding:18px;box-shadow:var(--shadow);
-  width:min(90vw,320px);display:none;
+  position:fixed; z-index:952;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r-lg); padding:clamp(14px,4vw,18px);
+  box-shadow:var(--shadow);
+  width:min(92vw,320px); display:none;
+  max-height:55dvh; overflow-y:auto;
   animation:pop .25s cubic-bezier(.2,.8,.3,1) both;
+  transition: top 0.28s cubic-bezier(0.2, 0.9, 0.4, 1),
+              left 0.28s cubic-bezier(0.2, 0.9, 0.4, 1);
 }
 /* PC: larger tutorial card */
 @media (min-width: 640px) {
@@ -800,7 +814,7 @@ input[type=range].font-range::-webkit-slider-thumb{-webkit-appearance:none;width
   <header class="topbar">
     <div class="brand">Data<em>Grid</em></div>
     <div class="tb-spacer"></div>
-    <button class="btn-gear" id="btn-settings" onclick="openCfg()" title="Configuración">
+    <button class="btn-gear" id="btn-settings" onclick="onGearClick()" title="Configuración">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3"/>
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -827,8 +841,8 @@ input[type=range].font-range::-webkit-slider-thumb{-webkit-appearance:none;width
   </div>
 </div>
 
-<!-- FAB -->
-<div id="fab-wrap">
+<!-- FAB – oculto hasta que se muestre la pantalla principal -->
+<div id="fab-wrap" style="display:none">
   <div id="fab-menu">
     <div class="fab-item" onclick="openQuickNote()">
       <div class="fab-item-ico gold">📝</div>Nota rápida
@@ -847,7 +861,7 @@ input[type=range].font-range::-webkit-slider-thumb{-webkit-appearance:none;width
   <div class="topbar">
     <button class="btn-back" onclick="closeEditor()">← Atrás</button>
     <input id="inp-name" type="text" placeholder="Nombre de la tabla…" autocomplete="off">
-    <button class="btn-save" onclick="saveTable()">✓ Guardar</button>
+    <button id="btn-save-main" class="btn-save" onclick="saveTable()">✓ Guardar</button>
   </div>
 
   <div class="ed-meta-row">
@@ -1154,41 +1168,132 @@ function showView(id){
 }
 
 // ═══════════════════════════════════════════════════
-//  TUTORIAL  (13 steps)
+//  TUTORIAL  (13 pasos — no se elimina ninguno)
+//
+//  Sub-fases de 'category' se manejan con tutCatPhase:
+//    0 = "abre el engranaje"
+//    1 = "toca + Nueva categoría"   (drawer abierto)
+//    2 = "escribe nombre y guarda"  (cat-modal abierto)
 // ═══════════════════════════════════════════════════
 const TUT_STEPS=[
-  {id:'intro',    target:null,            title:'Tu primera mirada',      msg:'Esta es la <strong>pantalla principal</strong>. Aquí verás todas tus tablas ordenadas como mensajes. Empecemos por lo básico.',wait:'btn',btn:'Siguiente →'},
-  {id:'fab',      target:'#fab-btn',      title:'El botón + (más)',        msg:'Este <strong>botón dorado</strong> en la esquina es tu punto de partida. Te permite crear tablas y notas rápidas. <strong>Tócalo ahora.</strong>',wait:'tap'},
-  {id:'template', target:'#tpl-modal',    title:'Elige una plantilla',    msg:'Escoge el tipo de tabla que necesitas. Las plantillas rellenan los encabezados por ti. <strong>Toca una para continuar.</strong>',wait:'tap'},
-  {id:'type',     target:'#ed-type-row',  title:'Tipos de tabla',         msg:'Las tablas pueden ser <strong>📋 Información</strong> (texto libre), <strong>🔢 Cálculos</strong> (operaciones matemáticas) o <strong>💰 Finanzas</strong> (ingresos/gastos). Elige según tu necesidad.',wait:'btn',btn:'Siguiente →'},
-  {id:'importance',target:'#imp-chip',    title:'Importancia',            msg:'Asigna un nivel de importancia a tu tabla: <strong>Alta</strong> (rojo), <strong>Media</strong> (amarillo) o <strong>Baja</strong> (azul). Ayuda a priorizar.',wait:'tap', customAction:()=>{ openImpSheet(); }},
-  {id:'name',     target:'#inp-name',     title:'Ponle nombre',           msg:'Dale un nombre descriptivo a tu tabla. Por ejemplo: <strong>"Gastos de enero"</strong> o <strong>"Inventario tienda"</strong>. Escribe algo ahora.',wait:'fill',btn:'Continuar →',fillCheck:()=>document.getElementById('inp-name').value.trim().length>0},
-  {id:'grid',     target:'#etable',       title:'Llena tu tabla',         msg:'Toca cualquier celda y escribe. La <strong>primera columna</strong> es para nombres o categorías. El resto para tus datos.',wait:'fill',btn:'Continuar →',fillCheck:()=>[...document.querySelectorAll('#etable td.dc input')].some(i=>i.value.trim())},
-  {id:'save',     target:'.btn-save',     title:'Guarda tu trabajo',      msg:'Cuando termines de llenar datos, toca <strong>✓ Guardar</strong>. Tu tabla aparecerá en el inicio.',wait:'tap'},
-  {id:'bubble',   target:'#feed-scroll',  title:'Tu tabla guardada',      msg:'¡Aquí está! Cada tabla se muestra como una <strong>burbuja</strong>. Tócala para editarla. La X roja la elimina (con confirmación).',wait:'btn',btn:'Siguiente →'},
-  {id:'search',   target:'#search-bar',   title:'Búsqueda instantánea',   msg:'Cuando tengas muchas tablas, usa esta barra para <strong>filtrar por nombre o categoría</strong> al instante.',wait:'btn',btn:'Siguiente →'},
-   {id:'category', target:'#btn-settings', title:'Categorías', msg:'Toca el engranaje para abrir Configuración. Después, crea una categoría con nombre y color.',wait:'tap'},
-   {id:'delete',   target:'.btn-del',      title:'Eliminar tabla',         msg:'Para borrar una tabla, toca el botón ✕ en la burbuja. Se te pedirá confirmación.',wait:'tap'},
-  {id:'done',     target:null,            title:'¡Lo lograste! 🎉',       msg:'Ya conoces DataGrid. Puedes crear tablas de <strong>finanzas, inventario o personalizadas</strong>, usar notas rápidas y buscar todo al instante.',wait:'btn',btn:'¡Empezar!',final:true}
+  // 1
+  {id:'intro',
+   target:null,
+   title:'Bienvenido a DataGrid 👋',
+   msg:'Esta es tu <strong>pantalla principal</strong>. Aquí aparecerán todas tus tablas como tarjetas grandes y fáciles de leer. Desplázate hacia abajo para verlas todas. Toca <strong>Siguiente</strong> para comenzar el recorrido.',
+   wait:'btn',btn:'Siguiente →'},
+  // 2
+  {id:'fab',
+   target:'#fab-btn',
+   title:'El botón dorado ＋',
+   msg:'¿Ves el <strong>círculo dorado</strong> en la esquina inferior derecha? Ese es tu punto de partida para todo. Con él puedes crear tablas nuevas o escribir notas rápidas. <strong>Tócalo ahora mismo</strong> para continuar.',
+   wait:'tap'},
+  // 3
+  {id:'template',
+   target:'#tpl-modal',
+   title:'Elige una plantilla 📋',
+   msg:'Aparecieron 4 tipos de tabla. Cada una viene con columnas listas para usar:\n• <strong>💰 Finanzas</strong> — ingresos y gastos\n• <strong>📦 Inventario</strong> — productos y cantidades\n• <strong>👥 Contactos</strong> — nombres y teléfonos\n• <strong>⊞ Personalizada</strong> — tú decides todo\n\n<strong>Toca cualquiera para crearla.</strong>',
+   wait:'tap'},
+  // 4
+  {id:'type',
+   target:'#ed-type-row',
+   title:'Tipo de tabla 🔢',
+   msg:'Aquí defines <strong>qué hará</strong> tu tabla:\n• <strong>📋 Información</strong>: texto libre, sin cálculos\n• <strong>🔢 Cálculos</strong>: suma, resta, multiplica o divide celdas\n• <strong>💰 Finanzas</strong>: marca celdas como ingreso o gasto y ve tu balance\n\nPor ahora el tipo ya viene elegido según la plantilla. Toca <strong>Siguiente</strong>.',
+   wait:'btn',btn:'Siguiente →'},
+  // 5
+  {id:'importance',
+   target:'#imp-chip',
+   title:'Nivel de importancia ⚡',
+   msg:'Este botón le da una <strong>prioridad</strong> a tu tabla para que sepas cuáles revisar primero.\n• <strong>🔴 Alta</strong>: urgente, la necesitas a diario\n• <strong>🟡 Media</strong>: importante pero no urgente\n• <strong>🔵 Baja</strong>: referencia o archivo\n\n<strong>Tócalo y elige un nivel.</strong>',
+   wait:'tap',
+   customAction:()=>{ setTimeout(openImpSheet,120); }},
+  // 6
+  {id:'name',
+   target:'#inp-name',
+   title:'Dale un nombre ✏️',
+   msg:'La barra de arriba espera el nombre de tu tabla. Escribe algo que la describa bien, por ejemplo: <strong>"Gastos de enero"</strong>, <strong>"Inventario tienda"</strong> o <strong>"Lista de clientes"</strong>.\n\nCuando hayas escrito algo, aparecerá el botón para continuar.',
+   wait:'fill',btn:'Continuar →',
+   fillCheck:()=>document.getElementById('inp-name').value.trim().length>0},
+  // 7
+  {id:'grid',
+   target:'#etable',
+   title:'Llena tu tabla 📝',
+   msg:'La cuadrícula ya tiene columnas según la plantilla que elegiste. Ahora <strong>toca una celda y escribe</strong>.\n\n• La <strong>primera columna azul</strong> es para los nombres de cada fila (ej. "Enero", "Manzanas", "Ana")\n• Las demás columnas son para los valores\n\nEscribe al menos un dato para continuar.',
+   wait:'fill',btn:'Continuar →',
+   fillCheck:()=>[...document.querySelectorAll('#etable td.dc input')].some(i=>i.value.trim())},
+  // 8
+  {id:'save',
+   target:'#btn-save-main',
+   title:'Guarda tu tabla 💾',
+   msg:'Ya tienes datos. Ahora toca el botón <strong>✓ Guardar</strong> que está arriba a la derecha. Tu tabla quedará guardada y aparecerá en la pantalla principal.\n\n<strong>Tócalo para guardar.</strong>',
+   wait:'tap'},
+  // 9
+  {id:'bubble',
+   target:'#feed-scroll',
+   title:'Tu tabla guardada 🎉',
+   msg:'¡Aquí está! Tu tabla aparece como una <strong>burbuja grande</strong> con toda la información visible de un vistazo.\n\n• <strong>Toca la burbuja</strong> para abrirla y editarla\n• El botón <strong>✕</strong> en la esquina la elimina (siempre con confirmación para no borrar nada por error)\n\nToca <strong>Siguiente</strong> para continuar.',
+   wait:'btn',btn:'Siguiente →'},
+  // 10
+  {id:'search',
+   target:'#search-bar',
+   title:'Búsqueda rápida 🔍',
+   msg:'Cuando tengas muchas tablas, esta barra te ayuda a encontrar la que necesitas al instante. <strong>Escribe el nombre</strong> de una tabla o el nombre de una <strong>categoría</strong> y el listado se filtra solo.\n\nToca <strong>Siguiente</strong> para ver las categorías.',
+   wait:'btn',btn:'Siguiente →'},
+  // 11
+  {id:'category',
+   target:'#btn-settings',
+   title:'Categorías de color 🏷',
+   msg:'Las categorías te ayudan a <strong>agrupar tablas</strong> relacionadas con una banda de color en la parte superior de cada burbuja. Por ejemplo: "Trabajo" en azul, "Casa" en verde.\n\nPrimero toca el <strong>engranaje ⚙</strong> de arriba a la derecha para abrir Configuración.',
+   wait:'tap'},
+      // 12
+  {id:'delete',
+   target:'.btn-del',
+   title:'Eliminar una tabla 🗑',
+   msg:'Para borrar una tabla que ya no necesites, toca el botón <strong>✕</strong> que aparece en la esquina de cada burbuja.\n\nSe abrirá una ventana de confirmación.\n\n<strong>Toca el ✕ de cualquier burbuja ahora.</strong>',
+   wait:'tap'},
+  // 13
+  {id:'delete-confirm',
+   target:'#del-modal .modal-box',
+   title:'Confirma la eliminación',
+   msg:'Esta ventana evita borrados accidentales.\n\nPuedes tocar <strong>"Cancelar"</strong> o <strong>"Sí, eliminar"</strong>.\n\n<strong>Toca cualquiera de los dos para finalizar el recorrido.</strong>',
+   wait:'modal-action'},
+  // 14
+  {id:'done',
+   target:null,
+   title:'¡Lo lograste! 🎉',
+   msg:'Ya conoces DataGrid. Puedes crear tablas de <strong>finanzas, inventario o personalizadas</strong>, usar notas rápidas y buscar todo al instante.',
+   wait:'btn',btn:'¡Empezar!',final:true}
 ];
-let tutStep=0,tutActive=false;
-let tutInterval = null;
+
+let tutStep=0, tutActive=false, tutInterval=null;
 
 function startTutorial(){
-  cfg.welcomeDone=true;cfgSave();
+  cfg.welcomeDone=true; cfgSave();
   document.getElementById('v-welcome').classList.remove('active');
-  showView('v-feed');renderFeed();
-  tutActive=true;tutStep=0;
+  showView('v-feed'); renderFeed();
+  tutActive=true; tutStep=0; tutCatPhase=0;
   renderTutStep();
 }
 
 function renderTutStep(){
+  if(tutInterval){ clearInterval(tutInterval); tutInterval=null; }
   const s=TUT_STEPS[tutStep];
+
+  // Control del botón Guardar: solo activo en paso 'save'
+  const saveBtn=document.getElementById('btn-save-main');
+  if(saveBtn){
+    const locked = tutActive && s.id!=='save';
+    saveBtn.disabled = locked;
+    saveBtn.style.opacity = locked ? '0.35' : '';
+    saveBtn.style.cursor  = locked ? 'not-allowed' : '';
+  }
+
   document.getElementById('tut-step-lbl').textContent=`Paso ${tutStep+1} de ${TUT_STEPS.length}`;
   document.getElementById('tut-title').innerHTML=s.title;
-  document.getElementById('tut-msg').innerHTML=s.msg;
+  // Convertir \n en <br> para legibilidad
+  document.getElementById('tut-msg').innerHTML=s.msg.replace(/\n/g,'<br>');
 
-  // Progress dots
+  // Puntos de progreso
   const prog=document.getElementById('tut-prog');
   prog.innerHTML='';
   TUT_STEPS.forEach((_,i)=>{
@@ -1197,36 +1302,24 @@ function renderTutStep(){
     prog.appendChild(d);
   });
 
-  // Footer
+  // Pie de tarjeta
   const foot=document.getElementById('tut-foot');
   foot.innerHTML='';
   if(s.wait==='btn'||s.wait==='fill'){
     const b=document.createElement('button');
-    b.className='tut-btn';b.textContent=s.btn||'Siguiente →';
+    b.className='tut-btn'; b.textContent=s.btn||'Siguiente →';
     if(s.wait==='fill'){
       b.disabled=true;
-      // Limpiar intervalo previo para evitar conflictos
-      if(tutInterval) clearInterval(tutInterval);
-      const check=()=>{ 
-        if(s.fillCheck && s.fillCheck()) {
-          b.disabled=false;
-          clearInterval(tutInterval);
-          tutInterval = null;
-        }
+      const capturedStep=tutStep;
+      const check=()=>{
+        if(tutStep!==capturedStep){ clearInterval(tutInterval); tutInterval=null; return; }
+        if(s.fillCheck&&s.fillCheck()){ b.disabled=false; clearInterval(tutInterval); tutInterval=null; }
       };
-      tutInterval = setInterval(()=>{ 
-        if(tutStep !== TUT_STEPS.indexOf(s)){
-          clearInterval(tutInterval);
-          tutInterval = null;
-          return;
-        }
-        check();
-      }, 300);
-      check();
+      tutInterval=setInterval(check,300); check();
     }
-    b.onclick=()=>{ if(!b.disabled)advanceTut(); };
+    b.onclick=()=>{ if(!b.disabled) advanceTut(); };
     foot.appendChild(b);
-  } else if(s.wait==='tap'||s.wait==='external'){
+  } else {
     const w=document.createElement('div');
     w.className='tut-waiting';
     w.innerHTML='<div class="tut-pulse"></div> Esperando tu acción…';
@@ -1234,37 +1327,33 @@ function renderTutStep(){
     if(s.customAction) s.customAction();
   }
 
-  // Spotlight
   spotlightTut(s.target);
   positionCard(s.target);
-
-  // Show card
   document.getElementById('tut-card').classList.add('show');
 }
 
 function advanceTut(){
-  if(TUT_STEPS[tutStep].final){
-    endTutorial();return;
-  }
+  if(TUT_STEPS[tutStep].final){ endTutorial(); return; }
   tutStep++;
-  if(TUT_STEPS[tutStep].id==='bubble'&&db.length===0) tutStep++;
-  
-  // Pequeño retraso para el paso 'name' y que el input esté listo
-  if(TUT_STEPS[tutStep].id === 'name'){
-    setTimeout(()=> renderTutStep(), 80);
-  } else {
-    renderTutStep();
-  }
+  // Si 'bubble' y no hay tabla aún, saltarlo
+  if(TUT_STEPS[tutStep]?.id==='bubble'&&db.length===0) tutStep++;
+  // Pequeño delay cuando el editor acaba de abrirse
+  const delay = (TUT_STEPS[tutStep]?.id==='name'||TUT_STEPS[tutStep]?.id==='type') ? 120 : 0;
+  setTimeout(renderTutStep, delay);
 }
 
 function endTutorial(){
   tutActive=false;
+  if(tutInterval){ clearInterval(tutInterval); tutInterval=null; }
   ['tut-top','tut-bottom','tut-left','tut-right'].forEach(id=>{
-    const el=document.getElementById(id);el.classList.remove('show');el.style.cssText='';
+    const e=document.getElementById(id); e.classList.remove('show'); e.style.cssText='';
   });
   document.getElementById('tut-shine').classList.remove('show');
   document.getElementById('tut-card').classList.remove('show');
-  cfg.tutDone=true;cfgSave();
+  // Desbloquear botón guardar
+  const saveBtn=document.getElementById('btn-save-main');
+  if(saveBtn){ saveBtn.disabled=false; saveBtn.style.opacity=''; saveBtn.style.cursor=''; }
+  cfg.tutDone=true; cfgSave();
 }
 
 function spotlightTut(sel){
@@ -1301,7 +1390,15 @@ function spotlightTut(sel){
 function positionCard(sel){
   const card=document.getElementById('tut-card');
   const vw=window.innerWidth,vh=window.innerHeight;
-  const cw=Math.min(vw*0.9, (vw>=640?420:320));
+  // Ancho condicional: más ancho solo en el paso 'importance' (paso 5)
+  const isImportanceStep = tutActive && TUT_STEPS[tutStep]?.id === 'importance';
+    const cw = Math.min(vw*0.9, (vw>=640 ? (isImportanceStep ? 520 : 420) : 320));
+  // Ajustar padding vertical solo en paso 5 para reducir altura
+  if (isImportanceStep) {
+    card.style.padding = '16px 20px';
+  } else {
+    card.style.padding = ''; // Restaurar al valor por defecto del CSS
+  }
   
   let targetEl = sel ? document.querySelector(sel) : null;
   if(sel === '#tpl-modal' && targetEl){
@@ -1332,68 +1429,106 @@ function positionCard(sel){
     card.style.cssText = `left:${Math.max(10, left)}px;top:${Math.max(10, top)}px;width:${cw}px;position:fixed`;
     return;
   }
-
-      // CASO ESPECIAL: fila de tipos de tabla
       // CASO ESPECIAL: fila de tipos de tabla
   if(sel === '#ed-type-row'){
     const cardHeight = card.offsetHeight || 200;
     if(vw >= 640){
-      // PC: siempre a la derecha del todo, con margen amplio para no estorbar
-      left = vw - cw - 30;  // 30px de margen derecho
-      top = Math.max(20, Math.min(vh - cardHeight - 20, r.top + 60)); // 60px debajo del elemento
+      left = vw - cw - 30;
+      top = Math.max(20, Math.min(vh - cardHeight - 20, r.top + 60));
     } else {
-      // Móvil: colocarla muy abajo, cerca del borde inferior
       left = (vw - cw) / 2;
-      top = vh - cardHeight - 30; // 30px arriba del borde inferior
+      top = vh - cardHeight - 30;
     }
     card.style.cssText = `left:${Math.max(10, left)}px;top:${Math.max(10, top)}px;width:${cw}px;position:fixed`;
     return;
+  }
 
-      // CASO ESPECIAL: botón nueva categoría en drawer
-  if(sel === '#cfg-drawer .btn-add-cat'){
+  // CASO ESPECIAL: paso 7 "Llena tu tabla" -> esquina inferior derecha en PC
+  if (sel === '#etable' && vw >= 640) {
     const cardHeight = card.offsetHeight || 200;
+    left = vw - cw - 20;
+    top = vh - cardHeight - 20;
+    card.style.cssText = `left:${left}px;top:${top}px;width:${cw}px;position:fixed`;
+    return;
+  }
+
+  // CASO ESPECIAL: botón nueva categoría en drawer
+  if(sel === '#cfg-drawer .btn-add-cat' || sel === '#cfg-drawer'){
+    const cardHeight = card.offsetHeight || 220;
     if(vw >= 640){
-      // PC: a la derecha del drawer
       const drawer = document.getElementById('cfg-drawer');
-      const drawerRect = drawer.getBoundingClientRect();
+      const drawerRect = drawer ? drawer.getBoundingClientRect() : {right:310,top:60};
       left = drawerRect.right + 20;
       top = Math.max(20, Math.min(vh - cardHeight - 20, drawerRect.top + 80));
     } else {
-      // Móvil: centrado abajo
       left = (vw - cw) / 2;
       top = vh - cardHeight - 30;
     }
     card.style.cssText = `left:${Math.max(10, left)}px;top:${Math.max(10, top)}px;width:${cw}px;position:fixed`;
     return;
   }
-  }
 
-    // CASO ESPECIAL: paso burbuja (target #feed-scroll)
-  if(sel === '#feed-scroll' && tutActive && TUT_STEPS[tutStep].id === 'bubble'){
+    // CASO ESPECIAL: paso burbuja (target #feed-scroll) — colocar arriba
+  if(sel === '#feed-scroll' && tutActive && TUT_STEPS[tutStep]?.id === 'bubble'){
     const cardHeight = card.offsetHeight || 200;
-    if(vw >= 640){
-      // PC: a la derecha del feed
-      const feed = document.getElementById('feed-scroll');
-      const feedRect = feed.getBoundingClientRect();
-      left = feedRect.right + 20;
-      top = Math.max(20, Math.min(vh - cardHeight - 20, feedRect.top + 100));
+    if (vw >= 640) {
+      left = vw - cw - 20;          // alineado a la derecha
+      top = 80;                     // debajo del topbar
     } else {
-      // Móvil: centrado abajo
-      left = (vw - cw) / 2;
-      top = vh - cardHeight - 30;
+      left = (vw - cw) / 2;         // centrado en móvil
+      top = 80;
     }
-    card.style.cssText = `left:${Math.max(10, left)}px;top:${Math.max(10, top)}px;width:${cw}px;position:fixed`;
+    card.style.cssText = `left:${Math.max(10,left)}px;top:${top}px;width:${cw}px;position:fixed`;
     return;
   }
 
-  // Móvil: centrado debajo o arriba
+  // CASO ESPECIAL: imp-sheet — cubre la mitad inferior, siempre poner card arriba
+  if(sel === '#imp-sheet'){
+    const cardHeight = card.offsetHeight || 220;
+    left = (vw - cw) / 2;
+    // Sheet empieza aprox a la mitad de la pantalla: poner la tarjeta en el tercio superior
+    top = Math.max(10, Math.min(vh/3 - cardHeight/2, 120));
+    card.style.cssText = `left:${Math.max(10,left)}px;top:${Math.max(10,top)}px;width:${cw}px;position:fixed`;
+    return;
+  }
+
+  // Dentro de positionCard(sel), agregar este caso:
+if(sel === '#del-modal .modal-box') {
+    const cardHeight = card.offsetHeight || 200;
+    const modalBox = document.querySelector('#del-modal .modal-box');
+    if(modalBox) {
+        const modalRect = modalBox.getBoundingClientRect();
+        if(window.innerWidth >= 640) {
+            // Escritorio: tarjeta a la derecha del modal
+            left = modalRect.right + 20;
+            top = modalRect.top + (modalRect.height/2) - cardHeight/2;
+        } else {
+            // Móvil: tarjeta arriba del modal
+            left = (window.innerWidth - cw) / 2;
+            top = modalRect.top - cardHeight - 20;
+            if(top < 10) top = modalRect.bottom + 20;
+        }
+        card.style.cssText = `left:${Math.max(10,left)}px;top:${Math.max(10,top)}px;width:${cw}px;position:fixed`;
+        return;
+    }
+}
+
+  // Móvil: centrado debajo o arriba — elige la zona con más espacio libre
   if(vw < 640){
     left = (vw - cw)/2;
     const cardHeight = card.offsetHeight || 200;
-    if(r.bottom + pad + cardHeight < vh){ 
-      top = r.bottom + pad; 
-    } else { 
-      top = Math.max(pad, r.top - cardHeight - pad); 
+    const spaceBelow = vh - r.bottom - pad;
+    const spaceAbove = r.top - pad;
+    // Si hay más espacio arriba, o si el elemento está en la mitad inferior → card arriba
+    if(spaceAbove > cardHeight + 20 && (spaceAbove >= spaceBelow || r.top > vh * 0.55)){
+      top = Math.max(pad, r.top - cardHeight - pad);
+    } else if(spaceBelow >= cardHeight + 10){
+      top = r.bottom + pad;
+    } else {
+      // No cabe ni arriba ni abajo: poner donde haya más espacio
+      top = spaceAbove > spaceBelow
+        ? Math.max(pad, r.top - cardHeight - pad)
+        : Math.min(vh - cardHeight - pad, r.bottom + pad);
     }
     top = Math.max(pad, Math.min(vh - cardHeight - pad, top));
     card.style.cssText = `left:${Math.max(pad,left)}px;top:${top}px;width:${cw}px;position:fixed`;
@@ -1435,21 +1570,38 @@ function tutHook(stepId){
   return false;
 }
 
+// Tutorial tap hook — llamado por funciones externas
+function tutHook(stepId){
+  if(!tutActive) return false;
+  if(TUT_STEPS[tutStep]?.id===stepId){ advanceTut(); return true; }
+  return false;
+}
+
+function onGearClick(){
+  if(tutActive && TUT_STEPS[tutStep]?.id==='category' && tutCatPhase===0){
+    openCfg(); return;
+  }
+  openCfg();
+}
+
 // ═══════════════════════════════════════════════════
 //  FAB
 // ═══════════════════════════════════════════════════
 let fabOpen=false;
 function toggleFab(){
-  // Tutorial hook for 'fab' step
-  if(tutActive&&TUT_STEPS[tutStep].id==='fab'){
-    openTemplatePicker();
-    return;
+  if(tutActive && TUT_STEPS[tutStep]?.id==='fab'){
+    // En tutorial: directo a template picker, sin abrir el menú
+    openTemplatePicker(); return;
   }
   fabOpen=!fabOpen;
   document.getElementById('fab-btn').classList.toggle('open',fabOpen);
   document.getElementById('fab-menu').classList.toggle('open',fabOpen);
 }
-function closeFab(){fabOpen=false;document.getElementById('fab-btn').classList.remove('open');document.getElementById('fab-menu').classList.remove('open')}
+function closeFab(){
+  fabOpen=false;
+  document.getElementById('fab-btn').classList.remove('open');
+  document.getElementById('fab-menu').classList.remove('open');
+}
 
 // ═══════════════════════════════════════════════════
 //  TEMPLATE PICKER
@@ -1457,16 +1609,14 @@ function closeFab(){fabOpen=false;document.getElementById('fab-btn').classList.r
 function openTemplatePicker(){
   closeFab();
   document.getElementById('tpl-modal').classList.add('open');
-  // Tutorial hook – next step after modal is shown
-  if(tutActive&&TUT_STEPS[tutStep].id==='fab'){ tutStep++;renderTutStep(); }
+  if(tutActive && TUT_STEPS[tutStep]?.id==='fab') advanceTut();
 }
 function closeTpl(){ document.getElementById('tpl-modal').classList.remove('open'); }
 
 function pickTpl(key){
   const tpl=TEMPLATES[key];
   closeTpl();
-  // Tutorial hook
-  if(tutActive&&TUT_STEPS[tutStep].id==='template'){ tutStep++;renderTutStep(); }
+  if(tutActive && TUT_STEPS[tutStep]?.id==='template') advanceTut();
   openEditor(null,-1,tpl);
 }
 
@@ -1480,25 +1630,19 @@ function openCfg(){
   document.getElementById('cfg-overlay').classList.add('open');
   requestAnimationFrame(()=>{
     document.getElementById('cfg-drawer').classList.add('open');
-    // Si el tutorial está en el paso 'category', cambiamos el target al drawer y resaltamos
-        if(tutActive && TUT_STEPS[tutStep].id === 'category'){
-      TUT_STEPS[tutStep].target = '#cfg-drawer .btn-add-cat';
-      // Actualizar mensaje de la tarjeta para que sea más específico
-      document.getElementById('tut-msg').innerHTML = 'Ahora toca el botón <strong>+ Nueva categoría</strong>. Ponle un nombre y elige un color. Así organizarás tus tablas.';
+    // Tutorial paso 'category' fase 0→1: drawer abierto, apuntar al botón +cat
+        // Si el tutorial está activo en el paso 'category', actualizar spotlight tras animación del drawer
+    if(tutActive && TUT_STEPS[tutStep]?.id==='category'){
       setTimeout(()=>{
-        spotlightTut('#cfg-drawer .btn-add-cat');
-        positionCard('#cfg-drawer .btn-add-cat');
-      }, 350);
+        spotlightTut('#cfg-drawer');
+        positionCard('#cfg-drawer');
+      }, 300);
     }
   });
 }
 function closeCfg(){
   document.getElementById('cfg-drawer').classList.remove('open');
   setTimeout(()=>document.getElementById('cfg-overlay').classList.remove('open'),300);
-  // Si el tutorial está en el paso 'category', restaurar el target al engranaje
-    if(tutActive && TUT_STEPS[tutStep].id === 'category'){
-    TUT_STEPS[tutStep].target = '#btn-settings';
-  }
 }
 
 // ═══════════════════════════════════════════════════
@@ -1524,8 +1668,13 @@ function openCatCreate(){
   document.getElementById('cat-name-inp').value='';
   buildPalette();
   document.getElementById('cat-modal').classList.add('open');
-    if(tutActive && TUT_STEPS[tutStep].id === 'category'){
-    advanceTut();
+  // Tutorial paso 'category' fase 1→2: modal abierto, pedir nombre
+    // Si el tutorial está activo en el paso 'category', actualizar spotlight al abrir el modal
+  if(tutActive && TUT_STEPS[tutStep]?.id==='category'){
+    setTimeout(()=>{
+      spotlightTut('#cat-modal .modal-box');
+      positionCard('#cat-modal .modal-box');
+    }, 250);
   }
 }
 function closeCatModal(){ document.getElementById('cat-modal').classList.remove('open'); }
@@ -1543,8 +1692,13 @@ function saveCat(){
   const name=document.getElementById('cat-name-inp').value.trim();
   if(!name)return;
   cats.push({id:'c'+Date.now(),name,color:selColor});
-  catSave();renderCatList();closeCatModal();
-  renderCatPickList();
+  catSave(); renderCatList(); closeCatModal(); closeCfg();
+  renderCatPickList(); renderFeed();
+  // Tutorial paso 'category' fase 2 completado → avanzar al paso siguiente
+    // Si el tutorial está activo en el paso 'category', avanzar al siguiente paso tras guardar
+  if(tutActive && TUT_STEPS[tutStep]?.id==='category'){
+    setTimeout(()=> advanceTut(), 300);
+  }
 }
 function delCat(id){
   cats=cats.filter(c=>c.id!==id);
@@ -1593,24 +1747,18 @@ function assignCat(id){
 // ═══════════════════════════════════════════════════
 let eImportance=null;
 function openImpSheet(){
-  if(tutActive && TUT_STEPS[tutStep].id === 'importance'){
-    document.getElementById('tut-card').classList.remove('show');
-    TUT_STEPS[tutStep].target = '#imp-sheet';
-  }
-
   ['alta','media','baja','none'].forEach(k=>{
-    document.getElementById('ich-'+k).textContent = (eImportance===(k==='none'?null:k)) ? '✓' : '';
+    document.getElementById('ich-'+k).textContent=(eImportance===(k==='none'?null:k))?'✓':'';
   });
   document.getElementById('imp-overlay').style.display='block';
   requestAnimationFrame(()=>{
     document.getElementById('imp-sheet').classList.add('open');
-    if(tutActive && TUT_STEPS[tutStep].id === 'importance'){
-      // Retraso para que la animación de apertura tenga efecto
-      setTimeout(()=>{
-        spotlightTut('#imp-sheet');
-        positionCard('#imp-sheet');
-      }, 80);
-    }
+    if(tutActive && TUT_STEPS[tutStep]?.id==='importance'){
+  setTimeout(()=>{
+    spotlightTut('#imp-sheet');
+    positionCard('#imp-sheet');      // Usa la lógica centralizada (ya incluye caso especial)
+  }, 320);
+}
   });
 }
 function closeImpSheet(){
@@ -1621,15 +1769,12 @@ function pickImp(val){
   eImportance=val;
   const chip=document.getElementById('imp-chip');
   if(!val){ chip.textContent='⚡ Importancia'; chip.className='meta-chip'; }
-  else {
+  else{
     const labels={alta:'🔴 Alta',media:'🟡 Media',baja:'🔵 Baja'};
-    chip.textContent=labels[val];
-    chip.className='meta-chip imp-chip-'+val;
+    chip.textContent=labels[val]; chip.className='meta-chip imp-chip-'+val;
   }
   closeImpSheet();
-  if(tutActive && TUT_STEPS[tutStep].id === 'importance'){
-    advanceTut();
-  }
+  if(tutActive && TUT_STEPS[tutStep]?.id==='importance') advanceTut();
 }
 
 // ═══════════════════════════════════════════════════
@@ -1657,12 +1802,11 @@ function openEditor(data=null,idx=-1,tpl=null){
   document.getElementById('val-cols').textContent=eCols;
   document.getElementById('val-rows').textContent=eRows;
 
-  // Type chips & visibility
+  // Type chips & visibility — siempre visible durante tutorial
   document.querySelectorAll('.type-chip').forEach(c=>{
     c.classList.toggle('active',c.dataset.type===eType);
   });
-  // Ocultar fila de tipos si es 'info'
-  document.getElementById('ed-type-row').style.display = eType==='info' ? 'none' : 'flex';
+  document.getElementById('ed-type-row').style.display = (tutActive || eType!=='info') ? 'flex' : 'none';
 
   // Meta chips
   assignCat(eCatId);
@@ -1810,10 +1954,25 @@ function saveTable(){
     lastAccess:existing?.lastAccess||now
   };
   if(editIdx>=0){db[editIdx]=obj}else{db.unshift(obj)}
-  dbSave();renderFeed();
-  // Tutorial hook
-  if(tutActive&&TUT_STEPS[tutStep].id==='save'){ tutStep++;renderTutStep(); }
+  dbSave(); renderFeed();
+  const wasTutSave = tutActive && TUT_STEPS[tutStep]?.id==='save';
   closeEditor();
+  if(wasTutSave) setTimeout(advanceTut, 200);
+}
+
+// ── Botón eliminar: bloqueado durante tutorial excepto en paso 'delete' ──
+function handleDelBtn(e, idx){
+  e.stopPropagation();
+  if(tutActive){
+    if(TUT_STEPS[tutStep]?.id==='delete'){
+      openDelModal(idx);
+      // Avanzar al paso 13 después de que el modal se muestre (200ms)
+      setTimeout(()=> advanceTut(), 200);
+      return;
+    }
+    if(TUT_STEPS[tutStep]?.id==='delete-confirm') return;
+  }
+  openDelModal(idx);
 }
 
 function changeDim(dim,delta){
@@ -1880,12 +2039,21 @@ function buildBubble(t,idx){
           <span>⊞ ${t.rows}×${t.cols}</span>${impBadge}${typeBadge}
         </div>
       </div>
-            <button class="btn-del" title="Eliminar" onclick="event.stopPropagation(); if(tutActive&&TUT_STEPS[tutStep].id==='delete'){ tutHook('delete'); } else { openDelModal(${idx}); }">✕</button>
+            <button class="btn-del" title="Eliminar" data-idx="${idx}" onclick="handleDelBtn(event,${idx})">✕</button>
     </div>
     <div class="bubble-body">${buildReadTable(t)}</div>
     ${t.type==='finance'?buildFinSummary(t):''}`;
 
-  b.addEventListener('click',()=>{ trackAccess(idx);editTable(idx); });
+  // Dentro de buildBubble, reemplazar el addEventListener actual por:
+b.addEventListener('click',(e)=>{
+  // Si el tutorial está activo y estamos en pasos de eliminación, no abrir editor
+  if(tutActive && (TUT_STEPS[tutStep]?.id==='delete' || TUT_STEPS[tutStep]?.id==='delete-confirm')){
+    e.stopPropagation(); // Evita cualquier comportamiento accidental
+    return;
+  }
+  trackAccess(idx);
+  editTable(idx);
+});
   return b;
 }
 
@@ -2036,12 +2204,52 @@ function openDelModal(i){
   pendingDelIdx=i;
   document.getElementById('del-msg').innerHTML=`<strong>${esc(db[i].name||'Sin título')}</strong> se eliminará permanentemente y no podrá recuperarse.`;
   document.getElementById('del-modal').classList.add('open');
+  
+  // Deshabilitar botón Cancelar únicamente en el paso delete-confirm del tutorial
+  const cancelBtn = document.querySelector('#del-modal .del-cancel');
+  if (cancelBtn) {
+    if (tutActive && TUT_STEPS[tutStep]?.id === 'delete-confirm') {
+      cancelBtn.disabled = true;
+      cancelBtn.style.opacity = '0.5';
+      cancelBtn.style.cursor = 'not-allowed';
+    } else {
+      cancelBtn.disabled = false;
+      cancelBtn.style.opacity = '';
+      cancelBtn.style.cursor = '';
+    }
+  }
+  
+  // Si el tutorial está en el paso 'delete-confirm', actualizar spotlight tras animación
+  if(tutActive && TUT_STEPS[tutStep]?.id==='delete-confirm'){
+      setTimeout(()=>{
+          spotlightTut('#del-modal .modal-box');
+          positionCard('#del-modal .modal-box');
+      }, 200);
+  }
 }
-function cancelDel(){pendingDelIdx=-1;document.getElementById('del-modal').classList.remove('open')}
+
+function cancelDel(){
+  // Si el botón está deshabilitado (tutorial paso delete-confirm), ignorar
+  const cancelBtn = document.querySelector('#del-modal .del-cancel');
+  if (cancelBtn && cancelBtn.disabled) return;
+  
+  pendingDelIdx=-1;
+  document.getElementById('del-modal').classList.remove('open');
+  if(tutActive && TUT_STEPS[tutStep]?.id==='delete-confirm'){
+      advanceTut(); // Pasa a 'done'
+  }
+}
+
 function execDel(){
   if(pendingDelIdx<0)return;
-  db.splice(pendingDelIdx,1);pendingDelIdx=-1;
-  dbSave();renderFeed();document.getElementById('del-modal').classList.remove('open');
+  db.splice(pendingDelIdx,1);
+  pendingDelIdx=-1;
+  dbSave();
+  renderFeed();
+  document.getElementById('del-modal').classList.remove('open');
+  if(tutActive && TUT_STEPS[tutStep]?.id==='delete-confirm'){
+      advanceTut(); // Pasa a 'done'
+  }
 }
 
 // ═══════════════════════════════════════════════════
