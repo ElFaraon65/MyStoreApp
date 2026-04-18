@@ -667,9 +667,12 @@
 /* ══════════════════════════════════════════
    CONFIG
 ══════════════════════════════════════════ */
-const JSON_URL = 'https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/main/AppsDisponibles.json';
-const GH_RAW   = (user, repo, branch, file) =>
+const JSON_URL  = 'https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/main/AppsDisponibles.json';
+const GH_RAW    = (user, repo, branch, file) =>
   `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${file}`;
+// GitHub Pages: sirve el archivo como app ejecutable, no como texto crudo
+const GH_PAGES  = (user, repo, file) =>
+  `https://${user.toLowerCase()}.github.io/${repo}/${file}`;
 
 /* ══════════════════════════════════════════
    STATE
@@ -999,9 +1002,7 @@ function refreshActionBtn(app) {
 ══════════════════════════════════════════ */
 async function forceDownload(url, filename) {
   try {
-    // Añadir timestamp para evitar que el navegador sirva versión cacheada
-    const freshUrl = url.includes('?') ? url + '&t=' + Date.now() : url + '?t=' + Date.now();
-    const response = await fetch(freshUrl, { cache: 'no-store' });
+    const response = await fetch(url);
     if (!response.ok) throw new Error(`Error al descargar: ${response.status}`);
     const blob = await response.blob();
     const blobUrl = URL.createObjectURL(blob);
@@ -1053,16 +1054,16 @@ function mainAction() {
        Se descargará con el mismo nombre que el archivo actual para que lo reemplace en tu dispositivo.`;
     openModal('updateModal');
   } else {
-    // INICIAR — abre la última versión desde GitHub con cache-bust para garantizar
-    // que siempre cargue el archivo más reciente, incluso si el nombre no cambió.
-    const filename = currentApp.archivoBase + (currentApp.extension || '.html');
-    const baseUrl  = (currentApp.latestVersionInfo && currentApp.latestVersionInfo.url)
-      ? currentApp.latestVersionInfo.url
-      : GH_RAW(currentApp.githubUser, currentApp.githubRepo,
-          currentApp.githubBranch || 'main', filename);
-    // Añadir timestamp para forzar que GitHub/navegador no sirva versión cacheada
-    const freshUrl = baseUrl + '?t=' + Date.now();
-    window.open(freshUrl, '_blank');
+    // INICIAR — abre la app desde GitHub Pages (ejecuta el HTML, no lo muestra como texto).
+    // Usa latestVersionInfo.file para apuntar al archivo más reciente encontrado
+    // (ej: DataGrid2.html), no al archivoBase (DataGrid.html).
+    // Cache-bust con timestamp para garantizar que carga la versión más nueva.
+    const file = (currentApp.latestVersionInfo && currentApp.latestVersionInfo.file)
+      ? currentApp.latestVersionInfo.file
+      : currentApp.archivoBase + (currentApp.extension || '.html');
+    const url = GH_PAGES(currentApp.githubUser, currentApp.githubRepo, file)
+                + '?t=' + Date.now();
+    window.open(url, '_blank');
   }
 }
 
