@@ -688,6 +688,28 @@ const GH_RAW   = (user, repo, branch, file) =>
   `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${file}`;
 
 /* ══════════════════════════════════════════
+   DETECCIÓN DE PLATAFORMA
+   true  → móvil/Android  → usa .apk
+   false → PC/Windows     → usa .classic.appxbundle
+══════════════════════════════════════════ */
+function isMobilePlatform() {
+  // API moderna (Chromium): la más fiable
+  if (navigator.userAgentData) {
+    return navigator.userAgentData.mobile === true;
+  }
+  // Fallback clásico
+  const ua = navigator.userAgent || '';
+  return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(ua);
+}
+
+/* Extensión correcta según plataforma */
+function platformExt(app) {
+  return isMobilePlatform()
+    ? (app.extension    || '.apk')
+    : (app.extensionPC  || app.extension || '.appxbundle');
+}
+
+/* ══════════════════════════════════════════
    STATE
 ══════════════════════════════════════════ */
 let apps        = [];
@@ -917,7 +939,7 @@ async function checkForUpdates(app) {
 
   try {
     const base   = app.archivoBase;
-    const ext    = app.extension || '.html';
+    const ext    = platformExt(app);          // ← según plataforma
     const user   = app.githubUser;
     const repo   = app.githubRepo;
     const branch = app.githubBranch || 'main';
@@ -1043,7 +1065,7 @@ async function forceDownload(url, filename) {
 const INSTALLABLE_EXTS = ['.apk', '.appxbundle', '.exe', '.msi', '.ipa'];
 
 function isInstallable(app) {
-  const ext = (app.extension || '.html').toLowerCase();
+  const ext = platformExt(app).toLowerCase();
   return INSTALLABLE_EXTS.includes(ext);
 }
 
@@ -1053,7 +1075,7 @@ let _pendingInstall = null; // { url, filename, versionNumber, displayVersion }
 function mainAction() {
   if (!currentApp) return;
   const installed = isInstalled(currentApp);
-  const ext = currentApp.extension || '.html';
+  const ext = platformExt(currentApp);        // ← según plataforma
 
   if (!installed) {
     // ── PRIMERA DESCARGA ──
@@ -1110,8 +1132,15 @@ function mainAction() {
   } else {
     // ── YA INSTALADA Y AL DÍA ──
     if (isInstallable(currentApp)) {
-      // Los instalables (.apk etc.) no se pueden abrir desde el navegador — no hacer nada
-      return;
+      // Los instalables no se pueden "abrir" desde el navegador
+      // El botón en este estado dirá "Instalada" — solo informamos
+      document.getElementById('modalTitle').textContent = `${currentApp.nombre} instalada`;
+      document.getElementById('modalDesc').innerHTML =
+        `Ya tienes la versión más reciente instalada en tu dispositivo.<br><br>` +
+        `Si quieres reinstalarla, puedes desinstalarla primero con el botón de abajo.`;
+      openModal('updateModal');
+      // Ocultar el botón de actualizar en este modal para que no confunda
+      document.getElementById('modalUpdateBtn').style.display = 'none';
     } else {
       // HTML: abrir directamente
       const filename = currentApp.archivoBase + ext;
@@ -1155,7 +1184,7 @@ async function doUpdate() {
   // Si es un instalable, mostrar aviso Android antes de descargar
   if (isInstallable(currentApp)) {
     closeModal('updateModal');
-    const ext = currentApp.extension || '.apk';
+    const ext = platformExt(currentApp);      // ← según plataforma
     _pendingInstall = {
       url: updateInfo.downloadUrl,
       filename: currentApp.archivoBase + ext,
@@ -1181,7 +1210,7 @@ async function doUpdate() {
   btn.disabled = true;
 
   try {
-    await forceDownload(updateInfo.downloadUrl, currentApp.archivoBase + (currentApp.extension || '.html'));
+    await forceDownload(updateInfo.downloadUrl, currentApp.archivoBase + platformExt(currentApp));
     // 🆕 MODIFICACIÓN: marcar instalada con versión semántica
     markInstalled(currentApp, updateInfo.versionNumber, updateInfo.displayVersion);
     updateInfo = null;
@@ -1302,7 +1331,7 @@ async function fetchRealSize(app) {
     if (app.latestVersionInfo) {
       url = app.latestVersionInfo.url;
     } else {
-      const filePath = app.archivoBase + (app.extension || '.html');
+      const filePath = app.archivoBase + platformExt(app);
       url = GH_RAW(app.githubUser, app.githubRepo, app.githubBranch || 'main', filePath);
     }
     const response = await fetch(url, { method: 'HEAD', cache: 'no-store' });
@@ -1572,11 +1601,6 @@ function openReviews() {
   document.getElementById('bn-reviews').classList.add('active');
   document.getElementById('bn-home').classList.remove('active');
   document.getElementById('bn-apps').classList.remove('active');
-}
-
-function openFirstApp() {
-  if (!apps.length) return;
-  openAppDetail(apps[0]);
 }
 
 function switchDTab(btn, id) {
