@@ -1218,14 +1218,16 @@ function openAppDetail(app) {
   currentApp = app;
   goDetail();
 
-  // Función auxiliar para refrescar UI cuando tengamos latestVersionInfo
-  const refreshDetailUI = () => {
-    // Mostrar versión semántica
-    const displayVer = app.latestVersionInfo?.displayVersion
-                       || getDisplayVersionFromChangelog(app, 1);
-    document.getElementById('statVer').textContent = 'v' + displayVer;
-    refreshActionBtn(app);
-  };
+  // ── Versión semántica a mostrar ──
+  let displayVer = '';
+  if (isInstalled(app)) {
+    displayVer = getInstalledDisplayVersion(app) || getDisplayVersionFromChangelog(app, 1);
+  } else {
+    // Si no está instalada, usamos la info más reciente que tengamos (de latestVersionInfo o changelog)
+    displayVer = (app.latestVersionInfo && app.latestVersionInfo.displayVersion)
+                 || getDisplayVersionFromChangelog(app, 1);
+  }
+  document.getElementById('statVer').textContent = 'v' + displayVer;
 
   // Icon
   document.getElementById('detailIconWrap').innerHTML = iconHTML(app, 90);
@@ -1235,7 +1237,6 @@ function openAppDetail(app) {
   document.getElementById('detailDev').textContent  = app.autor;
   document.getElementById('statSize').textContent   = app.realSize || app.tamano || '—';
   document.getElementById('statReq').textContent    = app.requiere || '—';
-  // La versión se rellenará en refreshDetailUI
 
   // Tags
   const tagColors = ['', 'blue', 'purple', 'orange'];
@@ -1277,21 +1278,24 @@ function openAppDetail(app) {
   document.getElementById('reviewerName').value = '';
   renderReviews();
 
+  // Action button (con la info ya disponible)
+  refreshActionBtn(app);
+
   // Reset tabs
   switchDTab(document.querySelector('.dtab'), 'about');
 
   // Obtener tamaño real del archivo (HEAD)
   fetchRealSize(app);
 
-  // Asegurar que latestVersionInfo esté disponible antes de refrescar botón y versión
+  // Si no tenemos latestVersionInfo, lo generamos en segundo plano sin afectar la UI
   if (!app.latestVersionInfo) {
-    checkForUpdates(app).then(() => refreshDetailUI());
-  } else {
-    refreshDetailUI();
+    checkForUpdates(app).then(() => {
+      // Solo refrescamos el texto de versión si cambió (por si acaso)
+      const newDisplay = app.latestVersionInfo?.displayVersion || displayVer;
+      document.getElementById('statVer').textContent = 'v' + newDisplay;
+      refreshActionBtn(app);
+    });
   }
-}
-function openFirstApp() {
-  if (apps.length) openAppDetail(apps[0]);
 }
 
 /* ══════════════════════════════════════════
