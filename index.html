@@ -999,7 +999,9 @@ function refreshActionBtn(app) {
 ══════════════════════════════════════════ */
 async function forceDownload(url, filename) {
   try {
-    const response = await fetch(url);
+    // Añadir timestamp para evitar que el navegador sirva versión cacheada
+    const freshUrl = url.includes('?') ? url + '&t=' + Date.now() : url + '?t=' + Date.now();
+    const response = await fetch(freshUrl, { cache: 'no-store' });
     if (!response.ok) throw new Error(`Error al descargar: ${response.status}`);
     const blob = await response.blob();
     const blobUrl = URL.createObjectURL(blob);
@@ -1051,17 +1053,16 @@ function mainAction() {
        Se descargará con el mismo nombre que el archivo actual para que lo reemplace en tu dispositivo.`;
     openModal('updateModal');
   } else {
-    // INICIAR — abre siempre la última versión disponible en GitHub.
-    // No hay forma de abrir un archivo local descargado desde una web/PWA,
-    // así que abrimos la URL de GitHub que siempre tiene la versión más reciente.
+    // INICIAR — abre la última versión desde GitHub con cache-bust para garantizar
+    // que siempre cargue el archivo más reciente, incluso si el nombre no cambió.
     const filename = currentApp.archivoBase + (currentApp.extension || '.html');
-    const url = GH_RAW(
-      currentApp.githubUser,
-      currentApp.githubRepo,
-      currentApp.githubBranch || 'main',
-      filename
-    );
-    window.open(url, '_blank');
+    const baseUrl  = (currentApp.latestVersionInfo && currentApp.latestVersionInfo.url)
+      ? currentApp.latestVersionInfo.url
+      : GH_RAW(currentApp.githubUser, currentApp.githubRepo,
+          currentApp.githubBranch || 'main', filename);
+    // Añadir timestamp para forzar que GitHub/navegador no sirva versión cacheada
+    const freshUrl = baseUrl + '?t=' + Date.now();
+    window.open(freshUrl, '_blank');
   }
 }
 
