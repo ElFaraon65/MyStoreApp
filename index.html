@@ -1188,13 +1188,11 @@ function mainAction() {
   } else {
     // ── YA INSTALADA Y AL DÍA → INICIAR ──
     if (isMobilePlatform()) {
-      // Android: abrir la app por su scheme/intent
-      // Intenta abrir la app instalada por su nombre de paquete
-      const scheme = (currentApp.androidScheme || ('android-app://com.' + currentApp.nombre.toLowerCase().replace(/\s/g,'')));
-      try { window.location.href = scheme; } catch(_) {}
+      // Android TWA: abrir la URL del sitio — Android lo intercepta y abre la app instalada
+      const url = currentApp.androidUrl || `https://${currentApp.githubUser}.github.io/${currentApp.githubRepo}/`;
+      window.location.href = url;
     } else {
-      // PC: ejecutar install.ps1 con PowerShell automáticamente
-      // Descarga el ZIP y lanza PowerShell — el usuario solo ve que se abre la app
+      // PC: mostrar instrucciones para ejecutar install.ps1
       _pendingInstall = {
         url: currentApp.latestVersionInfo
           ? currentApp.latestVersionInfo.url
@@ -1207,12 +1205,10 @@ function mainAction() {
       };
       document.getElementById('pcWarningTitle').textContent = `Iniciar ${currentApp.nombre}`;
       document.getElementById('pcWarningDesc').innerHTML =
-        `Se descargará el paquete y se ejecutará <strong>install.ps1</strong> automáticamente con PowerShell.<br><br>
-        <strong>Pasos:</strong><br>
-        1. Extrae el ZIP descargado<br>
-        2. Haz clic derecho en <strong>install.ps1</strong><br>
-        3. Selecciona <strong>"Ejecutar con PowerShell"</strong><br><br>
-        <span style="font-size:12px;color:var(--text3)">Windows puede pedir confirmación — es normal al instalar fuera de la Microsoft Store.</span>`;
+        `La app ya está instalada. Para abrirla:<br><br>
+        1. Busca <strong>DataGrid</strong> en el menú Inicio de Windows<br>
+        2. O ejecuta de nuevo <strong>install.ps1</strong> — el script la abre automáticamente tras instalarla.<br><br>
+        <span style="font-size:12px;color:var(--text3)">Si no aparece en el menú Inicio, vuelve a ejecutar install.ps1 con clic derecho → "Ejecutar con PowerShell".</span>`;
       openModal('pcWarningModal');
     }
   }
@@ -1367,7 +1363,7 @@ function renderNewLaunch() {
         <div style="font-size:12px;color:var(--text3);margin-bottom:3px">${app.autor}</div>
         <div style="font-size:12px;color:var(--text2)">${app.categoria} · ${sizeText}</div>
       </div>
-      <div class="nlc-install">${isInstalled(app) ? (updateInfo ? 'Actualizar' : 'Instalada') : 'Instalar'}</div>
+      <div class="nlc-install">${isInstalled(app) ? (updateInfo ? 'Actualizar' : 'Iniciar') : 'Instalar'}</div>
     </div>`;
 }
 
