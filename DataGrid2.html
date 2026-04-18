@@ -831,54 +831,70 @@ input[type=range].font-range::-webkit-slider-thumb{-webkit-appearance:none;width
 .cat-opt-name{font-family:'Syne',sans-serif;font-weight:600;font-size:var(--fs-md);color:var(--text);flex:1}
 .cat-opt-check{font-size:var(--fs-lg);color:var(--accent)}
 
-/* ═══════════════════════════════════════════════════════════  TUTORIAL */
-.tut-piece{position:fixed;background:rgba(0,0,0,.85);z-index:950;display:none;pointer-events:none}
+/* ═══════════════════════════════════════════════════════════  TUTORIAL
+   Filosofía: MOBILE-FIRST.
+   En móvil la tarjeta es un panel anclado (abajo o arriba).
+   En desktop es un flotante inteligente cerca del target.
+   Esto elimina cualquier solapamiento posible.
+═══════════════════════════════════════════════════════════ */
+.tut-piece{
+  position:fixed;background:rgba(0,0,0,.86);z-index:950;
+  display:none;pointer-events:none;
+}
 .tut-piece.show{display:block}
+
 #tut-shine{
-  position:fixed; border:2.5px solid var(--accent); border-radius:14px;
-  z-index:951; pointer-events:none;
-  box-shadow:0 0 0 6px rgba(232,184,75,.18),0 0 30px rgba(232,184,75,.12);
+  position:fixed;border:2.5px solid var(--accent);border-radius:14px;
+  z-index:951;pointer-events:none;
+  box-shadow:0 0 0 6px rgba(232,184,75,.18),0 0 28px rgba(232,184,75,.12);
   display:none;
-  transition: top 0.28s cubic-bezier(0.2, 0.9, 0.4, 1),
-              left 0.28s cubic-bezier(0.2, 0.9, 0.4, 1),
-              width 0.28s cubic-bezier(0.2, 0.9, 0.4, 1),
-              height 0.28s cubic-bezier(0.2, 0.9, 0.4, 1);
+  transition:top .25s cubic-bezier(.2,.9,.4,1),left .25s cubic-bezier(.2,.9,.4,1),
+             width .25s cubic-bezier(.2,.9,.4,1),height .25s cubic-bezier(.2,.9,.4,1);
 }
 #tut-shine.show{display:block}
 
+/* ── Tarjeta base (mobile-first) ── */
 #tut-card{
-  position:fixed; z-index:952;
-  background:var(--surface); border:1px solid var(--border);
-  border-radius:var(--r-lg); padding:clamp(14px,4vw,18px);
+  position:fixed;z-index:952;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:clamp(14px,4vw,18px);
   box-shadow:var(--shadow);
-  width:min(92vw,320px); display:none;
-  max-height:55dvh; overflow-y:auto; overflow-x:hidden;
+  display:none;
+  overflow-y:auto;overflow-x:hidden;
   animation:pop .25s cubic-bezier(.2,.8,.3,1) both;
-  transition: top 0.28s cubic-bezier(0.2, 0.9, 0.4, 1),
-              left 0.28s cubic-bezier(0.2, 0.9, 0.4, 1);
 }
+#tut-card.show{display:block}
 
-/* Móviles: tarjeta compacta con scroll interno */
-@media (max-width: 640px) {
-  #tut-card {
-    width: 260px !important;
-    max-height: 180px !important;
-    padding: 10px 12px !important;
-    overflow-y: auto !important;
-    border-radius: 16px;
-    font-size: 14px;
+/* ── MÓVIL (<640px): panel anclado, nunca flotante ── */
+@media (max-width:639px){
+  #tut-card{
+    /* JS posicionará left/right/top/bottom — aquí fijamos solo el ancho y alto máximo */
+    left:10px !important;
+    right:10px !important;
+    width:auto !important;
+    max-width:none !important;
+    /* Altura máxima generosa: 40% de la pantalla disponible */
+    max-height:40dvh;
+    /* Sin padding excesivo en móvil */
+    padding:14px 14px 12px !important;
   }
-  .tut-title { font-size: var(--fs-md) !important; }
-  .tut-msg { font-size: var(--fs-sm) !important; }
-  .tut-btn { height: 32px; padding: 0 10px; font-size: var(--fs-xs); }
-  .tut-step { font-size: 10px; margin-bottom: 2px; }
+  .tut-title{font-size:var(--fs-lg) !important;margin-bottom:6px}
+  .tut-msg{font-size:var(--fs-sm) !important;margin-bottom:10px;line-height:1.55}
+  .tut-step{font-size:calc(var(--fs)*.65) !important;margin-bottom:4px}
+  .tut-progress{margin-bottom:10px}
+  .tut-btn{height:36px;padding:0 14px;font-size:var(--fs-sm)}
 }
 
-/* PC: larger tutorial card */
-@media (min-width: 640px) {
-  #tut-card { width: min(70vw, 420px); padding: 24px; }
-  .tut-title { font-size: var(--fs-2xl); }
-  .tut-msg { font-size: var(--fs-md); }
+/* ── DESKTOP (≥640px): flotante con más espacio ── */
+@media (min-width:640px){
+  #tut-card{
+    width:min(60vw,400px);
+    max-height:70dvh;
+    padding:22px 24px;
+  }
+  .tut-title{font-size:var(--fs-xl)}
+  .tut-msg{font-size:var(--fs-md)}
 }
 #tut-card.show{display:block}
 .tut-step{font-family:'Syne',sans-serif;font-size:var(--fs-xs);font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
@@ -908,6 +924,22 @@ input[type=range].font-range::-webkit-slider-thumb{-webkit-appearance:none;width
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* ═══════════════════════════════════════════════════════════  TUTORIAL UI LOCK
+   Cuando el tutorial está activo en pasos de feed (intro, bubble, search, category, delete)
+   todo lo que no sea la acción requerida queda bloqueado visualmente y funcionalmente.
+═══════════════════════════════════════════════════════════ */
+/* FAB bloqueado durante pasos que no requieren el FAB */
+#fab-wrap.tut-locked{pointer-events:none !important;opacity:.25 !important}
+/* Burbujas bloqueadas durante pasos que no requieren tocarlas */
+#feed-scroll.tut-bubbles-locked .bubble,
+#feed-scroll.tut-bubbles-locked .special{
+  pointer-events:none !important;opacity:.55 !important;
+}
+/* Barra de búsqueda bloqueada */
+#search-bar.tut-locked{pointer-events:none !important;opacity:.3 !important}
+/* Engranaje bloqueado */
+#btn-settings.tut-locked{pointer-events:none !important;opacity:.25 !important}
 </style>
 </head>
 <body>
@@ -1310,12 +1342,7 @@ function showView(id){
 }
 
 // ═══════════════════════════════════════════════════
-//  TUTORIAL  (13 pasos — no se elimina ninguno)
-//
-//  Sub-fases de 'category' se manejan con tutCatPhase:
-//    0 = "abre el engranaje"
-//    1 = "toca + Nueva categoría"   (drawer abierto)
-//    2 = "escribe nombre y guarda"  (cat-modal abierto)
+//  TUTORIAL  (17 pasos — no se elimina ninguno)
 // ═══════════════════════════════════════════════════
 const TUT_STEPS=[
   // 1
@@ -1330,76 +1357,94 @@ const TUT_STEPS=[
    title:'El botón dorado ＋',
    msg:'¿Ves el <strong>círculo dorado</strong> en la esquina inferior derecha? Ese es tu punto de partida para todo. Con él puedes crear tablas nuevas o escribir notas rápidas. <strong>Tócalo ahora mismo</strong> para continuar.',
    wait:'tap'},
-  // 3
-  {id:'template',
-   target:'#tpl-modal',
-   title:'Elige una plantilla 📋',
-   msg:'Aparecieron 4 tipos de tabla. Cada una viene con columnas listas para usar:\n• <strong>💰 Finanzas</strong> — ingresos y gastos\n• <strong>📦 Inventario</strong> — productos y cantidades\n• <strong>👥 Contactos</strong> — nombres y teléfonos\n• <strong>⊞ Personalizada</strong> — tú decides todo\n\n<strong>Toca cualquiera para crearla.</strong>',
-   wait:'tap'},
+  // 3  ← NUEVO: explicación de plantillas antes de elegir
+  {id:'template-info',
+   target:'#tpl-modal .modal-box',
+   title:'¿Qué tipo de tabla necesitas? 📋',
+   msg:'Estas son las 4 plantillas disponibles. Cada una ya tiene las columnas listas:\n\n• <strong>💰 Finanzas</strong> — llevar ingresos y gastos\n• <strong>📦 Inventario</strong> — productos y cantidades\n• <strong>👥 Contactos</strong> — nombres y teléfonos\n• <strong>⊞ Personalizada</strong> — tú pones todo desde cero\n\nToca <strong>Siguiente</strong> cuando hayas visto las opciones.',
+   wait:'btn',btn:'Siguiente →'},
   // 4
+  {id:'template',
+   target:'#tpl-modal .modal-box',
+   title:'Elige una plantilla 👆',
+   msg:'Ahora <strong>toca una de las 4 opciones</strong> para crear tu primera tabla y continuar el recorrido.',
+   wait:'tap'},
+  // 5
   {id:'type',
    target:'#ed-type-row',
    title:'Tipo de tabla 🔢',
-   msg:'Aquí defines <strong>qué hará</strong> tu tabla:\n• <strong>📋 Información</strong>: texto libre, sin cálculos\n• <strong>🔢 Cálculos</strong>: suma, resta, multiplica o divide celdas\n• <strong>💰 Finanzas</strong>: marca celdas como ingreso o gasto y ve tu balance\n\nPor ahora el tipo ya viene elegido según la plantilla. Toca <strong>Siguiente</strong>.',
+   msg:'Aquí defines <strong>qué hará</strong> tu tabla:\n• <strong>📋 Información</strong>: texto libre, sin cálculos\n• <strong>🔢 Cálculos</strong>: suma, resta, multiplica o divide celdas\n• <strong>💰 Finanzas</strong>: marca celdas como ingreso o gasto y ve tu balance\n\nEl tipo ya viene elegido según la plantilla. Toca <strong>Siguiente</strong>.',
    wait:'btn',btn:'Siguiente →'},
-  // 5
-  {id:'importance',
+  // 6  ← NUEVO: explicación de importancia antes de abrir el sheet
+  {id:'importance-info',
    target:'#imp-chip',
    title:'Nivel de importancia ⚡',
-   msg:'Este botón le da una <strong>prioridad</strong> a tu tabla para que sepas cuáles revisar primero.\n• <strong>🔴 Alta</strong>: urgente, la necesitas a diario\n• <strong>🟡 Media</strong>: importante pero no urgente\n• <strong>🔵 Baja</strong>: referencia o archivo\n\n<strong>Tócalo y elige un nivel.</strong>',
+   msg:'Este botón asigna una <strong>prioridad</strong> a tu tabla para que sepas cuáles revisar primero:\n\n• <strong>🔴 Alta</strong> — urgente, la necesitas a diario\n• <strong>🟡 Media</strong> — importante pero sin prisa\n• <strong>🔵 Baja</strong> — referencia o archivo\n\n<strong>Toca el botón ⚡ Importancia</strong> para continuar.',
+   wait:'tap'},
+  // 7
+  {id:'importance',
+   target:'#imp-chip',
+   title:'Elige tu nivel ahora 👆',
+   msg:'Toca el botón <strong>⚡ Importancia</strong> y selecciona un nivel de la lista que aparece.',
    wait:'tap',
    customAction:()=>{ setTimeout(openImpSheet,120); }},
-  // 6
+  // 8
   {id:'name',
    target:'#inp-name',
    title:'Dale un nombre ✏️',
-   msg:'La barra de arriba espera el nombre de tu tabla. Escribe algo que la describa bien, por ejemplo: <strong>"Gastos de enero"</strong>, <strong>"Inventario tienda"</strong> o <strong>"Lista de clientes"</strong>.\n\nCuando hayas escrito algo, aparecerá el botón para continuar.',
+   msg:'Escribe un nombre descriptivo para tu tabla, por ejemplo: <strong>"Gastos de enero"</strong>, <strong>"Inventario tienda"</strong> o <strong>"Lista de clientes"</strong>.\n\nCuando hayas escrito algo aparecerá el botón para continuar.',
    wait:'fill',btn:'Continuar →',
    fillCheck:()=>document.getElementById('inp-name').value.trim().length>0},
-  // 7
+  // 9  ← NUEVO: explicación de la cuadrícula antes de rellenar
+  {id:'grid-info',
+   target:'#etable',
+   title:'Así se rellena la tabla 📝',
+   msg:'La cuadrícula ya tiene columnas según la plantilla elegida. Así funciona:\n\n• La <strong>columna azul</strong> (izquierda) es para nombres de fila, por ejemplo "Enero", "Manzanas" o "Ana"\n• El <strong>resto de columnas</strong> son para los valores\n• Toca cualquier celda y escribe directamente\n\nToca <strong>Siguiente</strong> para empezar a escribir.',
+   wait:'btn',btn:'Siguiente →'},
+  // 10
   {id:'grid',
    target:'#etable',
-   title:'Llena tu tabla 📝',
-   msg:'La cuadrícula ya tiene columnas según la plantilla que elegiste. Ahora <strong>toca una celda y escribe</strong>.\n\n• La <strong>primera columna azul</strong> es para los nombres de cada fila (ej. "Enero", "Manzanas", "Ana")\n• Las demás columnas son para los valores\n\nEscribe al menos un dato para continuar.',
+   title:'Escribe al menos un dato 👆',
+   msg:'Toca cualquier celda de la cuadrícula y escribe un valor. Cuando lo hayas hecho, aparecerá el botón para continuar.',
    wait:'fill',btn:'Continuar →',
    fillCheck:()=>[...document.querySelectorAll('#etable td.dc input')].some(i=>i.value.trim())},
-  // 8
+  // 11
   {id:'save',
    target:'#btn-save-main',
    title:'Guarda tu tabla 💾',
-   msg:'Ya tienes datos. Ahora toca el botón <strong>✓ Guardar</strong> que está arriba a la derecha. Tu tabla quedará guardada y aparecerá en la pantalla principal.\n\n<strong>Tócalo para guardar.</strong>',
+   msg:'Ya tienes datos. Ahora toca el botón <strong>✓ Guardar</strong> de arriba a la derecha.\n\nTu tabla quedará guardada y aparecerá en la pantalla principal.',
    wait:'tap'},
-  // 9
+    // 12
   {id:'bubble',
    target:'#feed-scroll',
    title:'Tu tabla guardada 🎉',
-   msg:'¡Aquí está! Tu tabla aparece como una <strong>burbuja grande</strong> con toda la información visible de un vistazo.\n\n• <strong>Toca la burbuja</strong> para abrirla y editarla\n• El botón <strong>✕</strong> en la esquina la elimina (siempre con confirmación para no borrar nada por error)\n\nToca <strong>Siguiente</strong> para continuar.',
+   msg:'¡Aquí está! Tu tabla aparece como una <strong>burbuja grande</strong> con toda la información visible de un vistazo.\n\nToca <strong>Siguiente</strong> para continuar.',
    wait:'btn',btn:'Siguiente →'},
-  // 10
+  // 13
   {id:'search',
    target:'#search-bar',
    title:'Búsqueda rápida 🔍',
-   msg:'Cuando tengas muchas tablas, esta barra te ayuda a encontrar la que necesitas al instante. <strong>Escribe el nombre</strong> de una tabla o el nombre de una <strong>categoría</strong> y el listado se filtra solo.\n\nToca <strong>Siguiente</strong> para ver las categorías.',
+   msg:'Cuando tengas muchas tablas, escribe aquí el nombre de una tabla o categoría y el listado se filtra al instante.\n\nToca <strong>Siguiente</strong> para ver las categorías.',
    wait:'btn',btn:'Siguiente →'},
-  // 11
+  // 14
   {id:'category',
    target:'#btn-settings',
    title:'Categorías de color 🏷',
-   msg:'Las categorías te ayudan a <strong>agrupar tablas</strong> relacionadas con una banda de color en la parte superior de cada burbuja. Por ejemplo: "Trabajo" en azul, "Casa" en verde.\n\nPrimero toca el <strong>engranaje ⚙</strong> de arriba a la derecha para abrir Configuración.',
+   msg:'Las categorías agrupan tablas con una banda de color. Por ejemplo: "Trabajo" en azul, "Casa" en verde.\n\nToca el <strong>engranaje ⚙</strong> arriba a la derecha para abrir Configuración y crear tu primera categoría.',
    wait:'tap'},
-      // 12
+  // 15
   {id:'delete',
    target:'.btn-del',
    title:'Eliminar una tabla 🗑',
-   msg:'Para borrar una tabla que ya no necesites, toca el botón <strong>✕</strong> que aparece en la esquina de cada burbuja.\n\nSe abrirá una ventana de confirmación.\n\n<strong>Toca el ✕ de cualquier burbuja ahora.</strong>',
+   msg:'Para borrar una tabla, toca el botón <strong>✕</strong> en la esquina de cualquier burbuja. Se abrirá una ventana de confirmación.\n\n<strong>Toca el ✕ de cualquier burbuja ahora.</strong>',
    wait:'tap'},
-  // 13
+  // 16
   {id:'delete-confirm',
    target:'#del-modal .modal-box',
    title:'Confirma la eliminación',
    msg:'Esta ventana evita borrados accidentales.\n\nPuedes tocar <strong>"Cancelar"</strong> o <strong>"Sí, eliminar"</strong>.\n\n<strong>Toca cualquiera de los dos para finalizar el recorrido.</strong>',
    wait:'modal-action'},
-  // 14
+  // 17
   {id:'done',
    target:null,
    title:'¡Lo lograste! 🎉',
@@ -1428,6 +1473,39 @@ function renderTutStep(){
     saveBtn.disabled = locked;
     saveBtn.style.opacity = locked ? '0.35' : '';
     saveBtn.style.cursor  = locked ? 'not-allowed' : '';
+  }
+
+  // Control del campo nombre: editable solo en paso 'name'; bloqueado en grid-info, grid, save
+  const nameInp = document.getElementById('inp-name');
+  if(nameInp){
+    const nameLocked = tutActive && ['grid-info','grid','save'].includes(s.id);
+    nameInp.disabled         = nameLocked;
+    nameInp.style.opacity    = nameLocked ? '0.45' : '';
+    nameInp.style.pointerEvents = nameLocked ? 'none' : '';
+  }
+
+  // Control de inputs de la tabla: bloqueados en 'grid-info', habilitados en 'grid'
+  const tableInputs = document.querySelectorAll('#etable td.dc input, #etable th.ch input');
+  tableInputs.forEach(inp => {
+    if (tutActive) {
+      const locked = (s.id === 'grid-info');
+      inp.disabled = locked;
+      inp.style.opacity = locked ? '0.45' : '';
+      inp.style.pointerEvents = locked ? 'none' : '';
+    } else {
+      inp.disabled = false;
+      inp.style.opacity = '';
+      inp.style.pointerEvents = '';
+    }
+  });
+
+  // Control del botón Atrás: bloqueado durante todos los pasos del editor del tutorial
+  const backBtn = document.querySelector('#v-editor .btn-back');
+  if(backBtn){
+    const backLocked = tutActive && ['type','importance-info','importance','name','grid-info','grid','save'].includes(s.id);
+    backBtn.disabled            = backLocked;
+    backBtn.style.opacity       = backLocked ? '0.35' : '';
+    backBtn.style.pointerEvents = backLocked ? 'none' : '';
   }
 
   document.getElementById('tut-step-lbl').textContent=`Paso ${tutStep+1} de ${TUT_STEPS.length}`;
@@ -1470,10 +1548,21 @@ function renderTutStep(){
   }
 
   spotlightTut(s.target);
-  positionCard(s.target);
+  lockFeedUI();
   const card = document.getElementById('tut-card');
-  card.classList.add('show');
-  card.scrollTop = 0;  // 🔁 Reinicia el scroll al inicio del contenido
+  
+  // PASOS SIN TARJETA VISIBLE: 'template' (el usuario debe ver el modal sin obstáculos)
+  const hideCardSteps = ['template', 'grid', 'importance'];
+  if (hideCardSteps.includes(s.id)) {
+    // Ocultar tarjeta pero mantener spotlight activo
+    card.classList.remove('show');
+    // Aún así posicionamos para evitar errores, pero no se mostrará
+    positionCard(s.target);
+  } else {
+    positionCard(s.target);
+    card.classList.add('show');
+    card.scrollTop = 0;
+  }
 }
 
 function advanceTut(){
@@ -1482,7 +1571,7 @@ function advanceTut(){
   // Si 'bubble' y no hay tabla aún, saltarlo
   if(TUT_STEPS[tutStep]?.id==='bubble'&&db.length===0) tutStep++;
   // Pequeño delay cuando el editor acaba de abrirse
-  const delay = (TUT_STEPS[tutStep]?.id==='name'||TUT_STEPS[tutStep]?.id==='type') ? 120 : 0;
+  const delay = (['name','type','importance-info','grid-info'].includes(TUT_STEPS[tutStep]?.id)) ? 150 : 0;
   setTimeout(renderTutStep, delay);
 }
 
@@ -1494,9 +1583,10 @@ function endTutorial(){
   });
   document.getElementById('tut-shine').classList.remove('show');
   document.getElementById('tut-card').classList.remove('show');
-  // Desbloquear botón guardar
+  // Desbloquear botón guardar y toda la UI del feed
   const saveBtn=document.getElementById('btn-save-main');
   if(saveBtn){ saveBtn.disabled=false; saveBtn.style.opacity=''; saveBtn.style.cursor=''; }
+  _unlockFeedUI();
   cfg.tutDone=true; cfgSave();
 }
 
@@ -1545,223 +1635,149 @@ function spotlightTut(sel){
 }
 
 function positionCard(sel){
-  const card=document.getElementById('tut-card');
-  const vw=window.innerWidth,vh=window.innerHeight;
-  // Ancho condicional: más ancho solo en el paso 'importance' (paso 5)
-  const isImportanceStep = tutActive && TUT_STEPS[tutStep]?.id === 'importance';
-  const cw = Math.min(vw*0.9, (vw>=640 ? (isImportanceStep ? 520 : 420) : 320));
-  
-  // Ajustar padding vertical solo en paso 5 para reducir altura (opcional, no modifica funcionalidad)
-  if (isImportanceStep) {
-    card.style.padding = '16px 20px';
-  } else {
-    card.style.padding = ''; // Restaurar al valor por defecto del CSS
+  const card = document.getElementById('tut-card');
+  const vw   = window.innerWidth;
+  const vh   = window.innerHeight;
+  // Margen de seguridad inferior (notch, barra Android)
+  const safeBot = 60;
+  const safePad = 10;
+
+  /* ────────────────────────────────────────────────────────
+     MOBILE FIRST  (<640px)
+     La tarjeta es siempre un panel anclado: arriba o abajo.
+     NUNCA flota ni tapa el elemento resaltado.
+     ──────────────────────────────────────────────────────── */
+  if(vw < 640){
+    const safeTop = 200;  // justo bajo la topbar, válido en editor y feed
+
+    // ZONA A — Elementos anclados al FONDO (sheets, drawer izquierdo)
+    // → tarjeta en la PARTE SUPERIOR (bajo la topbar)
+    const zoneA = new Set([
+      '#imp-sheet', '#cat-pick-sheet',
+      '#cfg-drawer', '#cfg-drawer .btn-add-cat',
+      '#fab-btn'   // FAB está abajo-derecha → tarjeta arriba
+    ]);
+    if(!sel || zoneA.has(sel)){
+      // EXCEPCIÓN: paso 'category' forzar tarjeta abajo
+      if (tutActive && TUT_STEPS[tutStep]?.id === 'category') {
+        card.style.cssText = `left:${safePad}px;right:${safePad}px;bottom:${safeBot}px;top:auto;position:fixed;max-height:38dvh;`;
+      } else if (tutActive && TUT_STEPS[tutStep]?.id === 'intro') {
+        card.style.cssText = `left:${safePad}px;right:${safePad}px;top:230px;bottom:auto;position:fixed;max-height:38dvh;`;
+      } else {
+        card.style.cssText = `left:${safePad}px;right:${safePad}px;top:${safeTop}px;bottom:auto;position:fixed;max-height:38dvh;`;
+      }
+      return;
+    }
+
+    // ZONA B — Modales centrados (tpl-modal, cat-modal, del-modal)
+    // → tarjeta en la PARTE INFERIOR (modal está en el centro, espacio libre abajo)
+    if(sel.includes('modal')){
+      if (tutActive && TUT_STEPS[tutStep]?.id === 'template-info') {
+        card.style.cssText = `left:${safePad}px;right:${safePad}px;bottom:85px;top:auto;position:fixed;min-height:75dvh;max-height:500dvh;`;
+      } else if (tutActive && TUT_STEPS[tutStep]?.id === 'delete-confirm') {
+        // Pegado al techo
+        card.style.cssText = `left:${safePad}px;right:${safePad}px;top:5px;bottom:auto;position:fixed;height:25dvh;`;
+      } else {
+        card.style.cssText = `left:${safePad}px;right:${safePad}px;bottom:${safeBot}px;top:auto;position:fixed;max-height:38dvh;`;
+      }
+      return;
+    }
+
+    // ZONA C — Paso 'bubble' (target #feed-scroll, abarca toda la pantalla)
+    // y paso 'search' (barra en la parte alta) → tarjeta en la PARTE INFERIOR
+    const forceBottom = new Set(['bubble','search','template-info','template','intro','done']);
+    if(TUT_STEPS[tutStep] && forceBottom.has(TUT_STEPS[tutStep].id)){
+      if (TUT_STEPS[tutStep].id === 'search') {
+                card.style.cssText = `left:${safePad}px;right:${safePad}px;bottom:220px;top:auto;position:fixed;min-height:45dvh;max-height:70dvh;`;
+      } else {
+        card.style.cssText = `left:${safePad}px;right:${safePad}px;bottom:${safeBot}px;top:auto;position:fixed;max-height:38dvh;`;
+      }
+      return;
+    }
+
+    // ZONA D — Elementos en la mitad superior de pantalla (editor: inputs, chips, rows, table)
+    // → tarjeta en la PARTE INFERIOR
+    const el2 = document.querySelector(sel);
+    if(el2){
+      const r2 = el2.getBoundingClientRect();
+      if(r2.top < vh * 0.55){
+        // El elemento está en la mitad superior → card abajo
+        if (tutActive && TUT_STEPS[tutStep]?.id === 'type') {
+          card.style.cssText = `left:${safePad}px;right:${safePad}px;bottom:30px;top:auto;position:fixed;max-height:38dvh;`;
+        } else if (tutActive && TUT_STEPS[tutStep]?.id === 'grid-info') {
+          card.style.cssText = `left:${safePad}px;right:${safePad}px;top:10px;bottom:auto;position:fixed;min-height:35dvh;max-height:15dvh;`;
+        } else {
+          card.style.cssText = `left:${safePad}px;right:${safePad}px;bottom:${safeBot}px;top:auto;position:fixed;max-height:38dvh;`;
+        }
+        return;
+      }
+    }
+
+    // DEFAULT — elemento en la mitad inferior → tarjeta arriba
+    // EXCEPCIÓN: paso 'grid-info' forzar arriba aunque el target (tabla) esté arriba
+    if (TUT_STEPS[tutStep]?.id === 'grid-info') {
+      card.style.cssText = `left:${safePad}px;right:${safePad}px;top:10px;bottom:auto;position:fixed;min-height:35dvh;max-height:15dvh;`;
+    } else {
+      card.style.cssText = `left:${safePad}px;right:${safePad}px;top:${safeTop}px;bottom:auto;position:fixed;max-height:38dvh;`;
+    }
+    return;
   }
-  
-  let targetEl = sel ? document.querySelector(sel) : null;
-  if(sel === '#tpl-modal' && targetEl){
+
+  /* ────────────────────────────────────────────────────────
+     DESKTOP  (≥640px)
+     Flotante inteligente: intenta derecha, luego izquierda,
+     luego abajo/arriba. Nunca sale de pantalla.
+     ──────────────────────────────────────────────────────── */
+  const cardW = Math.min(vw * 0.55, 400);
+  const pad   = 20;
+
+  // Sin target → centrado
+  if(!sel){
+    card.style.cssText = `left:${(vw-cardW)/2}px;top:${vh/2-120}px;width:${cardW}px;position:fixed`;
+    return;
+  }
+
+  let targetEl = document.querySelector(sel);
+  // Para modales, usar el .modal-box interior
+  if(targetEl && targetEl.classList.contains('modal-bg')){
     const inner = targetEl.querySelector('.modal-box');
     if(inner) targetEl = inner;
   }
-  
-  if(!targetEl){ 
-    card.style.cssText=`left:${(vw-cw)/2}px;top:${vh/2-100}px;width:${cw}px`; 
-    return; 
-  }
-  
-  const r=targetEl.getBoundingClientRect();
-  const pad=16;
-  let top,left;
-  
-  // CASO ESPECIAL: input de nombre
-  if(sel === '#inp-name'){
-    const cardHeight = card.offsetHeight || 200;
-    if(vw >= 640){
-      left = vw - cw - 20;
-      top = vh - cardHeight - 20;
-    } else {
-      left = (vw - cw) / 2;
-      top = r.bottom + 24;
-      if(top + cardHeight > vh) top = vh - cardHeight - 20;
-    }
-    card.style.cssText = `left:${Math.max(10, left)}px;top:${Math.max(10, top)}px;width:${cw}px;position:fixed`;
-    return;
-  }
-  // CASO ESPECIAL: fila de tipos de tabla
-  if(sel === '#ed-type-row'){
-    const cardHeight = card.offsetHeight || 200;
-    if(vw >= 640){
-      left = vw - cw - 30;
-      top = Math.max(20, Math.min(vh - cardHeight - 20, r.top + 60));
-    } else {
-      left = (vw - cw) / 2;
-      top = vh - cardHeight - 30;
-    }
-    card.style.cssText = `left:${Math.max(10, left)}px;top:${Math.max(10, top)}px;width:${cw}px;position:fixed`;
+
+  if(!targetEl){
+    card.style.cssText = `left:${(vw-cardW)/2}px;top:${vh/2-120}px;width:${cardW}px;position:fixed`;
     return;
   }
 
-  // CASO ESPECIAL: paso 7 "Llena tu tabla" -> esquina inferior derecha en PC
-  if (sel === '#etable' && vw >= 640) {
-    const cardHeight = card.offsetHeight || 200;
-    left = vw - cw - 20;
-    top = vh - cardHeight - 20;
-    card.style.cssText = `left:${left}px;top:${top}px;width:${cw}px;position:fixed`;
+  const r       = targetEl.getBoundingClientRect();
+  const cardH   = card.offsetHeight || 220;
+
+  // Intenta a la DERECHA
+  if(vw - r.right - pad >= cardW + pad){
+    const top = Math.max(pad, Math.min(vh - cardH - pad, r.top + r.height/2 - cardH/2));
+    card.style.cssText = `left:${r.right+pad}px;top:${top}px;width:${cardW}px;position:fixed`;
     return;
   }
-
-  // CASO ESPECIAL: botón nueva categoría en drawer
-  if(sel === '#cfg-drawer .btn-add-cat' || sel === '#cfg-drawer'){
-    const cardHeight = card.offsetHeight || 220;
-    if(vw >= 640){
-      const drawer = document.getElementById('cfg-drawer');
-      const drawerRect = drawer ? drawer.getBoundingClientRect() : {right:310,top:60};
-      left = drawerRect.right + 20;
-      top = Math.max(20, Math.min(vh - cardHeight - 20, drawerRect.top + 80));
-    } else {
-      left = (vw - cw) / 2;
-      top = vh - cardHeight - 30;
-    }
-    card.style.cssText = `left:${Math.max(10, left)}px;top:${Math.max(10, top)}px;width:${cw}px;position:fixed`;
+  // Intenta a la IZQUIERDA
+  if(r.left - pad >= cardW + pad){
+    const top = Math.max(pad, Math.min(vh - cardH - pad, r.top + r.height/2 - cardH/2));
+    card.style.cssText = `left:${r.left-cardW-pad}px;top:${top}px;width:${cardW}px;position:fixed`;
     return;
   }
-
-  // CASO ESPECIAL: paso burbuja (target #feed-scroll) — colocar arriba
-  if(sel === '#feed-scroll' && tutActive && TUT_STEPS[tutStep]?.id === 'bubble'){
-    const cardHeight = card.offsetHeight || 200;
-    if (vw >= 640) {
-      left = vw - cw - 20;          // alineado a la derecha
-      top = 80;                     // debajo del topbar
-    } else {
-      left = (vw - cw) / 2;         // centrado en móvil
-      top = 80;
-    }
-    card.style.cssText = `left:${Math.max(10,left)}px;top:${top}px;width:${cw}px;position:fixed`;
+  // Intenta ABAJO
+  if(vh - r.bottom - pad >= cardH + pad){
+    const left = Math.max(pad, Math.min(vw - cardW - pad, r.left + r.width/2 - cardW/2));
+    card.style.cssText = `left:${left}px;top:${r.bottom+pad}px;width:${cardW}px;position:fixed`;
     return;
   }
-
-  // CASO ESPECIAL: imp-sheet — cubre la mitad inferior, siempre poner card arriba
-  if(sel === '#imp-sheet'){
-    const cardHeight = card.offsetHeight || 220;
-    left = (vw - cw) / 2;
-    // Sheet empieza aprox a la mitad de la pantalla: poner la tarjeta en el tercio superior
-    top = Math.max(10, Math.min(vh/3 - cardHeight/2, 120));
-    card.style.cssText = `left:${Math.max(10,left)}px;top:${Math.max(10,top)}px;width:${cw}px;position:fixed`;
+  // Intenta ARRIBA
+  if(r.top - pad >= cardH + pad){
+    const left = Math.max(pad, Math.min(vw - cardW - pad, r.left + r.width/2 - cardW/2));
+    card.style.cssText = `left:${left}px;top:${r.top-cardH-pad}px;width:${cardW}px;position:fixed`;
     return;
   }
-
-  // Dentro de positionCard(sel), agregar este caso:
-  if(sel === '#del-modal .modal-box') {
-    const cardHeight = card.offsetHeight || 200;
-    const modalBox = document.querySelector('#del-modal .modal-box');
-    if(modalBox) {
-        const modalRect = modalBox.getBoundingClientRect();
-        if(window.innerWidth >= 640) {
-            // Escritorio: tarjeta a la derecha del modal
-            left = modalRect.right + 20;
-            top = modalRect.top + (modalRect.height/2) - cardHeight/2;
-        } else {
-            // Móvil: tarjeta arriba del modal (más separación)
-            left = (window.innerWidth - cw) / 2;
-            top = modalRect.top - cardHeight - 30;
-            if(top < 10) top = modalRect.bottom + 20;
-        }
-        card.style.cssText = `left:${Math.max(10,left)}px;top:${Math.max(10,top)}px;width:${cw}px;position:fixed`;
-        return;
-    }
-  }
-
-    // CASO ESPECIAL: FAB en móvil -> asegurar que no tape el botón
-  if(sel === '#fab-btn' && vw < 640){
-    card.style.cssText = `left:10px; top:70px; width:280px; max-height:220px; position:fixed;`;
-    return;
-  }
-
-    // CASO ESPECIAL: drawer de configuración en móvil -> colocar tarjeta abajo a la derecha
-  if((sel === '#cfg-drawer' || sel === '#cfg-drawer .btn-add-cat') && vw < 640){
-    card.style.cssText = `left: auto; right: 10px; top: auto; bottom: 20px; width: 280px; max-height: 220px; position: fixed;`;
-    return;
-  }
-  
-        // CASO ESPECIAL: barra de búsqueda (paso 10) -> más abajo
-    if(sel === '#search-bar') {
-      const cardWidth = Math.min(260, vw - 20);
-      card.style.cssText = `left: 10px; top: 130px; width: ${cardWidth}px; max-height: 180px; position: fixed;`;
-      return;
-    }
-    // CASO ESPECIAL: botón engranaje (paso 11) -> más a la izquierda
-    if(sel === '#btn-settings') {
-      const cardWidth = Math.min(260, vw - 20);
-      card.style.cssText = `left: 5px; top: 70px; width: ${cardWidth}px; max-height: 180px; position: fixed;`;
-      return;
-    }
-
-        // MÓVIL: Posicionamiento que nunca estorba
-  if(vw < 640) {
-    // 🌟 CASO ESPECIAL: Pantalla principal (feed) sin drawer abierto -> tarjeta grande centrada
-    const isFeedMain = !sel || sel === '#feed-scroll' || sel === '.bubble' || sel === '#fab-btn' || sel === '#search-bar';
-    const isDrawerOpen = document.getElementById('cfg-drawer').classList.contains('open');
-    if(isFeedMain && !isDrawerOpen) {
-      const cardWidth = Math.min(vw - 40, 320);
-      card.style.cssText = `left: 50%; transform: translateX(-50%); top: 120px; width: ${cardWidth}px; max-height: 300px; position: fixed;`;
-      return;
-    }
-
-    // Si el target es un modal pequeño (categoría, confirmación), colocar tarjeta arriba a la izquierda
-    const isSmallModal = sel && (sel.includes('#cat-modal') || sel.includes('#del-modal'));
-    if(isSmallModal) {
-      const cardWidth = Math.min(260, vw - 20);
-      card.style.cssText = `left: 10px; top: 10px; width: ${cardWidth}px; max-height: 140px; position: fixed;`;
-      return;
-    }
-    // Si es un sheet o drawer, abajo centrado
-    const isSheet = sel && (sel.includes('#imp-sheet') || sel.includes('#cfg-drawer') || sel.includes('#cat-pick-sheet'));
-    if(isSheet) {
-      const cardWidth = Math.min(260, vw - 20);
-      card.style.cssText = `left: 50%; transform: translateX(-50%); bottom: 10px; width: ${cardWidth}px; max-height: 180px; position: fixed;`;
-      return;
-    }
-    // Resto de elementos (botones, campos): esquina superior izquierda
-    left = 10;
-    top = 70;
-    if(left + 260 > vw) left = vw - 270;
-    card.style.cssText = `left:${left}px; top:${top}px; width:260px; max-height:180px; position:fixed;`;
-    return;
-  }
-  
-  // PC: intentar derecha/izquierda
-  const rightSpace = vw - r.right - pad;
-  const cardHeight = card.offsetHeight || 200;
-  if(rightSpace >= cw + pad){
-    left = r.right + pad;
-    top = Math.max(pad, Math.min(vh - cardHeight - pad, r.top + (r.height/2) - cardHeight/2));
-    card.style.cssText = `left:${left}px;top:${top}px;width:${cw}px;position:fixed`;
-    return;
-  }
-  const leftSpace = r.left - pad;
-  if(leftSpace >= cw + pad){
-    left = r.left - cw - pad;
-    top = Math.max(pad, Math.min(vh - cardHeight - pad, r.top + (r.height/2) - cardHeight/2));
-    card.style.cssText = `left:${left}px;top:${top}px;width:${cw}px;position:fixed`;
-    return;
-  }
-  
-  // Fallback centrado
-  left = (vw - cw)/2;
-  if(r.bottom + pad + 200 < vh){ 
-    top = r.bottom + pad; 
-  } else { 
-    top = Math.max(pad, r.top - 200 - pad); 
-  }
-  top = Math.max(pad, Math.min(vh - 210, top));
-  card.style.cssText = `left:${Math.max(pad,left)}px;top:${top}px;width:${cw}px;position:fixed`;
-}
-
-// Tutorial tap hooks – called by FAB, template picker, save button
-function tutHook(stepId){
-  if(!tutActive)return;
-  if(TUT_STEPS[tutStep].id===stepId){ advanceTut(); return true; }
-  return false;
+  // Fallback: esquina inferior-derecha
+  card.style.cssText = `left:${vw-cardW-pad}px;top:${vh-cardH-pad}px;width:${cardW}px;position:fixed`;
 }
 
 // Tutorial tap hook — llamado por funciones externas
@@ -1769,6 +1785,71 @@ function tutHook(stepId){
   if(!tutActive) return false;
   if(TUT_STEPS[tutStep]?.id===stepId){ advanceTut(); return true; }
   return false;
+}
+
+// ── Bloqueo / desbloqueo de elementos del feed durante el tutorial ──
+// Pasos en los que el feed está visible pero el usuario NO debe interactuar
+// libremente con él (todo bloqueado excepto la acción requerida por el paso).
+const FEED_LOCKED_STEPS = new Set([
+  'intro',    // paso 1  — solo "Siguiente"
+  'bubble',   // paso 12 — solo "Siguiente"
+  'search',   // paso 13 — solo "Siguiente"
+]);
+const FAB_ACTIVE_STEPS = new Set(['fab']); // paso 2 — solo FAB
+
+function lockFeedUI(){
+  if(!tutActive){ _unlockFeedUI(); return; }
+  const id = TUT_STEPS[tutStep]?.id;
+  const feed   = document.getElementById('feed-scroll');
+  const fab    = document.getElementById('fab-wrap');
+  const search = document.getElementById('search-bar');
+  const gear   = document.getElementById('btn-settings');
+
+  // Estado base: desbloquear todo
+  _unlockFeedUI();
+
+  if(FEED_LOCKED_STEPS.has(id)){
+    // FAB bloqueado
+    if(fab)    fab.classList.add('tut-locked');
+    // Burbujas bloqueadas
+    if(feed)   feed.classList.add('tut-bubbles-locked');
+    // Búsqueda bloqueada
+    if(search) search.classList.add('tut-locked');
+    // Engranaje bloqueado
+    if(gear)   gear.classList.add('tut-locked');
+    return;
+  }
+
+  if(FAB_ACTIVE_STEPS.has(id)){
+    // Solo burbujas, búsqueda y engranaje bloqueados; FAB libre
+    if(feed)   feed.classList.add('tut-bubbles-locked');
+    if(search) search.classList.add('tut-locked');
+    if(gear)   gear.classList.add('tut-locked');
+    return;
+  }
+
+  // Pasos en el feed donde SOLO el engranaje debe ser usable (category)
+  if(id === 'category'){
+    if(fab)    fab.classList.add('tut-locked');
+    if(feed)   feed.classList.add('tut-bubbles-locked');
+    if(search) search.classList.add('tut-locked');
+    return;
+  }
+
+  // Pasos en el feed donde el ✕ de burbuja debe ser usable (delete / delete-confirm)
+  if(id === 'delete' || id === 'delete-confirm'){
+    if(fab)    fab.classList.add('tut-locked');
+    if(search) search.classList.add('tut-locked');
+    if(gear)   gear.classList.add('tut-locked');
+    return;
+  }
+}
+
+function _unlockFeedUI(){
+  document.getElementById('fab-wrap')?.classList.remove('tut-locked');
+  document.getElementById('feed-scroll')?.classList.remove('tut-bubbles-locked');
+  document.getElementById('search-bar')?.classList.remove('tut-locked');
+  document.getElementById('btn-settings')?.classList.remove('tut-locked');
 }
 
 function onGearClick(){
@@ -1803,6 +1884,7 @@ function closeFab(){
 function openTemplatePicker(){
   closeFab();
   document.getElementById('tpl-modal').classList.add('open');
+  // Paso fab → avanzar a template-info (el modal se queda abierto)
   if(tutActive && TUT_STEPS[tutStep]?.id==='fab') advanceTut();
 }
 function closeTpl(){ document.getElementById('tpl-modal').classList.remove('open'); }
@@ -1810,6 +1892,7 @@ function closeTpl(){ document.getElementById('tpl-modal').classList.remove('open
 function pickTpl(key){
   const tpl=TEMPLATES[key];
   closeTpl();
+  // Paso template (tap) → avanzar a type
   if(tutActive && TUT_STEPS[tutStep]?.id==='template') advanceTut();
   openEditor(null,-1,tpl);
 }
@@ -1824,24 +1907,34 @@ function openCfg(){
   document.getElementById('cfg-overlay').classList.add('open');
   requestAnimationFrame(()=>{
     document.getElementById('cfg-drawer').classList.add('open');
-    // Tutorial paso 'category': drawer abierto, apuntar al botón "+ Nueva categoría"
+    // Tutorial paso 'category': auto-scroll hasta el botón +Nueva categoría
     if(tutActive && TUT_STEPS[tutStep]?.id==='category'){
       setTimeout(()=>{
-        const addBtn = document.querySelector('#cfg-drawer .btn-add-cat');
-        if(addBtn) {
-          spotlightTut('#cfg-drawer .btn-add-cat');
-          positionCard('#cfg-drawer .btn-add-cat');
-        } else {
-          spotlightTut('#cfg-drawer');
-          positionCard('#cfg-drawer');
+        // Scroll del drawer body a la sección de Categorías
+        const drawerBody = document.querySelector('#cfg-drawer .drawer-body');
+        const addBtn     = document.querySelector('#cfg-drawer .btn-add-cat');
+        if(drawerBody && addBtn){
+          // Scroll para que el botón quede visible en la parte central del drawer
+          const btnOffsetTop = addBtn.offsetTop;
+          drawerBody.scrollTop = Math.max(0, btnOffsetTop - 80);
         }
-      }, 350);
+        // Spotlight sobre el botón + nueva categoría
+        spotlightTut('#cfg-drawer .btn-add-cat');
+        positionCard('#cfg-drawer .btn-add-cat');
+        document.getElementById('tut-card').classList.add('show');
+        document.getElementById('tut-card').scrollTop = 0;
+      }, 420);
     }
   });
 }
 function closeCfg(){
   document.getElementById('cfg-drawer').classList.remove('open');
-  setTimeout(()=>document.getElementById('cfg-overlay').classList.remove('open'),300);
+  // Resetear scroll del drawer para la próxima apertura
+  setTimeout(()=>{
+    document.getElementById('cfg-overlay').classList.remove('open');
+    const drawerBody = document.querySelector('#cfg-drawer .drawer-body');
+    if(drawerBody) drawerBody.scrollTop = 0;
+  }, 300);
 }
 
 // ═══════════════════════════════════════════════════
@@ -1871,13 +1964,28 @@ function openCatCreate(){
   document.getElementById('cat-modal').classList.add('open');
   // Tutorial paso 'category' fase 1→2: modal abierto, pedir nombre
   if(tutActive && TUT_STEPS[tutStep]?.id==='category'){
+    // Ocultar tarjeta del tutorial para que no estorbe
+    document.getElementById('tut-card').classList.remove('show');
+    // Bloquear cierre del modal (cancelar y X)
+    const modal = document.getElementById('cat-modal');
+    const closeBtn = modal.querySelector('.modal-close');
+    const cancelBtn = modal.querySelector('.del-cancel');
+    if(closeBtn) { closeBtn.style.pointerEvents = 'none'; closeBtn.style.opacity = '0.4'; }
+    if(cancelBtn) { cancelBtn.style.pointerEvents = 'none'; cancelBtn.style.opacity = '0.4'; }
+    // También evitar clic en overlay
+    modal.setAttribute('data-tut-locked', 'true');
+    // Seguir esperando spotlight (aunque no se vea, para mantener lógica)
     setTimeout(()=>{
       spotlightTut('#cat-modal .modal-box');
       positionCard('#cat-modal .modal-box');
     }, 250);
   }
 }
-function closeCatModal(){ document.getElementById('cat-modal').classList.remove('open'); }
+function closeCatModal(){ 
+  // Si el tutorial está en paso 'category', no permitir cerrar
+  if(tutActive && TUT_STEPS[tutStep]?.id==='category') return;
+  document.getElementById('cat-modal').classList.remove('open'); 
+}
 
 function buildPalette(){
   const el=document.getElementById('color-palette');
@@ -1897,9 +2005,19 @@ function saveCat(){
   
   // Tutorial paso 'category' completado → avanzar INMEDIATAMENTE
   if(tutActive && TUT_STEPS[tutStep]?.id==='category'){
-    // Cerrar explícitamente cualquier modal o drawer abierto por el tutorial
+    // Restaurar interactividad del modal antes de cerrar
+    const modal = document.getElementById('cat-modal');
+    if(modal) {
+      const closeBtn = modal.querySelector('.modal-close');
+      const cancelBtn = modal.querySelector('.del-cancel');
+      if(closeBtn) { closeBtn.style.pointerEvents = ''; closeBtn.style.opacity = ''; }
+      if(cancelBtn) { cancelBtn.style.pointerEvents = ''; cancelBtn.style.opacity = ''; }
+      modal.removeAttribute('data-tut-locked');
+    }
+    // Forzar cierre del drawer y del modal (closeCatModal está bloqueada por el tutorial)
     closeCfg();
-    closeCatModal();
+    // Cerrar modal manualmente ignorando restricción
+    document.getElementById('cat-modal').classList.remove('open');
     // Ocultar tarjeta del tutorial momentáneamente para evitar bloqueos
     document.getElementById('tut-card').classList.remove('show');
     // Avanzar al siguiente paso
@@ -1953,6 +2071,11 @@ function assignCat(id){
 // ═══════════════════════════════════════════════════
 let eImportance=null;
 function openImpSheet(){
+  // Si el tutorial está en el paso 'importance-info', avanzar al siguiente paso
+  if(tutActive && TUT_STEPS[tutStep]?.id === 'importance-info') {
+    advanceTut();
+  }
+  
   ['alta','media','baja','none'].forEach(k=>{
     document.getElementById('ich-'+k).textContent=(eImportance===(k==='none'?null:k))?'✓':'';
   });
@@ -1960,9 +2083,12 @@ function openImpSheet(){
   requestAnimationFrame(()=>{
     document.getElementById('imp-sheet').classList.add('open');
     if(tutActive && TUT_STEPS[tutStep]?.id==='importance'){
+      // Esperar que la animación del sheet termine antes de spotlight
       setTimeout(()=>{
         spotlightTut('#imp-sheet');
-        positionCard('#imp-sheet');      // Usa la lógica centralizada (ya incluye caso especial)
+        positionCard('#imp-sheet');
+        // En el paso 'importance' la tarjeta debe permanecer oculta
+        // No forzamos classList.add('show')
       }, 320);
     }
   });
@@ -2080,6 +2206,24 @@ function buildEditTable(existing,headers=[]){
       inp.value=existing?(existing.data[r]?.[c]||''):'';
       // Usar doble clic para seleccionar en modo cálculo
       inp.addEventListener('dblclick',(e)=>{ e.stopPropagation(); onCellClick(td,r,c,inp); });
+      // Para tutorial paso 'grid': avanzar con Enter o al perder foco (móvil)
+      inp.addEventListener('keydown', (e) => {
+        if (tutActive && TUT_STEPS[tutStep]?.id === 'grid' && e.key === 'Enter') {
+          const val = e.target.value.trim();
+          if (val.length > 0) {
+            e.preventDefault();
+            advanceTut();
+          }
+        }
+      });
+      inp.addEventListener('blur', (e) => {
+        if (tutActive && TUT_STEPS[tutStep]?.id === 'grid') {
+          const val = e.target.value.trim();
+          if (val.length > 0) {
+            setTimeout(() => advanceTut(), 100);
+          }
+        }
+      });
       td.appendChild(inp);row.appendChild(td);
     }
   }
@@ -2401,6 +2545,11 @@ function trackAccess(idx){
 //  EDIT / DELETE TABLE
 // ═══════════════════════════════════════════════════
 function editTable(i){
+  if(tutActive){
+    const id = TUT_STEPS[tutStep]?.id;
+    const feedSteps = new Set(['intro','fab','template-info','template','bubble','search','category','delete','delete-confirm','done']);
+    if(feedSteps.has(id)) return;
+  }
   trackAccess(i);
   openEditor(db[i],i);
 }
