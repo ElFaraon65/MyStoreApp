@@ -3,16 +3,20 @@
   "short_name": "MyStoreHG",
   "description": "App de juegos gratuita para todos los proyectos de Historygamespstudios",
   "id": "io.github.elfaraon65.twa",
-  "start_url": "/MyStoreApp/index.html",
-"scope": "/MyStoreApp/",
+  "start_url": "/MyStoreApp/",
+  "scope": "/",
   "display": "fullscreen",
-  "display_override": ["fullscreen"],
+  "display_override": [
+    "fullscreen"
+  ],
   "background_color": "#0a0a0a",
   "theme_color": "#0a0a0a",
-  "orientation": "portrait",    
+  "orientation": "portrait",
   "lang": "es-ES",
   "dir": "ltr",
-  "categories": ["productividad"],
+  "categories": [
+    "productividad"
+  ],
   "prefer_related_applications": false,
   "edge_side_panel": {
     "preferred_width": 400
@@ -62,7 +66,13 @@
       "short_name": "Comenzar",
       "description": "Entrar en la app",
       "url": "./index.html",
-      "icons": [{ "src": "./Logo%20ASA.png", "sizes": "512x512", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "./Logo%20ASA.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }
