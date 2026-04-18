@@ -730,27 +730,12 @@ function markInstalled(app, versionNumber, displayVersion) {
   if (displayVersion) {
     localStorage.setItem(lsKey('installed_displayver', app), displayVersion);
   }
-  // Guardar ETag del archivo base al instalar, para detectar cambios futuros al mismo archivo
-  const baseUrl = GH_RAW(app.githubUser, app.githubRepo, app.githubBranch || 'main',
-    app.archivoBase + (app.extension || '.html'));
-  fetch(baseUrl, { method: 'HEAD', cache: 'no-store' })
-    .then(r => {
-      const etag = r.headers.get('etag') || r.headers.get('last-modified');
-      if (etag) saveInstalledEtag(app, etag);
-    }).catch(() => {});
 }
 function markUninstalled(app) {
   localStorage.removeItem(lsKey('installed', app));
   localStorage.removeItem(lsKey('installed_ver', app));
   localStorage.removeItem(lsKey('installed_vernum', app));
   localStorage.removeItem(lsKey('installed_displayver', app)); // 🆕
-  localStorage.removeItem(lsKey('installed_etag', app));       // etag del archivo base
-}
-function getInstalledEtag(app) {
-  return localStorage.getItem(lsKey('installed_etag', app)) || null;
-}
-function saveInstalledEtag(app, etag) {
-  if (etag) localStorage.setItem(lsKey('installed_etag', app), etag);
 }
 function loadRecentSearches() {
   try { return JSON.parse(localStorage.getItem('asa_recent_searches')) || []; }
@@ -904,16 +889,12 @@ function renderScreenshots(app) {
 
 /* ══════════════════════════════════════════
    UPDATE DETECTION
-   Dos capas:
-   1. Archivos numerados: DataGrid2, DataGrid3… (versión mayor)
-   2. ETag del archivo base: mismo nombre, contenido cambiado (parche silencioso)
-      → si el ETag del archivo base cambió respecto al guardado,
-        hay una actualización silenciosa que se aplica automáticamente
-        la próxima vez que el usuario toca "Iniciar".
+   Busca DataGrid2, DataGrid3… en GitHub y determina la última versión.
+   Compara con la versión instalada registrada.
 ══════════════════════════════════════════ */
 async function checkForUpdates(app) {
   updateInfo = null;
-  app.latestVersionInfo = null;
+  app.latestVersionInfo = null; // reset
 
   try {
     const base   = app.archivoBase;
@@ -922,84 +903,53 @@ async function checkForUpdates(app) {
     const repo   = app.githubRepo;
     const branch = app.githubBranch || 'main';
 
-    let latestFile          = base + ext;
-    let latestVersionNumber = 1;
-    let found               = false;
+    let latestFile = base + ext;
+    let latestVersionNumber = 1; // el base se considera versión 1
+    let found = false;
 
-    // — Capa 1: buscar DataGrid2.html, DataGrid3.html …
+    // Buscar desde 2 hasta 20
     for (let n = 2; n <= 20; n++) {
       const candidate = `${base}${n}${ext}`;
       const url = GH_RAW(user, repo, branch, candidate);
       try {
         const r = await fetch(url, { method: 'HEAD', cache: 'no-store' });
-        if (r.ok) { latestFile = candidate; latestVersionNumber = n; found = true; }
-        else break;
+        if (r.ok) {
+          latestFile = candidate;
+          latestVersionNumber = n;
+          found = true;
+        } else {
+          break; // si falla uno, asumimos que no hay más
+        }
       } catch (_) { break; }
     }
 
-    const latestUrl      = GH_RAW(user, repo, branch, latestFile);
+    const latestUrl = GH_RAW(user, repo, branch, latestFile);
+    // 🆕 MODIFICACIÓN: obtener versión semántica del changelog
     const displayVersion = getDisplayVersionFromChangelog(app, latestVersionNumber);
 
     app.latestVersionInfo = {
       versionNumber: latestVersionNumber,
-      file:          latestFile,
-      url:           latestUrl,
-      displayVersion
+      file: latestFile,
+      url: latestUrl,
+      displayVersion: displayVersion
     };
 
-    const installedVerNum  = getInstalledVersionNumber(app);
-    const isInstalledFlag  = isInstalled(app);
-
-    // — Capa 2: verificar ETag del archivo BASE (mismo nombre, contenido nuevo)
-    //   Solo aplica cuando no hay versión numerada mayor (latestVersionNumber === installedVerNum)
-    let baseContentChanged = false;
-    if (isInstalledFlag && latestVersionNumber === installedVerNum) {
-      try {
-        const baseUrl  = GH_RAW(user, repo, branch, base + ext);
-        const headRes  = await fetch(baseUrl, { method: 'HEAD', cache: 'no-store' });
-        if (headRes.ok) {
-          // GitHub devuelve ETag (hash del contenido) o Last-Modified
-          const remoteEtag     = headRes.headers.get('etag') ||
-                                 headRes.headers.get('last-modified') || null;
-          const installedEtag  = getInstalledEtag(app);
-
-          if (remoteEtag && installedEtag && remoteEtag !== installedEtag) {
-            // Mismo nombre, contenido diferente → actualización silenciosa
-            baseContentChanged = true;
-            app.latestVersionInfo.silentUpdate    = true;
-            app.latestVersionInfo.silentUrl       = baseUrl;
-            app.latestVersionInfo.remoteEtag      = remoteEtag;
-          } else if (remoteEtag && !installedEtag) {
-            // Primera vez que guardamos el ETag (usuario que instaló antes de esta feature)
-            saveInstalledEtag(app, remoteEtag);
-          }
-        }
-      } catch (_) {}
-    }
+    const installedVerNum = getInstalledVersionNumber(app);
+    const isInstalledFlag = isInstalled(app);
 
     if (isInstalledFlag && latestVersionNumber > installedVerNum) {
-      // Versión numerada mayor disponible
+      // Hay una versión más nueva disponible
       updateInfo = {
-        newFile:        latestFile,
-        downloadUrl:    latestUrl,
-        versionNumber:  latestVersionNumber,
-        displayVersion,
-        silent:         false
-      };
-    } else if (isInstalledFlag && baseContentChanged) {
-      // Mismo nombre pero contenido cambiado → actualización silenciosa
-      updateInfo = {
-        newFile:       base + ext,
-        downloadUrl:   app.latestVersionInfo.silentUrl,
-        versionNumber: installedVerNum,       // mismo número
-        displayVersion,
-        silent:        true,                  // no mostrar banner, solo se aplica al "Iniciar"
-        remoteEtag:    app.latestVersionInfo.remoteEtag
+        newFile: latestFile,
+        downloadUrl: latestUrl,
+        versionNumber: latestVersionNumber,
+        displayVersion: displayVersion
       };
     } else {
       updateInfo = null;
     }
 
+    // Actualizar botón si la app está instalada
     if (isInstalledFlag) refreshActionBtn(app);
   } catch (_) {}
 }
@@ -1030,14 +980,12 @@ function refreshActionBtn(app) {
                       : (getDisplayVersionFromChangelog(app, 1));
     text.textContent = `Descargar v${verToShow}`;
     unin.classList.remove('visible');
-  } else if (updateInfo && !updateInfo.silent) {
-    // Actualización mayor (archivo numerado nuevo) — mostrar botón Actualizar
+  } else if (updateInfo) {
     btn.classList.add('btn-update');
     btn.querySelector('svg').style.display = '';
     text.textContent = 'Actualizar';
     unin.classList.add('visible');
   } else {
-    // Instalada y al día (o hay actualización silenciosa pendiente → se aplica al Iniciar)
     btn.classList.add('btn-open');
     btn.querySelector('svg').style.display = 'none';
     text.textContent = 'Iniciar';
@@ -1103,40 +1051,17 @@ function mainAction() {
        Se descargará con el mismo nombre que el archivo actual para que lo reemplace en tu dispositivo.`;
     openModal('updateModal');
   } else {
-    // INICIAR — app instalada y al día (o actualización silenciosa pendiente)
+    // INICIAR — abre siempre la última versión disponible en GitHub.
+    // No hay forma de abrir un archivo local descargado desde una web/PWA,
+    // así que abrimos la URL de GitHub que siempre tiene la versión más reciente.
     const filename = currentApp.archivoBase + (currentApp.extension || '.html');
-
-    if (updateInfo && updateInfo.silent) {
-      // Hay una actualización del mismo archivo (mismo nombre, contenido cambiado).
-      // Descargamos en silencio primero, luego abrimos.
-      const btn  = document.getElementById('mainActionBtn');
-      const text = document.getElementById('mainActionText');
-      text.textContent = 'Actualizando…';
-      btn.disabled = true;
-
-      forceDownload(updateInfo.downloadUrl, filename).then(() => {
-        // Guardar el nuevo ETag y marcar como instalada
-        markInstalled(currentApp, updateInfo.versionNumber,
-                      updateInfo.displayVersion);
-        if (updateInfo.remoteEtag) saveInstalledEtag(currentApp, updateInfo.remoteEtag);
-        updateInfo = null;
-
-        btn.disabled = false;
-        refreshActionBtn(currentApp);
-
-        // Abrir la app
-        window.open('./' + filename, '_blank');
-      }).catch(() => {
-        btn.disabled = false;
-        text.textContent = 'Iniciar';
-        // Abrir de todas formas con la versión que tiene
-        window.open('./' + filename, '_blank');
-      });
-
-    } else {
-      // Sin actualización pendiente — abrir directamente
-      window.open('./' + filename, '_blank');
-    }
+    const url = GH_RAW(
+      currentApp.githubUser,
+      currentApp.githubRepo,
+      currentApp.githubBranch || 'main',
+      filename
+    );
+    window.open(url, '_blank');
   }
 }
 
