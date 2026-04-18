@@ -1187,17 +1187,13 @@ function mainAction() {
 
   } else {
     // ── YA INSTALADA Y AL DÍA → INICIAR ──
-    // Tanto en Android (.apk) como en PC (.classic.zip) descargamos el instalable
-    // usando siempre la última versión detectada por checkForUpdates.
-    {
-      const ext      = platformExt(currentApp);
-      const url      = currentApp.latestVersionInfo
-        ? currentApp.latestVersionInfo.url
-        : GH_RAW(currentApp.githubUser, currentApp.githubRepo,
-            currentApp.githubBranch || 'main',
-            currentApp.archivoBase + ext);
-      const filename = currentApp.archivoBase + ext;
-      forceDownload(url, filename);
+    if (isMobilePlatform()) {
+      // Android: abrir la PWA (la app nativa ya está instalada en el dispositivo)
+      window.open(currentApp.androidUrl
+        || `https://${currentApp.githubUser}.github.io/${currentApp.githubRepo}/`, '_blank');
+    } else {
+      // PC: lanzar la app via protocolo datagrid:// (registrado por install.ps1)
+      window.location.href = 'datagrid://launch';
     }
   }
 }
