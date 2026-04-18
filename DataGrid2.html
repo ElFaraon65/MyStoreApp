@@ -1959,8 +1959,8 @@ function openCatCreate(){
   selColor=PALETTE[5];
   document.getElementById('cat-name-inp').value='';
   buildPalette();
-  // 🔧 Si el tutorial está activo en el paso 'category', cerrar el drawer de Configuración
-  if(tutActive && TUT_STEPS[tutStep]?.id==='category') closeCfg();
+  // Cerrar siempre el drawer de Configuración al abrir el modal de nueva categoría
+  closeCfg();
   document.getElementById('cat-modal').classList.add('open');
   // Tutorial paso 'category' fase 1→2: modal abierto, pedir nombre
   if(tutActive && TUT_STEPS[tutStep]?.id==='category'){

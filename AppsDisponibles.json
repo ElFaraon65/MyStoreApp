@@ -33,10 +33,19 @@
     "tamano": "99 KB",
     "requiere": "Cualquier navegador",
 
-"changelog": [
+    "changelog": [
+    {
+        "version": "2.3.0",
+        "fecha": "Versión actual",
+        "estado": "estable",
+        "descripcion": "Corrección de errores",
+        "cambios": [
+          "Menú desplegable de configuración arreglada para evitar superponerse en la ventana de Categorías"
+        ]
+      },
     {
         "version": "2.2.0",
-        "fecha": "Versión actual",
+        "fecha": "Abril 17 del 2026",
         "estado": "estable",
         "descripcion": "Tutorial para dispositivos móviles arreglado",
         "cambios": [
