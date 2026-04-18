@@ -795,18 +795,14 @@ function getDisplayVersionFromChangelog(app, fallbackNumber = 1) {
 ══════════════════════════════════════════ */
 async function loadApps() {
   let data = null;
-  // Cache-bust con timestamp: garantiza que GitHub sirva el JSON más reciente
-  // aunque el archivo tenga el mismo nombre. Sin esto, GitHub puede cachear
-  // hasta 5 min y los cambios de descripción/estado no se ven.
-  const bust = '?t=' + Date.now();
   try {
-    const res = await fetch(JSON_URL + bust, { cache: 'no-store' });
+    const res = await fetch(JSON_URL, { cache: 'no-store' });
     if (res.ok) data = await res.json();
   } catch (_) {}
 
   if (!data) {
     try {
-      const res = await fetch('./AppsDisponibles.json' + bust, { cache: 'no-store' });
+      const res = await fetch('./AppsDisponibles.json', { cache: 'no-store' });
       if (res.ok) data = await res.json();
     } catch (_) {}
   }
@@ -1719,6 +1715,14 @@ document.addEventListener('keydown', e => {
    INIT
 ══════════════════════════════════════════ */
 loadApps();
+
+// Registrar Service Worker para eliminar caché del CDN de GitHub Pages.
+// Sin esto, GitHub Pages puede servir versiones viejas de los .html
+// hasta 10 min aunque ya hayas subido una nueva.
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js')
+    .catch(() => {}); // silencioso si falla (ej: en localhost sin HTTPS)
+}
 </script>
 </body>
 </html>
