@@ -678,7 +678,7 @@ let apps        = [];
 let currentApp  = null;
 let reviews     = {};       // keyed by app.nombre, persisted to localStorage
 let selStars    = 0;
-let updateInfo  = null;     // { newFile, downloadUrl, versionNumber }
+let updateInfo  = null;     // { newFile, downloadUrl, versionNumber, displayVersion }
 let recentSearches = [];    // persisted
 
 const COLORS = ['#4285f4','#ea4335','#34a853','#fbbc04','#9c27b0','#ff5722'];
@@ -690,6 +690,7 @@ const COLORS = ['#4285f4','#ea4335','#34a853','#fbbc04','#9c27b0','#ff5722'];
    - asa_installed_{appNombre}  → "true" | undefined
    - asa_installed_ver_{appNombre} → "1.1.0"
    - asa_installed_vernum_{appNombre} → número de versión (entero)
+   - asa_installed_displayver_{appNombre} → versión semántica mostrada al usuario
    - asa_recent_searches        → JSON array
 ══════════════════════════════════════════ */
 function lsKey(type, app) { return `asa_${type}_${app.nombre}`; }
@@ -711,22 +712,30 @@ function getInstalledVersionNumber(app) {
   const num = localStorage.getItem(lsKey('installed_vernum', app));
   return num ? parseInt(num, 10) : 0;
 }
-function markInstalled(app, versionNumber) {
+// 🆕 MODIFICACIÓN: obtener la versión semántica instalada
+function getInstalledDisplayVersion(app) {
+  return localStorage.getItem(lsKey('installed_displayver', app)) || null;
+}
+// 🆕 MODIFICACIÓN: markInstalled ahora recibe displayVersion
+function markInstalled(app, versionNumber, displayVersion) {
   localStorage.setItem(lsKey('installed', app), 'true');
-  localStorage.setItem(lsKey('installed_ver', app), app.version);
+  localStorage.setItem(lsKey('installed_ver', app), app.version || displayVersion);
   if (versionNumber !== undefined) {
     localStorage.setItem(lsKey('installed_vernum', app), versionNumber);
   } else {
-    // Intentar extraer de app.version (ej. "1.1.0" -> 1)
-    const match = app.version.match(/^(\d+)/);
+    const match = (app.version || displayVersion || '1').match(/^(\d+)/);
     const vnum = match ? parseInt(match[1], 10) : 1;
     localStorage.setItem(lsKey('installed_vernum', app), vnum);
+  }
+  if (displayVersion) {
+    localStorage.setItem(lsKey('installed_displayver', app), displayVersion);
   }
 }
 function markUninstalled(app) {
   localStorage.removeItem(lsKey('installed', app));
   localStorage.removeItem(lsKey('installed_ver', app));
   localStorage.removeItem(lsKey('installed_vernum', app));
+  localStorage.removeItem(lsKey('installed_displayver', app)); // 🆕
 }
 function loadRecentSearches() {
   try { return JSON.parse(localStorage.getItem('asa_recent_searches')) || []; }
@@ -766,6 +775,19 @@ function getInitials(name) {
 function extractVersionFromFilename(filename) {
   const match = filename.match(/(\d+)\.html$/);
   return match ? parseInt(match[1], 10) : 1;
+}
+
+/* ══════════════════════════════════════════
+   OBTENER VERSIÓN SEMÁNTICA DESDE EL CHANGELOG
+══════════════════════════════════════════ */
+function getDisplayVersionFromChangelog(app, fallbackNumber = 1) {
+  // 🆕 MODIFICACIÓN: usa el primer elemento del changelog como versión actual
+  if (app.changelog && app.changelog.length > 0) {
+    return app.changelog[0].version;
+  }
+  // Si no hay changelog, intenta con app.version o construye desde número
+  if (app.version) return app.version;
+  return `${fallbackNumber}.0.0`;
 }
 
 /* ══════════════════════════════════════════
@@ -902,10 +924,14 @@ async function checkForUpdates(app) {
     }
 
     const latestUrl = GH_RAW(user, repo, branch, latestFile);
+    // 🆕 MODIFICACIÓN: obtener versión semántica del changelog
+    const displayVersion = getDisplayVersionFromChangelog(app, latestVersionNumber);
+
     app.latestVersionInfo = {
       versionNumber: latestVersionNumber,
       file: latestFile,
-      url: latestUrl
+      url: latestUrl,
+      displayVersion: displayVersion
     };
 
     const installedVerNum = getInstalledVersionNumber(app);
@@ -916,7 +942,8 @@ async function checkForUpdates(app) {
       updateInfo = {
         newFile: latestFile,
         downloadUrl: latestUrl,
-        versionNumber: latestVersionNumber
+        versionNumber: latestVersionNumber,
+        displayVersion: displayVersion
       };
     } else {
       updateInfo = null;
@@ -947,11 +974,11 @@ function refreshActionBtn(app) {
   if (!installed) {
     btn.classList.add('btn-install');
     btn.querySelector('svg').style.display = '';
-    // Mostrar la versión que se descargará (última detectada o la del JSON)
-    const verToShow = (app.latestVersionInfo && app.latestVersionInfo.versionNumber > 1)
-      ? `v${app.latestVersionInfo.versionNumber}.0`
-      : `v${app.version || ''}`;
-    text.textContent = `Descargar ${verToShow}`;
+    // 🆕 MODIFICACIÓN: mostrar versión semántica en el botón
+    const verToShow = (app.latestVersionInfo && app.latestVersionInfo.displayVersion)
+                      ? app.latestVersionInfo.displayVersion
+                      : (getDisplayVersionFromChangelog(app, 1));
+    text.textContent = `Descargar v${verToShow}`;
     unin.classList.remove('visible');
   } else if (updateInfo) {
     btn.classList.add('btn-update');
@@ -995,46 +1022,40 @@ function mainAction() {
 
   if (!installed) {
     // Determinar URL de descarga: usar la última versión detectada si existe, si no la base
-    let downloadUrl, versionNumberToMark;
+    let downloadUrl, versionNumberToMark, displayVersionToMark;
     if (currentApp.latestVersionInfo) {
       downloadUrl = currentApp.latestVersionInfo.url;
       versionNumberToMark = currentApp.latestVersionInfo.versionNumber;
+      displayVersionToMark = currentApp.latestVersionInfo.displayVersion;
     } else {
       downloadUrl = GH_RAW(currentApp.githubUser, currentApp.githubRepo, currentApp.githubBranch || 'main',
         currentApp.archivoBase + (currentApp.extension || '.html'));
       versionNumberToMark = 1;
+      displayVersionToMark = getDisplayVersionFromChangelog(currentApp, 1);
     }
 
     const filename = currentApp.archivoBase + (currentApp.extension || '.html');
     forceDownload(downloadUrl, filename);
-    markInstalled(currentApp, versionNumberToMark);
+    // 🆕 MODIFICACIÓN: pasar displayVersion a markInstalled
+    markInstalled(currentApp, versionNumberToMark, displayVersionToMark);
     setTimeout(() => {
       refreshActionBtn(currentApp);
-      // Actualizar UI de versión instalada
-      document.getElementById('statVer').textContent = 'v' + (versionNumberToMark === 1 ? currentApp.version : `${versionNumberToMark}.0`);
+      // Actualizar UI de versión instalada con la versión semántica
+      document.getElementById('statVer').textContent = 'v' + displayVersionToMark;
     }, 500);
   } else if (updateInfo) {
     // Mostrar modal de actualización
     document.getElementById('modalTitle').textContent = `Actualización disponible`;
     document.getElementById('modalDesc').innerHTML =
-      `<strong>${currentApp.nombre}</strong> tiene una versión nueva disponible (v${updateInfo.versionNumber}.0).<br><br>
+      `<strong>${currentApp.nombre}</strong> tiene una versión nueva disponible (v${updateInfo.displayVersion}).<br><br>
        Se descargará con el mismo nombre que el archivo actual para que lo reemplace en tu dispositivo.`;
     openModal('updateModal');
   } else {
     // INICIAR — la app ya está instalada y actualizada.
-    // En PWA/APK instalado, intentamos abrir el archivo local.
-    // El navegador intentará encontrar el archivo descargado previamente.
     const filename = currentApp.archivoBase + (currentApp.extension || '.html');
-    // Intentar abrir como archivo local (funciona en PWA desktop y cuando
-    // el usuario ya tiene el archivo en su carpeta de descargas).
-    // En Android APK (PWABuilder/appxbundle) el archivo .html ya está empaquetado
-    // como asset interno, por lo que el navegador lo resuelve como ruta relativa.
     try {
-      // Primero intentamos abrir la ruta relativa local (funciona en APK/appxbundle
-      // donde el archivo está empaquetado junto a index.html)
       window.open('./' + filename, '_blank');
     } catch(e) {
-      // Fallback: abrir desde GitHub raw (sin descargar, solo visualizar)
       window.open(GH_RAW(currentApp.githubUser, currentApp.githubRepo,
         currentApp.githubBranch || 'main', filename), '_blank');
     }
@@ -1049,8 +1070,8 @@ async function doUpdate() {
 
   try {
     await forceDownload(updateInfo.downloadUrl, currentApp.archivoBase + (currentApp.extension || '.html'));
-    // Marcar como instalada con la nueva versión
-    markInstalled(currentApp, updateInfo.versionNumber);
+    // 🆕 MODIFICACIÓN: marcar instalada con versión semántica
+    markInstalled(currentApp, updateInfo.versionNumber, updateInfo.displayVersion);
     updateInfo = null;
 
     btn.textContent = '¡Listo!';
@@ -1059,7 +1080,9 @@ async function doUpdate() {
       btn.textContent = 'Actualizar';
       btn.disabled = false;
       refreshActionBtn(currentApp);
-      document.getElementById('statVer').textContent = 'v' + (currentApp.latestVersionInfo?.versionNumber || '—') + '.0';
+      const displayVer = getDisplayVersionFromChangelog(currentApp,
+                          currentApp.latestVersionInfo?.versionNumber || 1);
+      document.getElementById('statVer').textContent = 'v' + displayVer;
     }, 1500);
   } catch (_) {
     btn.textContent = 'Error — reintentar';
@@ -1195,14 +1218,14 @@ function openAppDetail(app) {
   currentApp = app;
   goDetail();
 
-  // Asegurar que latestVersionInfo esté disponible
-  if (!app.latestVersionInfo) {
-    checkForUpdates(app).then(() => {
-      // Refrescar UI después de obtener info de versión
-      document.getElementById('statVer').textContent = 'v' + (app.latestVersionInfo?.versionNumber === 1 ? app.version : `${app.latestVersionInfo?.versionNumber}.0`) || app.version || '—';
-      refreshActionBtn(app);
-    });
-  }
+  // Función auxiliar para refrescar UI cuando tengamos latestVersionInfo
+  const refreshDetailUI = () => {
+    // Mostrar versión semántica
+    const displayVer = app.latestVersionInfo?.displayVersion
+                       || getDisplayVersionFromChangelog(app, 1);
+    document.getElementById('statVer').textContent = 'v' + displayVer;
+    refreshActionBtn(app);
+  };
 
   // Icon
   document.getElementById('detailIconWrap').innerHTML = iconHTML(app, 90);
@@ -1212,7 +1235,7 @@ function openAppDetail(app) {
   document.getElementById('detailDev').textContent  = app.autor;
   document.getElementById('statSize').textContent   = app.realSize || app.tamano || '—';
   document.getElementById('statReq').textContent    = app.requiere || '—';
-  document.getElementById('statVer').textContent    = 'v' + (app.latestVersionInfo?.versionNumber === 1 ? app.version : `${app.latestVersionInfo?.versionNumber}.0`) || app.version || '—';
+  // La versión se rellenará en refreshDetailUI
 
   // Tags
   const tagColors = ['', 'blue', 'purple', 'orange'];
@@ -1226,7 +1249,7 @@ function openAppDetail(app) {
     (app.caracteristicas || []).map(f =>
       `<div class="feat-item"><div class="feat-dot"></div>${f}</div>`).join('');
 
-  // For-who chips from JSON or defaults
+  // For-who chips
   const forWhoChips = document.getElementById('forWhoChips');
   if (app.paraQuien && app.paraQuien.length) {
     forWhoChips.innerHTML = app.paraQuien.map(c =>
@@ -1254,16 +1277,19 @@ function openAppDetail(app) {
   document.getElementById('reviewerName').value = '';
   renderReviews();
 
-  // Action button
-  refreshActionBtn(app);
-
   // Reset tabs
   switchDTab(document.querySelector('.dtab'), 'about');
 
-  // Obtener tamaño real del archivo (HEAD) y actualizar UI
+  // Obtener tamaño real del archivo (HEAD)
   fetchRealSize(app);
-}
 
+  // Asegurar que latestVersionInfo esté disponible antes de refrescar botón y versión
+  if (!app.latestVersionInfo) {
+    checkForUpdates(app).then(() => refreshDetailUI());
+  } else {
+    refreshDetailUI();
+  }
+}
 function openFirstApp() {
   if (apps.length) openAppDetail(apps[0]);
 }
