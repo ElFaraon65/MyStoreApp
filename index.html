@@ -1110,15 +1110,8 @@ function mainAction() {
   } else {
     // ── YA INSTALADA Y AL DÍA ──
     if (isInstallable(currentApp)) {
-      // Los instalables no se pueden "abrir" desde el navegador
-      // El botón en este estado dirá "Instalada" — solo informamos
-      document.getElementById('modalTitle').textContent = `${currentApp.nombre} instalada`;
-      document.getElementById('modalDesc').innerHTML =
-        `Ya tienes la versión más reciente instalada en tu dispositivo.<br><br>` +
-        `Si quieres reinstalarla, puedes desinstalarla primero con el botón de abajo.`;
-      openModal('updateModal');
-      // Ocultar el botón de actualizar en este modal para que no confunda
-      document.getElementById('modalUpdateBtn').style.display = 'none';
+      // Los instalables (.apk etc.) no se pueden abrir desde el navegador — no hacer nada
+      return;
     } else {
       // HTML: abrir directamente
       const filename = currentApp.archivoBase + ext;
@@ -1579,6 +1572,11 @@ function openReviews() {
   document.getElementById('bn-reviews').classList.add('active');
   document.getElementById('bn-home').classList.remove('active');
   document.getElementById('bn-apps').classList.remove('active');
+}
+
+function openFirstApp() {
+  if (!apps.length) return;
+  openAppDetail(apps[0]);
 }
 
 function switchDTab(btn, id) {
