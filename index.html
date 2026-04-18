@@ -1050,8 +1050,7 @@ function refreshActionBtn(app) {
   } else {
     btn.classList.add('btn-open');
     btn.querySelector('svg').style.display = 'none';
-    // Los instalables (.apk etc.) no se pueden "iniciar" desde el navegador
-    text.textContent = isInstallable(app) ? 'Instalada ✓' : 'Iniciar';
+    text.textContent = 'Iniciar';
     unin.classList.add('visible');
   }
 }
@@ -1187,26 +1186,34 @@ function mainAction() {
     openModal('updateModal');
 
   } else {
-    // ── YA INSTALADA Y AL DÍA ──
-    if (isInstallable(currentApp)) {
-      // Los instalables no se pueden "abrir" desde el navegador
-      // El botón en este estado dirá "Instalada" — solo informamos
-      document.getElementById('modalTitle').textContent = `${currentApp.nombre} instalada`;
-      document.getElementById('modalDesc').innerHTML =
-        `Ya tienes la versión más reciente instalada en tu dispositivo.<br><br>` +
-        `Si quieres reinstalarla, puedes desinstalarla primero con el botón de abajo.`;
-      openModal('updateModal');
-      // Ocultar el botón de actualizar en este modal para que no confunda
-      document.getElementById('modalUpdateBtn').style.display = 'none';
+    // ── YA INSTALADA Y AL DÍA → INICIAR ──
+    if (isMobilePlatform()) {
+      // Android: abrir la app por su scheme/intent
+      // Intenta abrir la app instalada por su nombre de paquete
+      const scheme = (currentApp.androidScheme || ('android-app://com.' + currentApp.nombre.toLowerCase().replace(/\s/g,'')));
+      try { window.location.href = scheme; } catch(_) {}
     } else {
-      // HTML: abrir directamente
-      const filename = currentApp.archivoBase + ext;
-      try {
-        window.open('./' + filename, '_blank');
-      } catch(e) {
-        window.open(GH_RAW(currentApp.githubUser, currentApp.githubRepo,
-          currentApp.githubBranch || 'main', filename), '_blank');
-      }
+      // PC: ejecutar install.ps1 con PowerShell automáticamente
+      // Descarga el ZIP y lanza PowerShell — el usuario solo ve que se abre la app
+      _pendingInstall = {
+        url: currentApp.latestVersionInfo
+          ? currentApp.latestVersionInfo.url
+          : GH_RAW(currentApp.githubUser, currentApp.githubRepo,
+              currentApp.githubBranch || 'main',
+              currentApp.archivoBase + platformExt(currentApp)),
+        filename: currentApp.archivoBase + platformExt(currentApp),
+        versionNumber: currentApp.latestVersionInfo?.versionNumber || 1,
+        displayVersion: currentApp.latestVersionInfo?.displayVersion || getDisplayVersionFromChangelog(currentApp, 1)
+      };
+      document.getElementById('pcWarningTitle').textContent = `Iniciar ${currentApp.nombre}`;
+      document.getElementById('pcWarningDesc').innerHTML =
+        `Se descargará el paquete y se ejecutará <strong>install.ps1</strong> automáticamente con PowerShell.<br><br>
+        <strong>Pasos:</strong><br>
+        1. Extrae el ZIP descargado<br>
+        2. Haz clic derecho en <strong>install.ps1</strong><br>
+        3. Selecciona <strong>"Ejecutar con PowerShell"</strong><br><br>
+        <span style="font-size:12px;color:var(--text3)">Windows puede pedir confirmación — es normal al instalar fuera de la Microsoft Store.</span>`;
+      openModal('pcWarningModal');
     }
   }
 }
