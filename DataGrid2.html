@@ -1959,8 +1959,10 @@ function openCatCreate(){
   selColor=PALETTE[5];
   document.getElementById('cat-name-inp').value='';
   buildPalette();
-  // Cerrar siempre el drawer de Configuración al abrir el modal de nueva categoría
-  closeCfg();
+    // En móvil (<640px), cerrar el drawer de Configuración para evitar solapamiento
+  if (window.innerWidth < 640) {
+    closeCfg();
+  }
   document.getElementById('cat-modal').classList.add('open');
   // Tutorial paso 'category' fase 1→2: modal abierto, pedir nombre
   if(tutActive && TUT_STEPS[tutStep]?.id==='category'){

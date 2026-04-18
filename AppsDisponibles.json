@@ -35,12 +35,21 @@
 
     "changelog": [
     {
-        "version": "2.3.0",
+        "version": "2.2.2",
         "fecha": "Versión actual",
         "estado": "estable",
         "descripcion": "Corrección de errores",
         "cambios": [
-          "Menú desplegable de configuración arreglada para evitar superponerse en la ventana de Categorías"
+          "Menú desplegable de configuración arreglada para evitar superponerse en la ventana de Categorías ahora solo para pc"
+        ]
+      },
+    {
+        "version": "2.2.1",
+        "fecha": "Abril 18 del 2026",
+        "estado": "estable",
+        "descripcion": "Corrección de errores",
+        "cambios": [
+          "Menú desplegable de configuración arreglada para evitar superponerse en la ventana de Categorías para ambos dispositivos"
         ]
       },
     {
