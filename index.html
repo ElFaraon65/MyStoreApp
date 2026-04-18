@@ -1197,24 +1197,8 @@ function mainAction() {
       const filename = currentApp.archivoBase + platformExt(currentApp);
       forceDownload(url, filename);
     } else {
-      // PC: mostrar instrucciones para ejecutar install.ps1
-      _pendingInstall = {
-        url: currentApp.latestVersionInfo
-          ? currentApp.latestVersionInfo.url
-          : GH_RAW(currentApp.githubUser, currentApp.githubRepo,
-              currentApp.githubBranch || 'main',
-              currentApp.archivoBase + platformExt(currentApp)),
-        filename: currentApp.archivoBase + platformExt(currentApp),
-        versionNumber: currentApp.latestVersionInfo?.versionNumber || 1,
-        displayVersion: currentApp.latestVersionInfo?.displayVersion || getDisplayVersionFromChangelog(currentApp, 1)
-      };
-      document.getElementById('pcWarningTitle').textContent = `Iniciar ${currentApp.nombre}`;
-      document.getElementById('pcWarningDesc').innerHTML =
-        `La app ya está instalada. Para abrirla:<br><br>
-        1. Busca <strong>DataGrid</strong> en el menú Inicio de Windows<br>
-        2. O ejecuta de nuevo <strong>install.ps1</strong> — el script la abre automáticamente tras instalarla.<br><br>
-        <span style="font-size:12px;color:var(--text3)">Si no aparece en el menú Inicio, vuelve a ejecutar install.ps1 con clic derecho → "Ejecutar con PowerShell".</span>`;
-      openModal('pcWarningModal');
+      // PC: lanzar la app via protocolo datagrid:// (registrado por install.ps1)
+      window.location.href = 'datagrid://launch';
     }
   }
 }
