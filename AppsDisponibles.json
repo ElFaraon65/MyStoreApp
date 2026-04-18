@@ -4,11 +4,12 @@
     "autor": "HistoryGamesProductions",
     "rating": "5.0",
     "categoria": "Productividad y Entretenimiento",
+
     "githubUser": "ElFaraon65",
-    "githubRepo": "MyStoreApp",
+    "githubRepo": "DataGridApp",
     "githubBranch": "main",
     "archivoBase": "DataGrid",
-    "extension": ".html",
+    "extension": ".apk",
 
     "portada": "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/assets/icons/LOGO%20DATAGRID.png",
 
@@ -31,19 +32,19 @@
 
     "tags": ["Productividad", "Datos", "Gestión", "Offline"],
     "tamano": "99 KB",
-    "requiere": "Cualquier navegador",
+    "requiere": "Android 8.0+",
 
     "changelog": [
-    {
+      {
         "version": "2.2.2",
         "fecha": "Versión actual",
         "estado": "estable",
         "descripcion": "Corrección de errores",
         "cambios": [
-          "Menú desplegable de configuración arreglada para evitar superponerse en la ventana de Categorías ahora solo para dispositivo móviles"
+          "Menú desplegable de configuración arreglada para evitar superponerse en la ventana de Categorías ahora solo para dispositivos móviles"
         ]
       },
-    {
+      {
         "version": "2.2.1",
         "fecha": "Abril 18 del 2026",
         "estado": "estable",
@@ -52,7 +53,7 @@
           "Menú desplegable de configuración arreglada para evitar superponerse en la ventana de Categorías para ambos dispositivos"
         ]
       },
-    {
+      {
         "version": "2.2.0",
         "fecha": "Abril 17 del 2026",
         "estado": "estable",
@@ -61,7 +62,7 @@
           "Ya es posible manejar el tutorial en pantallas pequeñas. Nos expandemos hasta la comodidad de tu teléfono"
         ]
       },
-{
+      {
         "version": "2.1.0",
         "fecha": "Abril 16 del 2026",
         "estado": "inestable",
@@ -71,20 +72,20 @@
           "Las notas rápidas ya no te fuerzan a crear una tabla y ahora es opcional"
         ]
       },
-    {
-      "version": "2.0.0",
-      "fecha": "Abril 16 del 2026",
-      "estado": "inestable",
-      "descripcion": "Nuevas funcionalidades y mejoras de rendimiento",
-      "cambios": [
-        "Categorías para separar tablas",
-        "Tutorial adaptitivo",
-        "Nivel de importancia",
-        "Tipos de tabla",
-        "Notas rápidas para momentos en los cuales no haya tiempo de pensarlo mucho",
-        "Plantillas base para agilizar el trabajo y sentar una buena base"
-      ]
-  },
+      {
+        "version": "2.0.0",
+        "fecha": "Abril 16 del 2026",
+        "estado": "inestable",
+        "descripcion": "Nuevas funcionalidades y mejoras de rendimiento",
+        "cambios": [
+          "Categorías para separar tablas",
+          "Tutorial adaptativo",
+          "Nivel de importancia",
+          "Tipos de tabla",
+          "Notas rápidas para momentos en los cuales no haya tiempo de pensarlo mucho",
+          "Plantillas base para agilizar el trabajo y sentar una buena base"
+        ]
+      },
       {
         "version": "1.1.0",
         "fecha": "Abril 16 del 2026",

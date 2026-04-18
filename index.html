@@ -375,6 +375,22 @@
     </div>
   </div>
 </div>
+<!-- Android sources warning modal -->
+<div class="modal-bg" id="androidWarningModal">
+  <div class="modal-box">
+    <div class="modal-icon">📦</div>
+    <h3 id="androidWarningTitle">Instalador externo</h3>
+    <p id="androidWarningDesc">
+      Se descargará el instalador de la app (<strong id="androidWarningExt"></strong>).<br><br>
+      Android te pedirá que <strong>permitas instalar desde fuentes externas</strong> — es el comportamiento normal cuando se instala fuera de Play Store. Solo tienes que aceptar una vez y podrás instalar sin problemas.<br><br>
+      <span style="font-size:12px;color:var(--text3)">Si ya lo has hecho antes en este navegador, no volverá a preguntarte.</span>
+    </p>
+    <div class="modal-btns">
+      <button class="mbtn-cancel" onclick="closeModal('androidWarningModal')">Cancelar</button>
+      <button class="mbtn-ok" id="androidWarningBtn" onclick="proceedInstallableDownload()">Entendido, descargar</button>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════ LIGHTBOX ═══════════ -->
 <div id="lightbox" onclick="lbBgClick(event)">
@@ -768,12 +784,14 @@ function getInitials(name) {
 
 /* ══════════════════════════════════════════
    EXTRAER NÚMERO DE VERSIÓN DEL NOMBRE DE ARCHIVO
-   DataGrid.html → 1
-   DataGrid2.html → 2
-   DataGrid10.html → 10
+   Funciona con cualquier extensión (.html, .apk, .appxbundle…)
+   DataGrid.apk  → 1
+   DataGrid2.apk → 2
+   DataGrid10.apk → 10
 ══════════════════════════════════════════ */
 function extractVersionFromFilename(filename) {
-  const match = filename.match(/(\d+)\.html$/);
+  // Acepta cualquier extensión: busca dígitos justo antes del último punto
+  const match = filename.match(/(\d+)\.[^.]+$/);
   return match ? parseInt(match[1], 10) : 1;
 }
 
@@ -889,7 +907,8 @@ function renderScreenshots(app) {
 
 /* ══════════════════════════════════════════
    UPDATE DETECTION
-   Busca DataGrid2, DataGrid3… en GitHub y determina la última versión.
+   Busca {archivoBase}2, {archivoBase}3… con la extensión configurada
+   (.html, .apk, .appxbundle…) en el repo propio de cada app.
    Compara con la versión instalada registrada.
 ══════════════════════════════════════════ */
 async function checkForUpdates(app) {
@@ -988,7 +1007,8 @@ function refreshActionBtn(app) {
   } else {
     btn.classList.add('btn-open');
     btn.querySelector('svg').style.display = 'none';
-    text.textContent = 'Iniciar';
+    // Los instalables (.apk etc.) no se pueden "iniciar" desde el navegador
+    text.textContent = isInstallable(app) ? 'Instalada ✓' : 'Iniciar';
     unin.classList.add('visible');
   }
 }
@@ -1016,54 +1036,153 @@ async function forceDownload(url, filename) {
   }
 }
 
+/* ══════════════════════════════════════════
+   HELPERS — INSTALABLES
+   Extensiones que se instalan en el dispositivo (no se abren en el navegador).
+══════════════════════════════════════════ */
+const INSTALLABLE_EXTS = ['.apk', '.appxbundle', '.exe', '.msi', '.ipa'];
+
+function isInstallable(app) {
+  const ext = (app.extension || '.html').toLowerCase();
+  return INSTALLABLE_EXTS.includes(ext);
+}
+
+/* Datos temporales para el flujo de descarga de instalables */
+let _pendingInstall = null; // { url, filename, versionNumber, displayVersion }
+
 function mainAction() {
   if (!currentApp) return;
   const installed = isInstalled(currentApp);
+  const ext = currentApp.extension || '.html';
 
   if (!installed) {
-    // Determinar URL de descarga: usar la última versión detectada si existe, si no la base
+    // ── PRIMERA DESCARGA ──
     let downloadUrl, versionNumberToMark, displayVersionToMark;
     if (currentApp.latestVersionInfo) {
-      downloadUrl = currentApp.latestVersionInfo.url;
-      versionNumberToMark = currentApp.latestVersionInfo.versionNumber;
-      displayVersionToMark = currentApp.latestVersionInfo.displayVersion;
+      downloadUrl        = currentApp.latestVersionInfo.url;
+      versionNumberToMark   = currentApp.latestVersionInfo.versionNumber;
+      displayVersionToMark  = currentApp.latestVersionInfo.displayVersion;
     } else {
-      downloadUrl = GH_RAW(currentApp.githubUser, currentApp.githubRepo, currentApp.githubBranch || 'main',
-        currentApp.archivoBase + (currentApp.extension || '.html'));
-      versionNumberToMark = 1;
+      downloadUrl = GH_RAW(currentApp.githubUser, currentApp.githubRepo,
+        currentApp.githubBranch || 'main',
+        currentApp.archivoBase + ext);
+      versionNumberToMark  = 1;
       displayVersionToMark = getDisplayVersionFromChangelog(currentApp, 1);
     }
 
-    const filename = currentApp.archivoBase + (currentApp.extension || '.html');
-    forceDownload(downloadUrl, filename);
-    // 🆕 MODIFICACIÓN: pasar displayVersion a markInstalled
-    markInstalled(currentApp, versionNumberToMark, displayVersionToMark);
-    setTimeout(() => {
-      refreshActionBtn(currentApp);
-      // Actualizar UI de versión instalada con la versión semántica
-      document.getElementById('statVer').textContent = 'v' + displayVersionToMark;
-    }, 500);
+    const filename = currentApp.archivoBase + ext;
+
+    if (isInstallable(currentApp)) {
+      // Mostrar aviso Android antes de descargar
+      _pendingInstall = {
+        url: downloadUrl, filename,
+        versionNumber: versionNumberToMark,
+        displayVersion: displayVersionToMark
+      };
+      document.getElementById('androidWarningTitle').textContent =
+        `Instalar ${currentApp.nombre}`;
+      document.getElementById('androidWarningDesc').innerHTML =
+        `Se descargará el instalador de <strong>${currentApp.nombre}</strong> ` +
+        `(<strong>${ext}</strong>).<br><br>` +
+        `Android te pedirá que <strong>permitas instalar desde fuentes externas</strong> ` +
+        `— es el comportamiento normal cuando se instala fuera de Play Store. ` +
+        `Solo tienes que aceptarlo una vez en este navegador y ya no volverá a preguntarte.<br><br>` +
+        `<span style="font-size:12px;color:var(--text3)">El archivo se guardará en tu carpeta de Descargas.</span>`;
+      openModal('androidWarningModal');
+    } else {
+      // Archivo HTML: descarga directa como siempre
+      forceDownload(downloadUrl, filename);
+      markInstalled(currentApp, versionNumberToMark, displayVersionToMark);
+      setTimeout(() => {
+        refreshActionBtn(currentApp);
+        document.getElementById('statVer').textContent = 'v' + displayVersionToMark;
+      }, 500);
+    }
+
   } else if (updateInfo) {
-    // Mostrar modal de actualización
+    // ── ACTUALIZACIÓN DISPONIBLE ──
     document.getElementById('modalTitle').textContent = `Actualización disponible`;
     document.getElementById('modalDesc').innerHTML =
       `<strong>${currentApp.nombre}</strong> tiene una versión nueva disponible (v${updateInfo.displayVersion}).<br><br>
        Se descargará con el mismo nombre que el archivo actual para que lo reemplace en tu dispositivo.`;
     openModal('updateModal');
+
   } else {
-    // INICIAR — la app ya está instalada y actualizada.
-    const filename = currentApp.archivoBase + (currentApp.extension || '.html');
-    try {
-      window.open('./' + filename, '_blank');
-    } catch(e) {
-      window.open(GH_RAW(currentApp.githubUser, currentApp.githubRepo,
-        currentApp.githubBranch || 'main', filename), '_blank');
+    // ── YA INSTALADA Y AL DÍA ──
+    if (isInstallable(currentApp)) {
+      // Los instalables no se pueden "abrir" desde el navegador
+      // El botón en este estado dirá "Instalada" — solo informamos
+      document.getElementById('modalTitle').textContent = `${currentApp.nombre} instalada`;
+      document.getElementById('modalDesc').innerHTML =
+        `Ya tienes la versión más reciente instalada en tu dispositivo.<br><br>` +
+        `Si quieres reinstalarla, puedes desinstalarla primero con el botón de abajo.`;
+      openModal('updateModal');
+      // Ocultar el botón de actualizar en este modal para que no confunda
+      document.getElementById('modalUpdateBtn').style.display = 'none';
+    } else {
+      // HTML: abrir directamente
+      const filename = currentApp.archivoBase + ext;
+      try {
+        window.open('./' + filename, '_blank');
+      } catch(e) {
+        window.open(GH_RAW(currentApp.githubUser, currentApp.githubRepo,
+          currentApp.githubBranch || 'main', filename), '_blank');
+      }
     }
+  }
+}
+
+/* Llamado por el botón "Entendido, descargar" del modal Android */
+async function proceedInstallableDownload() {
+  if (!_pendingInstall || !currentApp) return;
+  const btn = document.getElementById('androidWarningBtn');
+  btn.textContent = 'Descargando…';
+  btn.disabled = true;
+
+  try {
+    await forceDownload(_pendingInstall.url, _pendingInstall.filename);
+    markInstalled(currentApp, _pendingInstall.versionNumber, _pendingInstall.displayVersion);
+    setTimeout(() => {
+      closeModal('androidWarningModal');
+      btn.textContent = 'Entendido, descargar';
+      btn.disabled = false;
+      refreshActionBtn(currentApp);
+      document.getElementById('statVer').textContent = 'v' + _pendingInstall.displayVersion;
+      _pendingInstall = null;
+    }, 500);
+  } catch (_) {
+    btn.textContent = 'Error — reintentar';
+    btn.disabled = false;
   }
 }
 
 async function doUpdate() {
   if (!updateInfo || !currentApp) return;
+
+  // Si es un instalable, mostrar aviso Android antes de descargar
+  if (isInstallable(currentApp)) {
+    closeModal('updateModal');
+    const ext = currentApp.extension || '.apk';
+    _pendingInstall = {
+      url: updateInfo.downloadUrl,
+      filename: currentApp.archivoBase + ext,
+      versionNumber: updateInfo.versionNumber,
+      displayVersion: updateInfo.displayVersion,
+      isUpdate: true
+    };
+    document.getElementById('androidWarningTitle').textContent =
+      `Actualizar ${currentApp.nombre}`;
+    document.getElementById('androidWarningDesc').innerHTML =
+      `Se descargará la versión <strong>v${updateInfo.displayVersion}</strong> de ` +
+      `<strong>${currentApp.nombre}</strong> (<strong>${ext}</strong>).<br><br>` +
+      `Android te pedirá que <strong>permitas instalar desde fuentes externas</strong>. ` +
+      `Acepta para completar la actualización. Si ya lo hiciste antes, no volverá a preguntarte.<br><br>` +
+      `<span style="font-size:12px;color:var(--text3)">El instalador se guardará en tu carpeta de Descargas.</span>`;
+    openModal('androidWarningModal');
+    return;
+  }
+
+  // HTML: descarga directa como siempre
   const btn = document.getElementById('modalUpdateBtn');
   btn.textContent = 'Descargando…';
   btn.disabled = true;
@@ -1474,7 +1593,14 @@ function switchDTab(btn, id) {
    MODALS
 ══════════════════════════════════════════ */
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  // Restaurar el botón de actualizar por si se ocultó en el flujo de "Instalada"
+  if (id === 'updateModal') {
+    const updateBtn = document.getElementById('modalUpdateBtn');
+    if (updateBtn) updateBtn.style.display = '';
+  }
+}
 document.querySelectorAll('.modal-bg').forEach(m =>
   m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); }));
 
