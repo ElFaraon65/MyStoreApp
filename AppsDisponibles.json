@@ -34,9 +34,18 @@
     "requiere": "Cualquier navegador",
 
 "changelog": [
+    {
+        "version": "2.2.0",
+        "fecha": "Versión actual",
+        "estado": "estable",
+        "descripcion": "Tutorial para dispositivos móviles arreglado",
+        "cambios": [
+          "Ya es posible manejar el tutorial en pantallas pequeñas. Nos expandemos hasta la comodidad de tu teléfono"
+        ]
+      },
 {
         "version": "2.1.0",
-        "fecha": "Versión actual",
+        "fecha": "Abril 16 del 2026",
         "estado": "inestable",
         "descripcion": "Corrección de errores",
         "cambios": [
