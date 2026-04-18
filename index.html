@@ -1187,24 +1187,17 @@ function mainAction() {
 
   } else {
     // ── YA INSTALADA Y AL DÍA → INICIAR ──
-    const webUrl = currentApp.androidUrl
-      || `https://${currentApp.githubUser}.github.io/${currentApp.githubRepo}/`;
-
-    if (isMobilePlatform()) {
-      // Android: abrir la PWA en el navegador (la app nativa ya está instalada aparte)
-      window.open(webUrl, '_blank');
-    } else {
-      // PC: intentar abrir via protocolo datagrid:// (registrado por install.ps1).
-      // Si el protocolo no está registrado, abre la PWA web como fallback silencioso.
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
-      iframe.src = 'datagrid://launch';
-      // Fallback: si tras 1.5s el usuario sigue en la página, abrir la versión web
-      setTimeout(() => {
-        document.body.removeChild(iframe);
-        if (!document.hidden) window.open(webUrl, '_blank');
-      }, 1500);
+    // Tanto en Android (.apk) como en PC (.classic.zip) descargamos el instalable
+    // usando siempre la última versión detectada por checkForUpdates.
+    {
+      const ext      = platformExt(currentApp);
+      const url      = currentApp.latestVersionInfo
+        ? currentApp.latestVersionInfo.url
+        : GH_RAW(currentApp.githubUser, currentApp.githubRepo,
+            currentApp.githubBranch || 'main',
+            currentApp.archivoBase + ext);
+      const filename = currentApp.archivoBase + ext;
+      forceDownload(url, filename);
     }
   }
 }
