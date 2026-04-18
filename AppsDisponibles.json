@@ -10,7 +10,7 @@
     "githubBranch": "main",
     "archivoBase": "DataGrid",
     "extension": ".apk",
-    "extensionPC": ".classic.appxbundle",
+    "extensionPC": ".classic.zip",
 
     "portada": "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/assets/icons/LOGO%20DATAGRID.png",
 
