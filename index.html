@@ -1658,7 +1658,11 @@ function openReviews() {
   if (!currentApp && apps.length) currentApp = apps[0];
   if (currentApp) {
     openAppDetail(currentApp);
-    setTimeout(() => switchDTab(document.querySelectorAll('.dtab')[1], 'reviews'), 50);
+    setTimeout(() => {
+      switchDTab(document.querySelectorAll('.dtab')[1], 'reviews');
+      const el = document.getElementById('dtab-reviews');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
   }
   document.getElementById('bn-reviews').classList.add('active');
   document.getElementById('bn-home').classList.remove('active');
