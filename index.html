@@ -1188,14 +1188,10 @@ function mainAction() {
   } else {
     // ── YA INSTALADA Y AL DÍA → INICIAR ──
     if (isMobilePlatform()) {
-      // Android: descarga el APK directamente — Android lo abre con el instalador nativo
-      const url = currentApp.latestVersionInfo
-        ? currentApp.latestVersionInfo.url
-        : GH_RAW(currentApp.githubUser, currentApp.githubRepo,
-            currentApp.githubBranch || 'main',
-            currentApp.archivoBase + platformExt(currentApp));
-      const filename = currentApp.archivoBase + platformExt(currentApp);
-      forceDownload(url, filename);
+      // Android: abrir la app directamente via androidUrl (ya está instalada)
+      const launchUrl = currentApp.androidUrl
+        || `https://${currentApp.githubUser}.github.io/${currentApp.githubRepo}/`;
+      window.open(launchUrl, '_blank');
     } else {
       // PC: lanzar la app via protocolo datagrid:// (registrado por install.ps1)
       window.open('datagrid://launch', '_blank');
