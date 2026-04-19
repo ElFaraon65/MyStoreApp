@@ -1410,6 +1410,10 @@ async function fetchRealSize(app) {
 /* ══════════════════════════════════════════
    OPEN APP DETAIL
 ══════════════════════════════════════════ */
+function openFirstApp() {
+  if (apps && apps.length > 0) openAppDetail(apps[0]);
+}
+
 function openAppDetail(app) {
   if (!app) return;
   currentApp = app;
