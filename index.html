@@ -1198,12 +1198,12 @@ function mainAction() {
       forceDownload(url, filename);
     } else {
       // PC: lanzar la app via protocolo datagrid:// (registrado por install.ps1)
-      const a = document.createElement('a');
-      a.href = 'datagrid://launch';
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => document.body.removeChild(a), 1000);
+      // Usamos iframe para disparar el protocolo sin navegar la página actual
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = 'datagrid://launch';
+      document.body.appendChild(iframe);
+      setTimeout(() => document.body.removeChild(iframe), 3000);
     }
   }
 }
