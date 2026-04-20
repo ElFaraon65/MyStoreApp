@@ -36,10 +36,20 @@
     "tamano": "99 KB",
     "requiere": "Android 8.0+",
 
+    
     "changelog": [
+    {
+        "version": "2.2.3",
+        "fecha": "Versión actual",
+        "estado": "estable",
+        "descripcion": "Corrección de errores",
+        "cambios": [
+          "Venta de configuración arreglada para adaptarse al tamaño de la fuente de letra en ambos dispositivos"
+        ]
+      },
       {
         "version": "2.2.2",
-        "fecha": "Versión actual",
+        "fecha": "Abril 18 del 2026",
         "estado": "estable",
         "descripcion": "Corrección de errores",
         "cambios": [
