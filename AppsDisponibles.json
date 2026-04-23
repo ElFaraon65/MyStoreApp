@@ -36,11 +36,19 @@
     "tamano": "99 KB",
     "requiere": "Android 8.0+",
 
-    
     "changelog": [
     {
-        "version": "2.3.0",
+        "version": "2.3.1",
         "fecha": "Versión actual",
+        "estado": "estable",
+        "descripcion": "Mejoras y Corrección de errores",
+        "cambios": [
+          "Cambios menores en el sistema de exportación de tablas"
+        ]
+      },
+    {
+        "version": "2.3.0",
+        "fecha": "Abril 23 del 2026",
         "estado": "estable",
         "descripcion": "Mejoras y Corrección de errores",
         "cambios": [
