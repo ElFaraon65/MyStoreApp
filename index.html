@@ -773,7 +773,11 @@ function getInstalledVersionNumber(app) {
 }
 // 🆕 MODIFICACIÓN: obtener la versión semántica instalada
 function getInstalledDisplayVersion(app) {
-  return localStorage.getItem(lsKey('installed_displayver', app)) || null;
+  const stored = localStorage.getItem(lsKey('installed_displayver', app));
+  const realDisplay = getDisplayVersionFromChangelog(app, 1);
+  if (!stored) return realDisplay;
+  // Devolver siempre la más reciente entre la guardada y la del changelog
+  return versionGreater(realDisplay, stored) ? realDisplay : stored;
 }
 // 🆕 MODIFICACIÓN: markInstalled ahora recibe displayVersion
 function markInstalled(app, versionNumber, displayVersion) {
