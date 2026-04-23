@@ -21,7 +21,7 @@
       "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/Captura%20de%20pantalla%202026-04-16%20at%203.06.09%20PM.jpeg"
     ],
 
-    "descripcion": "Aplicación de gestión de datos 100% local. Sin servidores, sin internet, sin cuentas. Un solo archivo que llevas contigo y funciona en cualquier navegador y pesa menos de 100 KB, ¡Menos que una foto en tu almacenamiento!.",
+    "descripcion": "Aplicación de gestión de datos 100% local. Sin servidores, sin internet, sin cuentas. Un solo archivo que llevas contigo y funciona en cualquier navegador.",
 
     "paraQuien": [
       { "tipo": "si", "texto": "✅ Equipos pequeños" },
@@ -39,8 +39,24 @@
     
     "changelog": [
     {
-        "version": "2.2.3",
+        "version": "2.2.4",
         "fecha": "Versión actual",
+        "estado": "estable",
+        "descripcion": "Mejoras y Corrección de errores",
+        "cambios": [
+          "Los botones de la ventana 'nota rápida' ahora tienen el tamaño adecuado y ya no se previsualiza una tabla en la parte inferior si no se hace uso de este símbolo '|'.",
+          "Las notas ahora se guardan correctamente sin ser exportadas como tablas si el usuario asi no lo desea",
+          "Ahora el algoritmo es mucho más inteligente, sabe qué tabla es la que necesita según su uso y da mejores recomendaciones o sugerencias",
+          "Cuando eliga el tipo de tabla 'informativo' ya no habrá ese cambio tan brusco, ahora las otras opciones permanecerán inhabilitadas, tan solo si se encuentra en la plantilla 'personalizar' tendrá acceso a todos los tipos de tablas sin límites.",
+          "Los 'Datos Importantes' que anclaban las burbujas más importantes ha cambiado su nombre a 'Análisis de Actividad'",
+          "Los símbolos representativos de cada acción dejaron de ser emojis para ser algo más serio.",
+          "Los cambios al tamaño de letra serán luego de ser solicitadas, ya no en tiempo real.",
+          "Arreglo de bugs."
+        ]
+      },
+    {
+        "version": "2.2.3",
+        "fecha": "Abril 20 del 2026",
         "estado": "estable",
         "descripcion": "Corrección de errores",
         "cambios": [
