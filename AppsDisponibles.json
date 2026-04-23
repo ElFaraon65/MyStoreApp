@@ -39,8 +39,24 @@
     
     "changelog": [
     {
-        "version": "2.2.4",
+        "version": "2.3.0",
         "fecha": "Versión actual",
+        "estado": "estable",
+        "descripcion": "Mejoras y Corrección de errores",
+        "cambios": [
+          "Scroll del mouse en pc en la edicion de la tabla",
+          "Se añadio el botón de 'exportar' que permite al usuario exportar sus tablas ya sea en formato PNG o PDF según las preferencias del usuario",
+          "Eliminación del residuo de 'Tabla'",
+          "Se añadieron pasos al tutorial para el botón 'exportar'",
+          "Arreglo de bugs en el tutorial",
+          "Arreglo de bugs en la aplicación de los cambios",
+          "Se arregló la previsualización de la tabla",
+          "En pc, la ventana de categoría vuelve a estar habilitada luego de dar clic en su apartado."
+        ]
+      },
+    {
+        "version": "2.2.4",
+        "fecha": "Abril 23 del 2026",
         "estado": "estable",
         "descripcion": "Mejoras y Corrección de errores",
         "cambios": [
