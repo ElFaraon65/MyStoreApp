@@ -1605,7 +1605,13 @@ async function submitReview() {
     const res = await fetch(SHEETS_URL, {
       method:  'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body:    JSON.stringify({ app: currentApp.nombre.toLowerCase(), ...review })
+      body:    JSON.stringify({
+        app:    currentApp.nombre.toLowerCase(),
+        nombre: review.name,
+        stars:  review.stars,
+        date:   review.date,
+        text:   review.text
+      })
     });
     const data = await res.json();
     if (data.ok) published = true;
