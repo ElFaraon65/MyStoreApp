@@ -1569,84 +1569,27 @@ function pickStar(n) {
    - Escritura: token de solo lectura de issues
      (scope: public_repo → solo puede crear issues en repos públicos)
    Formato de cada Issue:
-     Título: "[Reseña] DataGrid ★★★★★"
-     Body:   "nombre::Usuario\nstars::5\ndate::23 de abril de 2026\ntext::Opinión aquí"
+/* ══════════════════════════════════════════
+   RESEÑAS — Google Sheets via Apps Script
+   Sin tokens, sin credenciales en el código.
+   Funciona igual en PC y móvil.
 ══════════════════════════════════════════ */
-const GH_ISSUES_READ  = (user, repo) =>
-  `https://api.github.com/repos/${user}/${repo}/issues?labels=rese%C3%B1a&state=open&per_page=100&t=${Date.now()}`;
-const GH_ISSUES_POST  = (user, repo) =>
-  `https://api.github.com/repos/${user}/${repo}/issues`;
-
-// Token con permisos mínimos (public_repo) — solo puede crear issues en repos públicos.
-// NO puede leer código privado, ni modificar nada más.
-// Para generarlo: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained
-// Permisos necesarios: Issues → Read & Write (solo en este repo)
-const GH_ISSUES_TOKEN = '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';
-
-function parseIssueToReview(issue) {
-  try {
-    const lines = issue.body.split('\n');
-    const get = key => {
-      const l = lines.find(l => l.startsWith(key + '::'));
-      return l ? l.slice(key.length + 2).trim() : '';
-    };
-    return {
-      name:  get('nombre') || 'Usuario anónimo',
-      stars: parseInt(get('stars')) || 0,
-      date:  get('date')  || '',
-      text:  get('text')  || ''
-    };
-  } catch { return null; }
-}
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwbCcux6Wna9pNKCUBsN-qgDucRoMok8f95JwN3W_lPHVTsGHNMZzltTsWSoj8YVlx7/exec';
 
 async function loadReviewsRemote(app) {
-  // Muestra estado de carga
   document.getElementById('reviewList').innerHTML =
     '<div class="no-reviews"><div class="spinner"></div><br>Cargando reseñas…</div>';
-
   try {
-    const url = GH_ISSUES_READ(app.githubUser, app.githubRepo);
-    const res = await fetch(url, {
-      headers: { 'Accept': 'application/vnd.github+json' },
-      cache: 'no-store'
-    });
+    const res = await fetch(
+      `${SHEETS_URL}?app=${encodeURIComponent(app.nombre.toLowerCase())}&t=${Date.now()}`,
+      { cache: 'no-store' }
+    );
     if (!res.ok) throw new Error();
-    const issues = await res.json();
-
-    // Filtrar solo issues que sean reseñas de esta app
-    const appLabel = app.nombre.toLowerCase();
-    reviews = issues
-      .filter(i => i.title.toLowerCase().includes('[reseña]') &&
-                   i.title.toLowerCase().includes(appLabel))
-      .map(parseIssueToReview)
-      .filter(Boolean);
-
-    // También combinar con reseñas locales pendientes de sincronizar
-    const pending = loadReviewsPending(app);
-    if (pending.length) {
-      reviews = [...pending, ...reviews];
-    }
-
+    reviews = await res.json();
   } catch (_) {
-    // Si falla la red, usar cache local como fallback
-    reviews = [...loadReviewsPending(app), ...loadReviews(app)];
+    reviews = loadReviews(app); // fallback local si no hay red
   }
-
   renderReviews();
-}
-
-// Reseñas pendientes de subir (escritas sin conexión o antes de configurar token)
-function loadReviewsPending(app) {
-  try { return JSON.parse(localStorage.getItem(lsKey('reviews_pending', app))) || []; }
-  catch { return []; }
-}
-function saveReviewPending(app, review) {
-  const arr = loadReviewsPending(app);
-  arr.unshift(review);
-  localStorage.setItem(lsKey('reviews_pending', app), JSON.stringify(arr));
-}
-function clearReviewsPending(app) {
-  localStorage.removeItem(lsKey('reviews_pending', app));
 }
 
 async function submitReview() {
@@ -1655,8 +1598,8 @@ async function submitReview() {
     alert('Seleccioná al menos una estrella y escribí tu opinión.');
     return;
   }
-  const name = document.getElementById('reviewerName').value.trim() || 'Usuario anónimo';
-  const now  = new Date().toLocaleDateString('es', { day:'numeric', month:'long', year:'numeric' });
+  const name   = document.getElementById('reviewerName').value.trim() || 'Usuario anónimo';
+  const now    = new Date().toLocaleDateString('es', { day:'numeric', month:'long', year:'numeric' });
   const review = { name, stars: selStars, text, date: now };
 
   const subBtn = document.querySelector('.sub-review-btn');
@@ -1664,46 +1607,28 @@ async function submitReview() {
   subBtn.disabled = true;
 
   let published = false;
-
-  if (GH_ISSUES_TOKEN) {
-    try {
-      const stars = '★'.repeat(selStars) + '☆'.repeat(5 - selStars);
-      const body  = `nombre::${name}\nstars::${selStars}\ndate::${now}\ntext::${text}`;
-      const res = await fetch(GH_ISSUES_POST(currentApp.githubUser, currentApp.githubRepo), {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${GH_ISSUES_TOKEN}`,
-          'Accept': 'application/vnd.github+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          title:  `[Reseña] ${currentApp.nombre} ${stars}`,
-          body,
-          labels: ['reseña']
-        })
-      });
-      if (res.ok) published = true;
-    } catch (_) {}
-  }
+  try {
+    const res = await fetch(SHEETS_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body:    JSON.stringify({ app: currentApp.nombre.toLowerCase(), ...review })
+    });
+    const data = await res.json();
+    if (data.ok) published = true;
+  } catch (_) {}
 
   if (!published) {
-    // Sin token o sin conexión: guardar localmente y mostrar igual
-    saveReviewPending(currentApp, review);
+    // Sin red: guardar local como respaldo
     saveReviews(currentApp, [review, ...loadReviews(currentApp)]);
   }
 
   reviews.unshift(review);
-
   document.getElementById('reviewText').value = '';
   document.getElementById('reviewerName').value = '';
   selStars = 0;
   document.querySelectorAll('.si').forEach(s => s.classList.remove('lit'));
-  subBtn.textContent = published ? '¡Publicado!' : 'Publicado (local)';
-  setTimeout(() => {
-    subBtn.textContent = 'Publicar reseña';
-    subBtn.disabled = false;
-  }, 1800);
-
+  subBtn.textContent = published ? '¡Publicado!' : 'Guardado sin conexión';
+  setTimeout(() => { subBtn.textContent = 'Publicar reseña'; subBtn.disabled = false; }, 1800);
   renderReviews();
 }
 
