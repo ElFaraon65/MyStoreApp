@@ -1572,15 +1572,10 @@ function pickStar(n) {
      Título: "[Reseña] DataGrid ★★★★★"
      Body:   "nombre::Usuario\nstars::5\ndate::23 de abril de 2026\ntext::Opinión aquí"
 ══════════════════════════════════════════ */
-// Las reseñas siempre se guardan en el repo de la TIENDA (MyStoreApp),
-// no en el repo de cada app. Ahí está la etiqueta "reseña" creada.
-const STORE_USER = 'ElFaraon65';
-const STORE_REPO = 'MyStoreApp';
-
-const GH_ISSUES_READ  = () =>
-  `https://api.github.com/repos/${STORE_USER}/${STORE_REPO}/issues?labels=rese%C3%B1a&state=open&per_page=100&t=${Date.now()}`;
-const GH_ISSUES_POST  = () =>
-  `https://api.github.com/repos/${STORE_USER}/${STORE_REPO}/issues`;
+const GH_ISSUES_READ  = (user, repo) =>
+  `https://api.github.com/repos/${user}/${repo}/issues?labels=rese%C3%B1a&state=open&per_page=100&t=${Date.now()}`;
+const GH_ISSUES_POST  = (user, repo) =>
+  `https://api.github.com/repos/${user}/${repo}/issues`;
 
 // Token con permisos mínimos (public_repo) — solo puede crear issues en repos públicos.
 // NO puede leer código privado, ni modificar nada más.
@@ -1610,7 +1605,7 @@ async function loadReviewsRemote(app) {
     '<div class="no-reviews"><div class="spinner"></div><br>Cargando reseñas…</div>';
 
   try {
-    const url = GH_ISSUES_READ();
+    const url = GH_ISSUES_READ(app.githubUser, app.githubRepo);
     const res = await fetch(url, {
       headers: { 'Accept': 'application/vnd.github+json' },
       cache: 'no-store'
@@ -1674,7 +1669,7 @@ async function submitReview() {
     try {
       const stars = '★'.repeat(selStars) + '☆'.repeat(5 - selStars);
       const body  = `nombre::${name}\nstars::${selStars}\ndate::${now}\ntext::${text}`;
-      const res = await fetch(GH_ISSUES_POST(), {
+      const res = await fetch(GH_ISSUES_POST(currentApp.githubUser, currentApp.githubRepo), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${GH_ISSUES_TOKEN}`,
