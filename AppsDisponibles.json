@@ -40,10 +40,19 @@
 
     "changelog": [
     {
-        "version": "2.3.1",
+        "version": "2.3.2",
         "fecha": "Versión actual",
         "estado": "estable",
-        "descripcion": "Mejoras y Corrección de errores",
+        "descripcion": "Mejoras",
+        "cambios": [
+          "Se pueden escribir más contenido en una celda de la tabla"
+        ]
+      },
+    {
+        "version": "2.3.1",
+        "fecha": "Abril 24 del 2026",
+        "estado": "estable",
+        "descripcion": "Mejoras",
         "cambios": [
           "Cambios menores en el sistema de exportación de tablas"
         ]
