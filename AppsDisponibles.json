@@ -39,6 +39,15 @@
     "requierePC": "Windows 10 v1809+",
 
     "changelog": [
+      {
+        "version": "3.0.3",
+        "fecha": "Versión actual",
+        "estado": "inestable",
+        "descripcion": "Corrección de errores",
+        "cambios": [
+          "El asistente deja de estar trabado"
+        ]
+      },
     {
         "version": "3.0.2",
         "fecha": "Versión actual",
