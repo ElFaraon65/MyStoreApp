@@ -40,8 +40,17 @@
 
     "changelog": [
     {
-        "version": "3.0.1",
+        "version": "3.0.2",
         "fecha": "Versión actual",
+        "estado": "estable",
+        "descripcion": "Corrección de errores",
+        "cambios": [
+          "El asistente deja de estar trabado"
+        ]
+      },
+    {
+        "version": "3.0.1",
+        "fecha": "Abril 28 del 2026",
         "estado": "estable",
         "descripcion": "Corrección de errores",
         "cambios": [
