@@ -40,8 +40,33 @@
 
     "changelog": [
     {
-        "version": "2.3.2",
+        "version": "3.0.0",
         "fecha": "Versión actual",
+        "estado": "estable",
+        "descripcion": "Nueva y gran actualización",
+        "cambios": [
+          "Arreglo de bugs del tutorial.",
+          "Asistente virtual que te permite exportar tablas, siendo el reemplazado directo del botón 'Exportar'. Próximamente más funcionalidades.",
+          "Tutorial auditivo.",
+          "Paleta de colores.",
+          "Scroll más permisivo en PC para deslizarse con mayor fluidez y sin dificultades entre columnas.",
+          "Casillas de tachado que permiten bloquear una fila completa.",
+          "Arreglo de bugs en la barra de cálculos.",
+          "Edición rápida de las etiquetas de categoría.",
+          "Convertir a tabla con un símbolo más familiar, pasando de ser '|' a '-'.",
+          "Arreglo de bugs en el editor de tabla.",
+          "Botón de 'Guardar' inhabilitado si no detecta ningún cambio o edición en una tabla.",
+          "Audios narrados por el nuevo asistente, desde el paso 1 hasta el 18.",
+          "Efectos de sonido por cada opción.",
+          "Ahora queda más claro que no puedes crear una categoría sin un nombre gracias a un indicativo visual sutil.",
+          "Arreglo en el menú del asistente y sprites nuevos.",
+          "Audio modulado",
+          "Efectos visuales"
+        ]
+      },
+    {
+        "version": "2.3.2",
+        "fecha": "Abril 25 del 2026",
         "estado": "estable",
         "descripcion": "Mejoras",
         "cambios": [
