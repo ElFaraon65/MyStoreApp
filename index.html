@@ -1326,7 +1326,7 @@ function renderHomeApps(filter = '') {
   row.innerHTML = filtered.map((app, i) => {
     const badge = isInstalled(app) ? '<div class="installed-badge">Instalada</div>' : '';
     return `
-    <div class="app-card-sm" onclick="openAppDetail(apps[${apps.indexOf(app)}])">
+    <div class="app-card-sm" onclick="openAppSmart(apps[${apps.indexOf(app)}])">
       ${badge}
       <div class="ic">${iconHTML(app)}</div>
       <div class="name">${app.nombre}</div>
@@ -1500,6 +1500,17 @@ function openAppDetail(app) {
       document.getElementById('statVer').textContent = 'v' + newDisplay;
       refreshActionBtn(app);
     });
+  }
+}
+
+function openAppSmart(app) {
+  if (isInstalled(app) && !updateInfo) {
+    // La app está instalada y al día: abrir directamente igual que "Iniciar"
+    currentApp = app;
+    mainAction(); // ejecuta el mismo código del botón Iniciar (abre web o intent)
+  } else {
+    // No instalada o hay actualización: ir a la ficha de detalle
+    openAppDetail(app);
   }
 }
 
@@ -1841,7 +1852,7 @@ function renderSearchResults(found, q) {
     const avg = appReviews.length ? appReviews.reduce((a,r)=>a+r.stars,0)/appReviews.length : 0;
     const starsHTML = [1,2,3,4,5].map(n =>
       `<span class="s${avg>=n?'':' empty'}">★</span>`).join('');
-    return `<div class="search-result-card" onclick="openAppDetail(apps[${apps.indexOf(app)}])">
+    return `<div class="search-result-card" onclick="openAppSmart(apps[${apps.indexOf(app)}])">
       <div class="src-icon">${iconHTML(app)}</div>
       <div class="src-info">
         <div class="src-name">${app.nombre}</div>
