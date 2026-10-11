@@ -1,10 +1,77 @@
 [
   {
+    "nombre": "Red Margin: Tracking system",
+    "autor": "HistoryGamesProductions",
+    "rating": "5.0",
+    "categoria": "Entretenimiento",
+    "githubUser": "ElFaraon65",
+    "githubRepo": "bio-breach-repositorio",
+    "githubBranch": "main",
+    "archivoBase": "BIO-BREACH__Sistema de rastreo",
+    "extension": ".apk",
+    "extensionPC": ".classic.zip",
+    "androidUrl": "https://elfaraon65.github.io/bio-breach-repositorio/",
+    "portada": "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Logo%20BIO-BREACH.png",
+    "capturas": [
+      "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Screenshots/Screenshot_20261010_211429.jpg",
+      "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Screenshots/Screenshot_20261010_211436.jpg",
+      "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Screenshots/Screenshot_20261010_211443.jpg",
+      "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Screenshots/Screenshot_20261010_211525.jpg",
+      "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Screenshots/Screenshot_20261010_211540.jpg"
+    ],
+    "descripcion": "App de entretimiento donde debes usar tus habilidades y hacer las preguntas adecuadas para hallar a un culpable",
+    "paraQuien": [
+      {
+        "tipo": "si",
+        "texto": "✅ Para jugar con amigos"
+      },
+      {
+        "tipo": "si",
+        "texto": "✅ Uso sin internet"
+      },
+      {
+        "tipo": "si",
+        "texto": "✅ Juego en solitario"
+      },
+      {
+        "tipo": "si",
+        "texto": "✅ Usuarios de estrategia"
+      },
+      {
+        "tipo": "no",
+        "texto": "⚠️ No para gente que prefieren estímulos rápidos"
+      },
+      {
+        "tipo": "no",
+        "texto": "⚠️ No para jugadores que no indagan"
+      }
+    ],
+    "tags": [
+      "Entretenimiento",
+      "Offline"
+    ],
+    "tamano": "3.15 MB",
+    "requiere": "Android 8.0+",
+    "changelog": [
+      {
+        "version": "6.0.0",
+        "fecha": "26 de septiembre",
+        "estado": "estable",
+        "descripcion": "Un nuevo nacer",
+        "cambios": [
+          "Sistema de enlazado",
+          "preguntas a consola",
+          "Nuevas animaciones",
+          "Nuevos menús"
+        ]
+      }
+    ]
+  },
+  {
     "nombre": "DataGrid",
     "autor": "HistoryGamesProductions",
     "rating": "5.0",
     "categoria": "Productividad y Entretenimiento",
-
     "githubUser": "ElFaraon65",
     "githubRepo": "DataGrid",
     "githubBranch": "main",
@@ -12,9 +79,7 @@
     "extension": ".apk",
     "extensionPC": ".classic.zip",
     "androidUrl": "https://ElFaraon65.github.io/DataGrid/",
-
     "portada": "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/assets/icons/LOGO%20DATAGRID.png",
-
     "capturas": [
       "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/Notas%20r%C3%A1pidas%20-%20Captura.jpeg",
       "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/Pantalla%20Principal%20-%20Captura.jpeg",
@@ -22,23 +87,42 @@
       "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/Categor%C3%ADas%20-%20Captura.jpeg",
       "https://raw.githubusercontent.com/ElFaraon65/MyStoreApp/refs/heads/main/Asistente%20-%20Captura.jpeg"
     ],
-
     "descripcion": "Aplicación de gestión de datos 100% local. Sin servidores, sin internet, sin cuentas. Un solo archivo que llevas contigo y funciona en cualquier navegador.",
-
     "paraQuien": [
-      { "tipo": "si", "texto": "✅ Equipos pequeños" },
-      { "tipo": "si", "texto": "✅ Uso sin internet" },
-      { "tipo": "si", "texto": "✅ Gestión de datos simple" },
-      { "tipo": "si", "texto": "✅ Usuarios no técnicos" },
-      { "tipo": "no", "texto": "⚠️ No para millones de filas" },
-      { "tipo": "no", "texto": "⚠️ No tiene gráficas (aún)" }
+      {
+        "tipo": "si",
+        "texto": "✅ Equipos pequeños"
+      },
+      {
+        "tipo": "si",
+        "texto": "✅ Uso sin internet"
+      },
+      {
+        "tipo": "si",
+        "texto": "✅ Gestión de datos simple"
+      },
+      {
+        "tipo": "si",
+        "texto": "✅ Usuarios no técnicos"
+      },
+      {
+        "tipo": "no",
+        "texto": "⚠️ No para millones de filas"
+      },
+      {
+        "tipo": "no",
+        "texto": "⚠️ No tiene gráficas (aún)"
+      }
     ],
-
-    "tags": ["Productividad", "Datos", "Gestión", "Offline"],
+    "tags": [
+      "Productividad",
+      "Datos",
+      "Gestión",
+      "Offline"
+    ],
     "tamano": "99 KB",
     "requiere": "Android 8.0+",
     "requierePC": "Windows 10 v1809+",
-
     "changelog": [
       {
         "version": "3.0.4",
@@ -58,7 +142,7 @@
           "El asistente deja de estar trabado"
         ]
       },
-    {
+      {
         "version": "3.0.2",
         "fecha": "Abril 28 del 2026",
         "estado": "inestable",
@@ -67,7 +151,7 @@
           "El asistente deja de estar trabado"
         ]
       },
-    {
+      {
         "version": "3.0.1",
         "fecha": "Abril 28 del 2026",
         "estado": "estable",
@@ -76,7 +160,7 @@
           "El asistente deja de estar trabado"
         ]
       },
-    {
+      {
         "version": "3.0.0",
         "fecha": "Abril 28 del 2026",
         "estado": "estable",
@@ -101,7 +185,7 @@
           "Efectos visuales"
         ]
       },
-    {
+      {
         "version": "2.3.2",
         "fecha": "Abril 25 del 2026",
         "estado": "estable",
@@ -110,7 +194,7 @@
           "Se pueden escribir más contenido en una celda de la tabla"
         ]
       },
-    {
+      {
         "version": "2.3.1",
         "fecha": "Abril 24 del 2026",
         "estado": "estable",
@@ -119,7 +203,7 @@
           "Cambios menores en el sistema de exportación de tablas"
         ]
       },
-    {
+      {
         "version": "2.3.0",
         "fecha": "Abril 23 del 2026",
         "estado": "estable",
@@ -135,7 +219,7 @@
           "En pc, la ventana de categoría vuelve a estar habilitada luego de dar clic en su apartado."
         ]
       },
-    {
+      {
         "version": "2.2.4",
         "fecha": "Abril 23 del 2026",
         "estado": "estable",
@@ -151,7 +235,7 @@
           "Arreglo de bugs."
         ]
       },
-    {
+      {
         "version": "2.2.3",
         "fecha": "Abril 20 del 2026",
         "estado": "estable",
@@ -234,40 +318,5 @@
         ]
       }
     ]
-  },
-  {
-  "nombre": "Red Margin: Tracking system",
-  "autor": "HistoryGamesProductions",
-  "rating": "5.0",
-  "categoria": "Entretenimiento",
-  "githubUser": "ElFaraon65",
-  "githubRepo": "bio-breach-repositorio",
-  "githubBranch": "main",
-  "archivoBase": "Bio Breach Hub",
-  "extension": ".apk",
-  "extensionPC": ".classic.zip",
-  "androidUrl": "https://elfaraon65.github.io/bio-breach-repositorio/",
-  "portada": "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Logo%20BIO-BREACH.png",
-  "capturas": ["https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Screenshots/Screenshot_20261010_211429.jpg",
-  "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Screenshots/Screenshot_20261010_211436.jpg",
-  "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Screenshots/Screenshot_20261010_211443.jpg",
-  "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Screenshots/Screenshot_20261010_211525.jpg",
-  "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Screenshots/Screenshot_20261010_211540.jpg"],
-  "descripcion": "App de entretimiento donde debes usar tus habilidades y hacer las preguntas adecuadas para hallar a un culpable",
-  "paraQuien": [
-      { "tipo": "si", "texto": "✅ Para jugar con amigos" },
-      { "tipo": "si", "texto": "✅ Uso sin internet" },
-      { "tipo": "si", "texto": "✅ Juego en solitario" },
-      { "tipo": "si", "texto": "✅ Usuarios de estrategia" },
-      { "tipo": "no", "texto": "⚠️ No para gente que prefieren estímulos rápidos" },
-      { "tipo": "no", "texto": "⚠️ No para jugadores que no indagan" }
-    ],
-  "tags": ["Entretenimiento", "Offline"],
-  "tamano": "3.15 MB",
-  "requiere": "Android 8.0+",
-  "changelog": [
-    { "version": "6.0.0", "fecha": "26 de septiembre", "estado": "estable",
-      "descripcion": "Un nuevo nacer", "cambios": ["Sistema de enlazado", "preguntas a consola", "Nuevas animaciones", "Nuevos menús"] }
-  ]
-}
+  }
 ]
