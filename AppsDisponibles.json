@@ -234,5 +234,40 @@
         ]
       }
     ]
-  }
+  },
+  {
+  "nombre": "Red Margin: Tracking system",
+  "autor": "HistoryGamesProductions",
+  "rating": "5.0",
+  "categoria": "Entretenimiento",
+  "githubUser": "ElFaraon65",
+  "githubRepo": "bio-breach-repositorio",
+  "githubBranch": "main",
+  "archivoBase": "BIO-BREACH__Sistema de rastreo",
+  "extension": ".apk",
+  "extensionPC": ".classic.zip",
+  "androidUrl": "https://elfaraon65.github.io/bio-breach-repositorio/",
+  "portada": "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Logo%20BIO-BREACH.png",
+  "capturas": ["https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Screenshots/Screenshot_20261010_211429.jpg",
+  "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Screenshots/Screenshot_20261010_211436.jpg",
+  "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Screenshots/Screenshot_20261010_211443.jpg",
+  "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Screenshots/Screenshot_20261010_211525.jpg",
+  "https://raw.githubusercontent.com/ElFaraon65/bio-breach-repositorio/refs/heads/main/Screenshots/Screenshot_20261010_211540.jpg"],
+  "descripcion": "App de entretimiento donde debes usar tus habilidades y hacer las preguntas adecuadas para hallar a un culpable",
+  "paraQuien": [
+      { "tipo": "si", "texto": "✅ Para jugar con amigos" },
+      { "tipo": "si", "texto": "✅ Uso sin internet" },
+      { "tipo": "si", "texto": "✅ Juego en solitario" },
+      { "tipo": "si", "texto": "✅ Usuarios de estrategia" },
+      { "tipo": "no", "texto": "⚠️ No para gente que prefieren estímulos rápidos" },
+      { "tipo": "no", "texto": "⚠️ No para jugadores que no indagan" }
+    ],
+  "tags": ["Entretenimiento", "Offline"],
+  "tamano": "3.15 MB",
+  "requiere": "Android 8.0+",
+  "changelog": [
+    { "version": "6.0.0", "fecha": "26 de septiembre", "estado": "estable",
+      "descripcion": "Un nuevo nacer", "cambios": ["Sistema de enlazado", "preguntas a consola", "Nuevas animaciones", "Nuevos menús"] }
+  ]
+}
 ]
