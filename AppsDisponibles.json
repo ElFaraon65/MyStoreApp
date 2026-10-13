@@ -65,7 +65,8 @@
           "Nuevos menús"
         ]
       }
-    ]
+    ],
+    "dificultad": 3
   },
   {
     "nombre": "DataGrid",
@@ -317,6 +318,7 @@
           "Primera versión pública de DataGrid"
         ]
       }
-    ]
+    ],
+    "dificultad": 2
   }
 ]

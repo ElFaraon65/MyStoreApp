@@ -654,9 +654,9 @@
       <div class="desc-features" id="descFeatures"></div>
       <div class="diff-section" style="margin-top:18px">
         <div class="diff-title">Nivel de dificultad de uso</div>
-        <div class="diff-bar"><div class="diff-bar-fill"></div></div>
+        <div class="diff-bar"><div class="diff-bar-fill" id="diffFill"></div></div>
         <div class="diff-bar-labels"><span>🟢 Muy fácil</span><span>🟡 Intermedio</span><span>🔴 Experto</span></div>
-        <div class="diff-verdict">✔ Fácil — cualquier persona puede usarla desde el primer día.</div>
+        <div class="diff-verdict" id="diffVerdict">✔ Fácil — cualquier persona puede usarla desde el primer día.</div>
       </div>
       <div class="for-who" style="margin-top:18px" id="forWhoWrap">
         <div class="for-who-title">¿Para quién es?</div>
@@ -1506,6 +1506,24 @@ function openAppDetail(app) {
       <span class="fw-chip yes">✅ Usuarios no técnicos</span>
       <span class="fw-chip no">⚠️ No para millones de filas</span>`;
   }
+
+  // Dificultad de uso (campo "dificultad" 1-5 del JSON; si falta, nivel 2 = lo que había antes)
+  (function () {
+    const niveles = {
+      1: { w: 12, c: '#2e7d32', t: '✔ Muy fácil — se entiende sin explicación.' },
+      2: { w: 30, c: '#2e7d32', t: '✔ Fácil — cualquier persona puede usarla desde el primer día.' },
+      3: { w: 55, c: '#b26a00', t: '⚠ Intermedio — requiere un poco de práctica.' },
+      4: { w: 78, c: '#d84315', t: '⚠ Avanzado — conviene tener experiencia previa.' },
+      5: { w: 95, c: '#c62828', t: '⛔ Experto — pensada para usuarios con mucha experiencia.' }
+    };
+    let n = parseInt(app.dificultad, 10);
+    if (!(n >= 1 && n <= 5)) n = 2;
+    const lv = niveles[n];
+    const fill = document.getElementById('diffFill');
+    const verdict = document.getElementById('diffVerdict');
+    if (fill) fill.style.width = lv.w + '%';
+    if (verdict) { verdict.textContent = lv.t; verdict.style.color = lv.c; }
+  })();
 
   // Screenshots
   renderScreenshots(app);
